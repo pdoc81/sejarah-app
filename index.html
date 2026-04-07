@@ -104,7 +104,6 @@
       </div>
     </header>
 
-    <!-- Top Tabs -->
     <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
       <button class="tab-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="latihan">
         Latihan
@@ -120,7 +119,6 @@
       </button>
     </div>
 
-    <!-- TAB LATIHAN -->
     <section id="tab-latihan" class="tab-panel mt-6">
       <div class="grid lg:grid-cols-[390px,1fr] gap-6">
         <aside class="glass rounded-3xl border border-slate-200 shadow-sm p-5 h-fit">
@@ -153,7 +151,6 @@
             </div>
           </div>
 
-          <!-- Chapter Fields -->
           <div id="chapterFields" class="space-y-4">
             <div>
               <label for="tingkatanSelect" class="block text-sm font-semibold mb-2">Tingkatan</label>
@@ -177,7 +174,6 @@
             </div>
           </div>
 
-          <!-- Exam Fields -->
           <div id="examFields" class="hidden space-y-4">
             <div class="rounded-2xl bg-red-50 border border-red-100 px-4 py-4">
               <p class="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold mb-1">Mod Percubaan</p>
@@ -193,7 +189,6 @@
             </div>
           </div>
 
-          <!-- Question Count -->
           <div class="mt-5">
             <p class="text-sm font-semibold mb-2">Bilangan Soalan</p>
             <div id="countWrap" class="grid grid-cols-3 gap-2">
@@ -318,7 +313,6 @@
       </div>
     </section>
 
-    <!-- TAB PROGRES -->
     <section id="tab-progres" class="tab-panel hidden mt-6">
       <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
         <h2 class="text-2xl font-bold">Progres Semasa</h2>
@@ -328,7 +322,6 @@
       </div>
     </section>
 
-    <!-- TAB BANTUAN -->
     <section id="tab-bantuan" class="tab-panel hidden mt-6">
       <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
         <h2 class="text-2xl font-bold">Bantuan</h2>
@@ -341,7 +334,6 @@
       </div>
     </section>
 
-    <!-- TAB SUMBANGAN -->
     <section id="tab-sumbangan" class="tab-panel hidden mt-6">
       <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
         <div class="grid lg:grid-cols-[1.3fr,0.9fr] gap-6">
@@ -604,16 +596,14 @@
     function updateScopePreview() {
       const form = Number(tingkatanSelect.value);
       const chapter = Number(babSelect.value);
-      const title = chapterTitles[form]?.[chapter] || '';
+      const title = chapterTitles[form] && chapterTitles[form][chapter] ? chapterTitles[form][chapter] : '';
       scopePreview.textContent = `Tingkatan ${form} · Bab ${chapter}${title ? ` – ${title}` : ''}`;
     }
 
     function setQuizMode(mode) {
       state.quizMode = mode;
-
       quizModeChapterBtn.classList.toggle('active', mode === 'chapter');
       quizModeExamBtn.classList.toggle('active', mode === 'exam');
-
       chapterFields.classList.toggle('hidden', mode !== 'chapter');
       examFields.classList.toggle('hidden', mode !== 'exam');
 
@@ -628,10 +618,8 @@
 
     function setPaper(mode) {
       state.paper = mode;
-
       paper1Btn.classList.toggle('active', mode === 'mcq');
       paper2Btn.classList.toggle('active', mode === 'structured');
-
       markStructuredBtn.classList.toggle('hidden', mode !== 'structured');
       updateCountState();
     }
@@ -712,7 +700,7 @@
 
       const form = Number(tingkatanSelect.value);
       const chapter = Number(babSelect.value);
-      const title = chapterTitles[form]?.[chapter] || '';
+      const title = chapterTitles[form] && chapterTitles[form][chapter] ? chapterTitles[form][chapter] : '';
       return `Tingkatan ${form} Bab ${chapter}${title ? ` - ${title}` : ''}`;
     }
 
@@ -846,75 +834,72 @@
       });
     }
 
-    <script>
-
     async function generateQuestions() {
-    resetOutput();
-    loadingBox.classList.remove('hidden');
-    setStatus('Menjana...', 'loading');
+      resetOutput();
+      loadingBox.classList.remove('hidden');
+      setStatus('Menjana...', 'loading');
 
-    const payload = {
+      const payload = {
         quizMode: state.quizMode,
         mode: state.paper,
         questionCount:
-        state.quizMode === 'exam' && state.paper === 'mcq'
+          state.quizMode === 'exam' && state.paper === 'mcq'
             ? 40
             : state.paper === 'mcq'
-            ? state.questionCount
-            : 10,
+              ? state.questionCount
+              : 10,
         selectedSkop: state.quizMode === 'chapter' ? tingkatanSelect.value : null,
         selectedSesi: state.quizMode === 'chapter' ? babSelect.value : null,
         scopeLabel: getScopeLabel()
-    };
+      };
 
-    try {
+      try {
         const res = await fetch('/.netlify/functions/generate', {
-        method: 'POST',
-        headers: {
+          method: 'POST',
+          headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
+          },
+          body: JSON.stringify(payload)
         });
 
         const rawText = await res.text();
-        let data = null;
+        let data = {};
 
         try {
-        data = rawText ? JSON.parse(rawText) : {};
+          data = rawText ? JSON.parse(rawText) : {};
         } catch (parseError) {
-        console.error('Raw response parse error:', rawText);
-        throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
+          console.error('Raw response parse error:', rawText);
+          throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
         }
 
         loadingBox.classList.add('hidden');
 
         if (!res.ok || data.error) {
-        showError(data.error || 'Gagal menjana soalan.');
-        return;
+          showError(data.error || 'Gagal menjana soalan.');
+          return;
         }
 
         if (data.debug_source || data.debug_variation_plan) {
-        debugBox.classList.remove('hidden');
-        debugText.textContent = JSON.stringify({
+          debugBox.classList.remove('hidden');
+          debugText.textContent = JSON.stringify({
             debug_source: data.debug_source || null,
             debug_variation_plan: data.debug_variation_plan || null
-        }, null, 2);
+          }, null, 2);
         }
 
         if (state.paper === 'mcq') {
-        renderMcq(data);
+          renderMcq(data);
         } else {
-        renderStructured(data);
+          renderStructured(data);
         }
 
         setStatus('Berjaya', 'success');
-    } catch (err) {
+      } catch (err) {
         console.error('Generate error:', err);
         loadingBox.classList.add('hidden');
         showError(err.message || 'Ralat sambungan.');
+      }
     }
-    }
-    </script>
 
     function submitMcq(isAuto = false) {
       if (!state.mcqData.length) return;
@@ -949,7 +934,7 @@
         if (selected === item.ans) score += 1;
 
         const expBox = document.getElementById(`exp-${index}`);
-        expBox.classList.remove('hidden');
+        if (expBox) expBox.classList.remove('hidden');
       });
 
       mcqScore.textContent = `${score} / ${state.mcqData.length}`;
@@ -988,7 +973,15 @@
           })
         });
 
-        const data = await res.json();
+        const rawText = await res.text();
+        let data = {};
+
+        try {
+          data = rawText ? JSON.parse(rawText) : {};
+        } catch (parseError) {
+          console.error('Raw mark response parse error:', rawText);
+          throw new Error(`Respons semakan tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
+        }
 
         if (!res.ok || data.error) {
           showError(data.error || 'Gagal menyemak jawapan.');
@@ -997,7 +990,7 @@
 
         structuredResults.classList.remove('hidden');
         structuredFeedbackList.innerHTML = '';
-        structuredTotal.textContent = `Jumlah Markah: ${data.total ?? 0}`;
+        structuredTotal.textContent = `Jumlah Markah: ${data.total != null ? data.total : 0}`;
 
         (state.structuredData.questions || []).forEach(question => {
           const resultItem = (data.results || []).find(r => r.id === question.id) || {};
@@ -1006,7 +999,7 @@
           div.innerHTML = `
             <div class="flex items-center justify-between gap-3">
               <span class="font-bold uppercase text-blue-700">${question.id}</span>
-              <span class="text-sm font-semibold text-blue-700">${resultItem.marks_awarded ?? 0} markah</span>
+              <span class="text-sm font-semibold text-blue-700">${resultItem.marks_awarded != null ? resultItem.marks_awarded : 0} markah</span>
             </div>
             <p class="mt-2 text-sm text-slate-700 leading-7"><span class="font-semibold">Maklum balas:</span> ${resultItem.feedback || '-'}</p>
             <div class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -1060,6 +1053,7 @@
       btn.addEventListener('click', () => {
         if (state.paper !== 'mcq') return;
         if (state.quizMode !== 'chapter') return;
+
         state.questionCount = Number(btn.dataset.count);
         countButtons.forEach(b => b.classList.toggle('active', b === btn));
       });
