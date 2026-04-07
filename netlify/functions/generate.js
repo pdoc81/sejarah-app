@@ -17,6 +17,24 @@ function jsonResponse(statusCode, body) {
   };
 }
 
+function getQuestionDistribution(questionCount) {
+  const count = Number(questionCount) || 10;
+
+  if (count === 5) {
+    return { mudah: 1, sederhana: 2, kbat: 2 };
+  }
+
+  if (count === 10) {
+    return { mudah: 2, sederhana: 5, kbat: 3 };
+  }
+
+  if (count === 20) {
+    return { mudah: 5, sederhana: 10, kbat: 5 };
+  }
+
+  return { mudah: 2, sederhana: 5, kbat: 3 };
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return jsonResponse(200, {});
@@ -41,6 +59,7 @@ exports.handler = async (event) => {
     let userText = '';
     let model = 'gpt-5.4-mini';
     const totalQuestions = Number(questionCount) || 10;
+    const distribution = getQuestionDistribution(totalQuestions);
 
     if (mode === 'mcq') {
       model = 'gpt-5.4-nano';
@@ -48,6 +67,11 @@ exports.handler = async (event) => {
       systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang teliti.
 Jana TEPAT ${totalQuestions} soalan objektif berkualiti tinggi.
+Campuran aras mestilah:
+- ${distribution.mudah} soalan mudah
+- ${distribution.sederhana} soalan sederhana
+- ${distribution.kbat} soalan KBAT
+
 Balas dalam JSON SAHAJA dengan format:
 {
   "questions": [
@@ -55,7 +79,8 @@ Balas dalam JSON SAHAJA dengan format:
       "q": "Soalan",
       "opts": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
       "ans": 0,
-      "exp": "Penjelasan ringkas"
+      "exp": "Penjelasan ringkas",
+      "level": "mudah"
     }
   ]
 }
@@ -67,11 +92,22 @@ Peraturan:
 - Sesuai untuk murid sekolah menengah
 - Pilihan jawapan mesti 4 sahaja
 - "ans" ialah index 0 hingga 3
+- "level" mesti salah satu daripada: mudah, sederhana, kbat
 - Pastikan jawapan tepat
 - Elakkan pilihan jawapan yang terlalu jelas salah
+- Soalan mudah = fakta asas / pengetahuan langsung
+- Soalan sederhana = kefahaman / sebab-akibat / aplikasi mudah
+- Soalan KBAT = analisis / perbandingan / inferens / penilaian
 `;
 
-      userText = `Jana ${totalQuestions} soalan objektif Sejarah KSSM bagi skop: ${scopeLabel}.`;
+      userText = `
+Jana ${totalQuestions} soalan objektif Sejarah KSSM bagi skop: ${scopeLabel}.
+
+Pastikan agihan tepat:
+- Mudah: ${distribution.mudah}
+- Sederhana: ${distribution.sederhana}
+- KBAT: ${distribution.kbat}
+`;
     } else if (mode === 'structured') {
       model = 'gpt-5.4-mini';
 
@@ -94,6 +130,9 @@ Peraturan:
 - Fakta tepat
 - Sesuai gaya SPM Sejarah
 - Jawapan model perlu padat dan berguna
+- Bahagian (a) lebih asas
+- Bahagian (b) sederhana
+- Bahagian (c) lebih mencabar / berunsur KBAT
 `;
 
       userText = `Jana satu set soalan struktur Sejarah untuk skop: ${scopeLabel}.`;

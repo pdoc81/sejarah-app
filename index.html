@@ -217,6 +217,15 @@
                     </div>
                 </div>
 
+                <div class="pt-4">
+                    <div class="rounded-[2rem] border border-rose-100 bg-rose-50 p-4 text-xs text-rose-700 leading-relaxed">
+                        <span class="font-black uppercase tracking-widest block mb-2">Agihan Automatik Kertas 1</span>
+                        <div id="distribution-info" class="font-semibold">
+                            10 soalan = 2 mudah • 5 sederhana • 3 KBAT
+                        </div>
+                    </div>
+                </div>
+
                 <div class="pt-6">
                     <button id="btn-start" onclick="startLearning()" class="w-full py-5 bg-rose-600 text-white rounded-[2rem] font-black shadow-xl shadow-rose-100 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-xs">
                         MULA SEKARANG
@@ -451,6 +460,13 @@
         if (el) el.innerText = text;
     }
 
+    function getDistributionText(count) {
+        if (count === 5) return '5 soalan = 1 mudah • 2 sederhana • 2 KBAT';
+        if (count === 10) return '10 soalan = 2 mudah • 5 sederhana • 3 KBAT';
+        if (count === 20) return '20 soalan = 5 mudah • 10 sederhana • 5 KBAT';
+        return '10 soalan = 2 mudah • 5 sederhana • 3 KBAT';
+    }
+
     async function fetchOpenAIBackend(payload) {
         const response = await fetch('/.netlify/functions/generate', {
             method: 'POST',
@@ -469,7 +485,7 @@
 
     window.onload = () => {
         try {
-            const saved = localStorage.getItem('cikgu_habibah_v16');
+            const saved = localStorage.getItem('cikgu_habibah_v17');
             if (saved) state.progress = JSON.parse(saved);
         } catch (e) {}
 
@@ -483,6 +499,7 @@
 
         refreshQuote();
         renderStats();
+        updateDistributionInfo();
     };
 
     function showView(viewId) {
@@ -595,6 +612,13 @@
                 btn.classList.add('bg-white', 'border-slate-100');
             }
         });
+
+        updateDistributionInfo();
+    }
+
+    function updateDistributionInfo() {
+        const el = document.getElementById('distribution-info');
+        if (el) el.innerText = getDistributionText(state.selectedQuestionCount);
     }
 
     async function startLearning() {
@@ -798,11 +822,14 @@
         renderResultChart(state.score, total);
         renderReview();
 
-        const key = state.quizMode === 'chapter' ? `F${state.selectedSkop}B${state.selectedSesi}` : `EXAM_${state.selectedSesi}`;
+        const key = state.quizMode === 'chapter'
+            ? `F${state.selectedSkop}B${state.selectedSesi}_${state.selectedPaper}_${state.selectedQuestionCount}`
+            : `EXAM_${state.selectedSesi}_${state.selectedPaper}_${state.selectedQuestionCount}`;
+
         if (!state.progress[key] || state.score > state.progress[key].score) {
             state.progress[key] = { score: state.score, total: total };
             try {
-                localStorage.setItem('cikgu_habibah_v16', JSON.stringify(state.progress));
+                localStorage.setItem('cikgu_habibah_v17', JSON.stringify(state.progress));
             } catch (e) {}
             renderStats();
         }
@@ -844,7 +871,8 @@
                 const div = document.createElement('div');
                 div.className = `bg-white p-8 rounded-[2.5rem] border-2 shadow-sm flex items-start space-x-6 ${ans?.isCorrect ? 'border-emerald-50' : 'border-rose-50'}`;
                 const selectedText = ans?.selected >= 0 ? q.opts[ans.selected] : 'Tiada jawapan';
-                div.innerHTML = `<div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 font-black ${ans?.isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}">${i + 1}</div><div class="space-y-3 pt-1"><p class="font-bold text-slate-800 text-lg leading-tight">${q.q}</p><p class="text-sm font-black text-slate-500 uppercase tracking-widest">Pilihan anda: ${selectedText}</p><p class="text-sm font-black ${ans?.isCorrect ? 'text-emerald-600' : 'text-rose-600'} uppercase tracking-widest">Jawapan betul: ${q.opts[q.ans]}</p><div class="p-4 bg-slate-50 rounded-2xl text-xs text-slate-500 italic border border-slate-100 font-medium leading-relaxed shadow-inner"><span class="font-black text-slate-800 uppercase block mb-1">Nota:</span> ${q.exp}</div></div>`;
+                const levelText = q.level ? ` <span class="ml-2 text-[10px] uppercase tracking-widest text-slate-400">(${q.level})</span>` : '';
+                div.innerHTML = `<div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 font-black ${ans?.isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}">${i + 1}</div><div class="space-y-3 pt-1"><p class="font-bold text-slate-800 text-lg leading-tight">${q.q}${levelText}</p><p class="text-sm font-black text-slate-500 uppercase tracking-widest">Pilihan anda: ${selectedText}</p><p class="text-sm font-black ${ans?.isCorrect ? 'text-emerald-600' : 'text-rose-600'} uppercase tracking-widest">Jawapan betul: ${q.opts[q.ans]}</p><div class="p-4 bg-slate-50 rounded-2xl text-xs text-slate-500 italic border border-slate-100 font-medium leading-relaxed shadow-inner"><span class="font-black text-slate-800 uppercase block mb-1">Nota:</span> ${q.exp}</div></div>`;
                 list.appendChild(div);
             });
         } else {
@@ -869,10 +897,11 @@
             card.className = 'bg-white p-10 rounded-[4rem] border border-slate-100 shadow-sm space-y-6';
             let count = 0;
             for (let i = 1; i <= f.chapters; i++) {
-                if (state.progress[`F${f.id}B${i}`]) count++;
+                const hasAny = Object.keys(state.progress).some(key => key.startsWith(`F${f.id}B${i}_`));
+                if (hasAny) count++;
             }
             const perc = Math.round((count / f.chapters) * 100) || 0;
-            card.innerHTML = `<div class="flex justify-between items-end"><div><h3 class="text-2xl font-black text-slate-800 uppercase tracking-tighter">${f.name}</h3><span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">${count} / ${f.chapters} Bab Selesai</span></div><div class="text-4xl font-black text-rose-500">${perc}%</div></div><div class="w-full bg-slate-50 h-2 rounded-full overflow-hidden shadow-inner"><div class="bg-rose-500 h-full transition-all duration-1000" style="width: ${perc}%"></div></div><div class="grid grid-cols-5 gap-2">${Array.from({ length: f.chapters }, (_, i) => { const done = state.progress[`F${f.id}B${i + 1}`]; return `<div class="aspect-square rounded-xl border-2 flex items-center justify-center text-[10px] font-black ${done ? 'bg-rose-500 border-rose-500 text-white shadow-md' : 'bg-white border-slate-50 text-slate-200'}">${i + 1}</div>`; }).join('')}</div>`;
+            card.innerHTML = `<div class="flex justify-between items-end"><div><h3 class="text-2xl font-black text-slate-800 uppercase tracking-tighter">${f.name}</h3><span class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">${count} / ${f.chapters} Bab Selesai</span></div><div class="text-4xl font-black text-rose-500">${perc}%</div></div><div class="w-full bg-slate-50 h-2 rounded-full overflow-hidden shadow-inner"><div class="bg-rose-500 h-full transition-all duration-1000" style="width: ${perc}%"></div></div><div class="grid grid-cols-5 gap-2">${Array.from({ length: f.chapters }, (_, i) => { const done = Object.keys(state.progress).some(key => key.startsWith(`F${f.id}B${i + 1}_`)); return `<div class="aspect-square rounded-xl border-2 flex items-center justify-center text-[10px] font-black ${done ? 'bg-rose-500 border-rose-500 text-white shadow-md' : 'bg-white border-slate-50 text-slate-200'}">${i + 1}</div>`; }).join('')}</div>`;
             container.appendChild(card);
         });
     }
