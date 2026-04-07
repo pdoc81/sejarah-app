@@ -60,38 +60,63 @@
       width: 100%;
       height: 280px;
     }
+    .modal-backdrop {
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(4px);
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
     @media print {
-      body {
-        background: white !important;
-      }
+      body { background: white !important; }
+      .no-print { display: none !important; }
     }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
   <div class="max-w-7xl mx-auto px-4 py-6">
-    <header class="glass rounded-3xl border border-slate-200 soft-shadow px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-bold text-xl shadow">
-          H
+    <header class="glass rounded-3xl border border-slate-200 soft-shadow px-5 py-4 flex flex-col gap-4">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-bold text-xl shadow">
+            H
+          </div>
+          <div>
+            <p class="text-xs font-bold tracking-[0.24em] text-red-500 uppercase">Sejarah Bersama</p>
+            <h1 class="text-2xl md:text-3xl font-black tracking-tight panel-title">Cikgu Habibah</h1>
+            <p class="text-sm text-slate-500">Latih tubi Sejarah KSSM dengan sokongan AI</p>
+          </div>
         </div>
-        <div>
-          <p class="text-xs font-bold tracking-[0.24em] text-red-500 uppercase">Sejarah Bersama</p>
-          <h1 class="text-2xl md:text-3xl font-black tracking-tight panel-title">Cikgu Habibah</h1>
-          <p class="text-sm text-slate-500">Latih tubi Sejarah KSSM dengan sokongan AI</p>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold tracking-[0.2em] uppercase text-slate-500 bg-slate-50">
+            Versi 1.0
+          </span>
         </div>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="inline-flex items-center rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold tracking-[0.2em] uppercase text-slate-500 bg-slate-50">
-          Edisi Peperiksaan Terkini
-        </span>
+
+      <div class="grid md:grid-cols-[1fr_auto] gap-4 items-center">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold mb-1">Murid Aktif</p>
+          <div class="flex flex-wrap items-center gap-3">
+            <div>
+              <p id="activeStudentName" class="font-bold text-slate-800">Belum dipilih</p>
+              <p id="activeStudentMeta" class="text-sm text-slate-500">Tambah murid untuk mula simpan progres berasingan.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="switchStudentBtn" class="rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-4 py-3 transition no-print">
+            Tukar Murid
+          </button>
+          <button id="addStudentBtn" class="rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-3 transition no-print">
+            Tambah Murid
+          </button>
+        </div>
       </div>
     </header>
 
-    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 no-print">
       <button class="tab-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold soft-shadow transition" data-tab="latihan">Latihan</button>
       <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold soft-shadow transition" data-tab="progres">Progres Semasa</button>
       <button class="tab-btn help-tab rounded-2xl border px-4 py-3 text-sm font-semibold soft-shadow transition" data-tab="bantuan">Bantuan</button>
@@ -303,10 +328,10 @@
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <h2 class="text-2xl font-bold panel-title">Progres Semasa</h2>
-              <p class="mt-1 text-slate-500 text-sm">Prestasi ini disimpan dalam pelayar peranti semasa.</p>
+              <p class="mt-1 text-slate-500 text-sm">Prestasi murid aktif disimpan dalam pelayar peranti semasa.</p>
             </div>
             <button id="clearProgressBtn" class="rounded-2xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50">
-              Padam Rekod
+              Padam Rekod Murid Aktif
             </button>
           </div>
         </div>
@@ -441,13 +466,68 @@
     </section>
 
     <section id="tab-bantuan" class="tab-panel hidden mt-6">
-      <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
-        <h2 class="text-2xl font-bold panel-title">Bantuan</h2>
-        <div class="mt-4 space-y-4 text-slate-700 leading-7">
-          <p><span class="font-semibold">Latih Tubi Bab</span> sesuai untuk fokus kepada satu bab tertentu mengikut tingkatan.</p>
-          <p><span class="font-semibold">Mod Percubaan SPM</span> sesuai untuk melatih pelajar dengan gaya soalan lebih hampir kepada peperiksaan sebenar.</p>
-          <p><span class="font-semibold">Kertas 1</span> menjana soalan objektif dan boleh disemak terus.</p>
-          <p><span class="font-semibold">Kertas 2</span> menjana soalan struktur dan jawapan model dipaparkan selepas semakan.</p>
+      <div class="space-y-6">
+        <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+          <h2 class="text-2xl font-bold panel-title">Bantuan</h2>
+          <p class="mt-2 text-slate-600">Ruang bantuan, pemakluman versi dan cadangan penambahbaikan.</p>
+        </div>
+
+        <div class="glass rounded-3xl border border-blue-200 bg-blue-50 soft-shadow p-6">
+          <h3 class="text-xl font-bold text-blue-800 panel-title">Pengumuman</h3>
+          <div class="mt-3 space-y-3 text-blue-900 leading-7">
+            <p><strong>Versi semasa:</strong> 1.0</p>
+            <p>Versi 1.0 menandakan asas aplikasi sudah stabil untuk penggunaan latihan harian dan semakan kendiri pelajar.</p>
+            <p>Sebarang perubahan selepas ini akan diteruskan dalam siri <strong>1.XX</strong> sehingga tuan sendiri memutuskan peralihan ke versi <strong>2.0</strong>.</p>
+          </div>
+        </div>
+
+        <div class="grid xl:grid-cols-2 gap-6">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+            <h3 class="text-xl font-bold panel-title">Pemakluman Versi</h3>
+            <div class="mt-4 space-y-3 text-slate-700 leading-7">
+              <p><strong>Versi:</strong> 1.0</p>
+              <p><strong>Status:</strong> Stabil</p>
+              <p><strong>Model pembangunan:</strong> Iterasi 1.XX untuk perubahan seterusnya</p>
+              <p><strong>Skop semasa:</strong> Pembelajaran Sejarah KSSM berasaskan latihan, review dan pemantauan progres murid</p>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+            <h3 class="text-xl font-bold panel-title">Kandungan & Features Versi 1.0</h3>
+            <div class="mt-4 space-y-3 text-slate-700 leading-7">
+              <p>• Latih tubi mengikut tingkatan dan bab</p>
+              <p>• Mod Percubaan SPM</p>
+              <p>• Kertas 1 objektif dengan semakan jawapan</p>
+              <p>• Kertas 2 struktur dengan semakan jawapan model</p>
+              <p>• Timer untuk Kertas 1 Latih Tubi Bab</p>
+              <p>• Dashboard progres dengan graf dan penapis</p>
+              <p>• Akaun murid berasingan secara lokal pada peranti yang sama</p>
+              <p>• Cetak dan eksport review selepas semakan jawapan</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+          <h3 class="text-xl font-bold panel-title">Perubahan daripada versi sebelumnya</h3>
+          <div class="mt-4 space-y-3 text-slate-700 leading-7">
+            <p>Versi 1.0 menghimpunkan semua penambahbaikan utama yang telah dibangunkan sebelum ini ke dalam satu versi asas yang stabil.</p>
+            <p>Antara perubahan utama yang telah disatukan:</p>
+            <p>• penjanaan batch untuk soalan 20 bagi mengelakkan timeout</p>
+            <p>• dashboard progres lengkap dengan penapis</p>
+            <p>• review keputusan yang boleh dicetak dan dieksport</p>
+            <p>• pengasingan data murid secara lokal bagi penggunaan oleh lebih daripada seorang murid pada peranti yang sama</p>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl border border-amber-200 bg-amber-50 soft-shadow p-6">
+          <h3 class="text-xl font-bold text-amber-800 panel-title">Maklum Balas / Cadangan Penambahbaikan</h3>
+          <div class="mt-4 space-y-3 text-amber-900 leading-7">
+            <p>Sekiranya tuan/puan ingin memberi maklum balas, melaporkan isu, atau mencadangkan penambahbaikan untuk versi seterusnya, sila emel kepada:</p>
+            <p class="font-bold text-lg">
+              <a href="mailto:nag4tidur@gmail.com?subject=Maklum%20Balas%20Aplikasi%20Sejarah%20Versi%201.0" class="underline underline-offset-4">nag4tidur@gmail.com</a>
+            </p>
+            <p>Cadangan yang jelas dan spesifik akan memudahkan penambahbaikan dibuat dalam iterasi 1.XX yang akan datang.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -499,9 +579,74 @@
         </div>
       </div>
     </section>
+
+    <footer class="mt-10 pb-8 text-center text-sm text-slate-500">
+      Sejarah Bersama Cikgu Habibah · Versi 1.0
+    </footer>
+  </div>
+
+  <!-- Modal Tambah Murid -->
+  <div id="studentModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center px-4">
+    <div class="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 soft-shadow">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-xl font-bold panel-title">Tambah Murid</h3>
+          <p class="text-sm text-slate-500 mt-1">Murid ini akan disimpan dalam peranti semasa.</p>
+        </div>
+        <button id="closeStudentModalBtn" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-50">
+          Tutup
+        </button>
+      </div>
+
+      <div class="mt-5 space-y-4">
+        <div>
+          <label for="studentNameInput" class="block text-sm font-semibold mb-2">Nama Murid</label>
+          <input id="studentNameInput" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-red-300" placeholder="Contoh: Ahmad / Balqis" />
+        </div>
+        <div>
+          <label for="studentFormInput" class="block text-sm font-semibold mb-2">Tingkatan</label>
+          <select id="studentFormInput" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-red-300">
+            <option value="1">Tingkatan 1</option>
+            <option value="2">Tingkatan 2</option>
+            <option value="3">Tingkatan 3</option>
+            <option value="4">Tingkatan 4</option>
+            <option value="5">Tingkatan 5</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button id="saveStudentBtn" class="rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold px-5 py-3 transition">
+          Simpan Murid
+        </button>
+        <button id="cancelStudentBtn" class="rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-5 py-3 transition">
+          Batal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tukar Murid -->
+  <div id="switchStudentModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center px-4">
+    <div class="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 soft-shadow">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-xl font-bold panel-title">Tukar Murid</h3>
+          <p class="text-sm text-slate-500 mt-1">Pilih murid aktif untuk melihat progres dan menggunakan latihan.</p>
+        </div>
+        <button id="closeSwitchStudentModalBtn" class="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold hover:bg-slate-50">
+          Tutup
+        </button>
+      </div>
+
+      <div id="studentListWrap" class="mt-5 space-y-3">
+        <p class="text-slate-500">Belum ada murid.</p>
+      </div>
+    </div>
   </div>
 
   <script>
+    const APP_VERSION = '1.0';
     const chapterTitles = {
       1: {1:"Mengenali Sejarah",2:"Zaman Air Batu",3:"Zaman Prasejarah",4:"Mengenali Tamadun",5:"Tamadun Awal Dunia",6:"Peningkatan Tamadun Yunani dan Rom",7:"Peningkatan Tamadun India dan China",8:"Tamadun Islam dan Sumbangannya"},
       2: {1:"Kerajaan Alam Melayu",2:"Sistem Pemerintahan dan Kegiatan Ekonomi Masyarakat Kerajaan Alam Melayu",3:"Sosiobudaya Masyarakat Kerajaan Alam Melayu",4:"Agama, Kepercayaan dan Keunikan Warisan Masyarakat Kerajaan Alam Melayu",5:"Kesultanan Melayu Melaka",6:"Kesultanan Johor Riau",7:"Kesultanan Melayu Pahang, Perak, Terengganu dan Selangor",8:"Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",9:"Warisan Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",10:"Sarawak dan Sabah"},
@@ -510,7 +655,8 @@
       5: {1:"Kedaulatan Negara",2:"Perlembagaan Persekutuan",3:"Raja Berperlembagaan dan Demokrasi Berparlimen",4:"Sistem Persekutuan",5:"Pembentukan Malaysia",6:"Cabaran Selepas Pembentukan Malaysia",7:"Membina Kesejahteraan Negara",8:"Membina Kemakmuran Negara",9:"Dasar Luar Malaysia",10:"Kecemerlangan Malaysia di Persada Dunia"}
     };
 
-    const PROGRESS_KEY = 'sejarahAppProgressV1';
+    const STUDENTS_KEY = 'sejarahAppStudentsV1';
+    const ACTIVE_STUDENT_KEY = 'sejarahAppActiveStudentIdV1';
 
     let scoreTrendChart = null;
     let formPerformanceChart = null;
@@ -591,6 +737,22 @@
     const progressFilterChapter = document.getElementById('progressFilterChapter');
     const progressFilterRange = document.getElementById('progressFilterRange');
 
+    const activeStudentName = document.getElementById('activeStudentName');
+    const activeStudentMeta = document.getElementById('activeStudentMeta');
+    const addStudentBtn = document.getElementById('addStudentBtn');
+    const switchStudentBtn = document.getElementById('switchStudentBtn');
+
+    const studentModal = document.getElementById('studentModal');
+    const closeStudentModalBtn = document.getElementById('closeStudentModalBtn');
+    const cancelStudentBtn = document.getElementById('cancelStudentBtn');
+    const saveStudentBtn = document.getElementById('saveStudentBtn');
+    const studentNameInput = document.getElementById('studentNameInput');
+    const studentFormInput = document.getElementById('studentFormInput');
+
+    const switchStudentModal = document.getElementById('switchStudentModal');
+    const closeSwitchStudentModalBtn = document.getElementById('closeSwitchStudentModalBtn');
+    const studentListWrap = document.getElementById('studentListWrap');
+
     let timerInterval = null;
     let timerSeconds = 0;
 
@@ -602,6 +764,189 @@
       mcqData: [],
       structuredData: null
     };
+
+    function getProgressKeyForStudent(studentId) {
+      return `sejarahAppProgressV1_${studentId}`;
+    }
+
+    function generateId(prefix = 'id') {
+      return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    }
+
+    function getStudents() {
+      try {
+        const raw = localStorage.getItem(STUDENTS_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveStudents(students) {
+      localStorage.setItem(STUDENTS_KEY, JSON.stringify(students));
+    }
+
+    function getActiveStudentId() {
+      return localStorage.getItem(ACTIVE_STUDENT_KEY) || '';
+    }
+
+    function setActiveStudentId(studentId) {
+      localStorage.setItem(ACTIVE_STUDENT_KEY, studentId);
+    }
+
+    function getActiveStudent() {
+      const students = getStudents();
+      const activeId = getActiveStudentId();
+      return students.find(s => s.id === activeId) || null;
+    }
+
+    function ensureDefaultStudent() {
+      const students = getStudents();
+      if (students.length === 0) {
+        const defaultStudent = {
+          id: generateId('student'),
+          name: 'Murid 1',
+          form: 4,
+          createdAt: new Date().toISOString()
+        };
+        saveStudents([defaultStudent]);
+        setActiveStudentId(defaultStudent.id);
+      } else if (!getActiveStudentId() || !students.find(s => s.id === getActiveStudentId())) {
+        setActiveStudentId(students[0].id);
+      }
+    }
+
+    function refreshActiveStudentCard() {
+      const student = getActiveStudent();
+      if (!student) {
+        activeStudentName.textContent = 'Belum dipilih';
+        activeStudentMeta.textContent = 'Tambah murid untuk mula simpan progres berasingan.';
+        return;
+      }
+
+      activeStudentName.textContent = student.name;
+      activeStudentMeta.textContent = `Tingkatan ${student.form} · Progres, review dan rekod latihan adalah berasingan untuk murid ini.`;
+    }
+
+    function openStudentModal() {
+      studentModal.classList.remove('hidden');
+      studentModal.classList.add('flex');
+      studentNameInput.value = '';
+      studentFormInput.value = '4';
+      studentNameInput.focus();
+    }
+
+    function closeStudentModal() {
+      studentModal.classList.add('hidden');
+      studentModal.classList.remove('flex');
+    }
+
+    function openSwitchStudentModal() {
+      renderStudentList();
+      switchStudentModal.classList.remove('hidden');
+      switchStudentModal.classList.add('flex');
+    }
+
+    function closeSwitchStudentModal() {
+      switchStudentModal.classList.add('hidden');
+      switchStudentModal.classList.remove('flex');
+    }
+
+    function addStudent() {
+      const name = studentNameInput.value.trim();
+      const form = Number(studentFormInput.value);
+
+      if (!name) {
+        alert('Sila masukkan nama murid.');
+        return;
+      }
+
+      const students = getStudents();
+      const newStudent = {
+        id: generateId('student'),
+        name,
+        form,
+        createdAt: new Date().toISOString()
+      };
+      students.push(newStudent);
+      saveStudents(students);
+      setActiveStudentId(newStudent.id);
+
+      refreshActiveStudentCard();
+      updateProgressChapterFilterOptions();
+      renderProgressDashboard();
+      closeStudentModal();
+    }
+
+    function renderStudentList() {
+      const students = getStudents();
+      const activeId = getActiveStudentId();
+
+      if (!students.length) {
+        studentListWrap.innerHTML = `<p class="text-slate-500">Belum ada murid.</p>`;
+        return;
+      }
+
+      studentListWrap.innerHTML = '';
+      students.forEach(student => {
+        const card = document.createElement('div');
+        card.className = 'rounded-2xl border border-slate-200 bg-white p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3';
+        card.innerHTML = `
+          <div>
+            <p class="font-bold text-slate-800">${escapeHtml(student.name)}</p>
+            <p class="text-sm text-slate-500 mt-1">Tingkatan ${student.form}</p>
+            ${student.id === activeId ? `<p class="text-xs mt-2 font-semibold text-emerald-700">Murid aktif</p>` : ''}
+          </div>
+          <div class="flex gap-2">
+            <button class="switch-student-action rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2 transition" data-student-id="${student.id}">
+              Pilih
+            </button>
+            <button class="delete-student-action rounded-2xl border border-red-200 bg-white hover:bg-red-50 text-red-600 font-semibold px-4 py-2 transition" data-student-id="${student.id}">
+              Padam
+            </button>
+          </div>
+        `;
+        studentListWrap.appendChild(card);
+      });
+
+      document.querySelectorAll('.switch-student-action').forEach(btn => {
+        btn.addEventListener('click', () => {
+          setActiveStudentId(btn.dataset.studentId);
+          refreshActiveStudentCard();
+          updateProgressChapterFilterOptions();
+          renderProgressDashboard();
+          closeSwitchStudentModal();
+        });
+      });
+
+      document.querySelectorAll('.delete-student-action').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const studentId = btn.dataset.studentId;
+          const students = getStudents();
+          const student = students.find(s => s.id === studentId);
+          if (!student) return;
+
+          const confirmed = confirm(`Padam murid "${student.name}" beserta semua progresnya?`);
+          if (!confirmed) return;
+
+          const updatedStudents = students.filter(s => s.id !== studentId);
+          saveStudents(updatedStudents);
+          localStorage.removeItem(getProgressKeyForStudent(studentId));
+
+          if (!updatedStudents.length) {
+            ensureDefaultStudent();
+          } else if (getActiveStudentId() === studentId) {
+            setActiveStudentId(updatedStudents[0].id);
+          }
+
+          refreshActiveStudentCard();
+          updateProgressChapterFilterOptions();
+          renderProgressDashboard();
+          renderStudentList();
+        });
+      });
+    }
 
     function setStatus(text, type = 'ready') {
       statusBadge.textContent = text;
@@ -915,6 +1260,11 @@
     }
 
     async function generateQuestions() {
+      if (!getActiveStudent()) {
+        alert('Sila tambah atau pilih murid dahulu.');
+        return;
+      }
+
       resetOutput();
       loadingBox.classList.remove('hidden');
       setStatus('Menjana...', 'loading');
@@ -992,21 +1342,28 @@
     }
 
     function getProgressRecords() {
+      const activeStudent = getActiveStudent();
+      if (!activeStudent) return [];
+
       try {
-        const raw = localStorage.getItem(PROGRESS_KEY);
+        const raw = localStorage.getItem(getProgressKeyForStudent(activeStudent.id));
         const parsed = raw ? JSON.parse(raw) : [];
         return Array.isArray(parsed) ? parsed : [];
-      } catch (error) {
-        console.error('Gagal baca localStorage progress:', error);
+      } catch {
         return [];
       }
     }
 
     function saveProgressRecords(records) {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(records));
+      const activeStudent = getActiveStudent();
+      if (!activeStudent) return;
+      localStorage.setItem(getProgressKeyForStudent(activeStudent.id), JSON.stringify(records));
     }
 
     function saveMcqProgress(score, total) {
+      const activeStudent = getActiveStudent();
+      if (!activeStudent) return;
+
       const percent = total > 0 ? Math.round((score / total) * 100) : 0;
       const form = state.quizMode === 'chapter' ? Number(tingkatanSelect.value) : null;
       const chapter = state.quizMode === 'chapter' ? Number(babSelect.value) : null;
@@ -1014,6 +1371,8 @@
 
       const record = {
         timestamp: new Date().toISOString(),
+        studentId: activeStudent.id,
+        studentName: activeStudent.name,
         quizMode: state.quizMode,
         paper: 'mcq',
         form,
@@ -1129,8 +1488,7 @@
       if (modeValue !== 'all') records = records.filter(r => r.quizMode === modeValue);
       if (formValue !== 'all') records = records.filter(r => String(r.form) === String(formValue));
 
-      const chapterStats = buildGroupedChapterStats(records)
-        .sort((a, b) => a.form - b.form || a.chapter - b.chapter);
+      const chapterStats = buildGroupedChapterStats(records).sort((a, b) => a.form - b.form || a.chapter - b.chapter);
 
       progressFilterChapter.innerHTML = '<option value="all">Semua Bab</option>';
 
@@ -1143,478 +1501,6 @@
 
       const stillExists = [...progressFilterChapter.options].some(opt => opt.value === currentChapterValue);
       progressFilterChapter.value = stillExists ? currentChapterValue : 'all';
-    }
-
-    function renderTopicCards(container, items, emptyText) {
-      container.innerHTML = '';
-      if (!items.length) {
-        container.innerHTML = `<p class="text-slate-500">${emptyText}</p>`;
-        return;
-      }
-
-      items.forEach((item, index) => {
-        const el = document.createElement('div');
-        el.className = 'rounded-2xl border border-slate-200 bg-white p-4';
-        el.innerHTML = `
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <p class="text-sm text-slate-500">#${index + 1}</p>
-              <p class="mt-1 font-bold text-slate-800">${item.label}</p>
-              <p class="mt-1 text-sm text-slate-500">${item.count} sesi</p>
-            </div>
-            <div class="text-right">
-              <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">Purata</p>
-              <p class="mt-1 text-xl font-black">${item.avg}%</p>
-            </div>
-          </div>
-        `;
-        container.appendChild(el);
-      });
-    }
-
-    function renderRecentSessions(records) {
-      recentSessionsList.innerHTML = '';
-      if (!records.length) {
-        recentSessionsList.innerHTML = `<p class="text-slate-500">Belum ada rekod bagi penapis ini.</p>`;
-        return;
-      }
-
-      records.slice(0, 8).forEach((record) => {
-        const el = document.createElement('div');
-        el.className = 'rounded-2xl border border-slate-200 bg-white p-4';
-        el.innerHTML = `
-          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <div>
-              <p class="font-bold text-slate-800">${getModeLabel(record)} · ${getScopeDisplay(record)}</p>
-              <p class="text-sm text-slate-500 mt-1">${formatDisplayDate(record.timestamp)}</p>
-            </div>
-            <div class="text-left md:text-right">
-              <p class="text-sm text-slate-500">${record.score} / ${record.totalQuestions}</p>
-              <p class="text-xl font-black">${record.percent}%</p>
-            </div>
-          </div>
-        `;
-        recentSessionsList.appendChild(el);
-      });
-    }
-
-    function destroyChart(chartRef) {
-      if (chartRef) chartRef.destroy();
-    }
-
-    function renderScoreTrendChart(records) {
-      const canvas = document.getElementById('scoreTrendChart');
-      if (!canvas) return;
-      destroyChart(scoreTrendChart);
-
-      const mcqRecords = records.filter(r => r.paper === 'mcq').slice(0, 10).reverse();
-      const labels = mcqRecords.map((r, i) => `Sesi ${i + 1}`);
-      const values = mcqRecords.map(r => Number(r.percent) || 0);
-
-      scoreTrendChart = new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Markah (%)',
-            data: values,
-            borderWidth: 3,
-            tension: 0.3,
-            fill: false
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: true } },
-          scales: {
-            y: { min: 0, max: 100, ticks: { stepSize: 20 } }
-          }
-        }
-      });
-    }
-
-    function renderFormPerformanceChart(records) {
-      const canvas = document.getElementById('formPerformanceChart');
-      if (!canvas) return;
-      destroyChart(formPerformanceChart);
-
-      const grouped = {};
-      records
-        .filter(r => r.quizMode === 'chapter' && r.form)
-        .forEach(r => {
-          if (!grouped[r.form]) grouped[r.form] = { total: 0, count: 0 };
-          grouped[r.form].total += Number(r.percent) || 0;
-          grouped[r.form].count += 1;
-        });
-
-      const forms = [1, 2, 3, 4, 5].filter(f => grouped[f]);
-      const labels = forms.map(f => `Tingkatan ${f}`);
-      const values = forms.map(f => Math.round(grouped[f].total / grouped[f].count));
-
-      formPerformanceChart = new Chart(canvas, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Purata Markah (%)',
-            data: values,
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: true } },
-          scales: {
-            y: { min: 0, max: 100, ticks: { stepSize: 20 } }
-          }
-        }
-      });
-    }
-
-    function renderChapterPerformanceChart(records) {
-      const canvas = document.getElementById('chapterPerformanceChart');
-      if (!canvas) return;
-      destroyChart(chapterPerformanceChart);
-
-      const topicStats = buildGroupedChapterStats(records)
-        .sort((a, b) => b.count - a.count || b.avg - a.avg)
-        .slice(0, 6);
-
-      const labels = topicStats.map(item => item.label);
-      const values = topicStats.map(item => item.avg);
-
-      chapterPerformanceChart = new Chart(canvas, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Purata Markah (%)',
-            data: values,
-            borderWidth: 1
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: true } },
-          scales: {
-            x: { min: 0, max: 100, ticks: { stepSize: 20 } }
-          }
-        }
-      });
-    }
-
-    function renderProgressDashboard() {
-      const records = getFilteredProgressRecords();
-      progressTotalSessions.textContent = String(records.length);
-
-      if (!records.length) {
-        progressAverage.textContent = '0%';
-        progressLastSession.textContent = 'Belum ada';
-        progressMostUsedMode.textContent = 'Belum ada';
-        renderTopicCards(strongTopicsList, [], 'Belum ada rekod bagi penapis ini.');
-        renderTopicCards(weakTopicsList, [], 'Belum ada rekod bagi penapis ini.');
-        renderRecentSessions([]);
-        renderScoreTrendChart([]);
-        renderFormPerformanceChart([]);
-        renderChapterPerformanceChart([]);
-        return;
-      }
-
-      const totalPercent = records.reduce((sum, r) => sum + (Number(r.percent) || 0), 0);
-      const avgPercent = Math.round(totalPercent / records.length);
-      progressAverage.textContent = `${avgPercent}%`;
-
-      const latest = records[0];
-      progressLastSession.textContent = `${latest.percent}% · ${formatDisplayDate(latest.timestamp)}`;
-
-      const modeCount = records.reduce((acc, r) => {
-        const key = getModeLabel(r);
-        acc[key] = (acc[key] || 0) + 1;
-        return acc;
-      }, {});
-      const mostUsed = Object.entries(modeCount).sort((a, b) => b[1] - a[1])[0];
-      progressMostUsedMode.textContent = mostUsed ? `${mostUsed[0]} (${mostUsed[1]})` : 'Belum ada';
-
-      const topicStats = buildGroupedChapterStats(records);
-      const strong = [...topicStats].sort((a, b) => b.avg - a.avg || b.count - a.count).slice(0, 3);
-      const weak = [...topicStats].sort((a, b) => a.avg - b.avg || b.count - a.count).slice(0, 3);
-
-      renderTopicCards(
-        strongTopicsList,
-        strong.map(item => ({ ...item, label: item.longLabel })),
-        'Belum ada rekod bab bagi penapis ini.'
-      );
-
-      renderTopicCards(
-        weakTopicsList,
-        weak.map(item => ({ ...item, label: item.longLabel })),
-        'Belum ada rekod bab bagi penapis ini.'
-      );
-
-      renderRecentSessions(records);
-      renderScoreTrendChart(records);
-      renderFormPerformanceChart(records);
-      renderChapterPerformanceChart(records);
-    }
-
-    function buildBaseReviewStyle() {
-      return `
-        <style>
-          body { font-family: Arial, Helvetica, sans-serif; color: #1e293b; margin: 24px; line-height: 1.5; }
-          .header { border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px; }
-          .title { font-size: 28px; font-weight: 700; margin: 0; }
-          .meta { color: #475569; font-size: 14px; margin-top: 6px; }
-          .summary { margin: 18px 0; padding: 14px 16px; border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px; }
-          .question { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin: 16px 0; }
-          .qhead { font-weight: 700; margin-bottom: 10px; }
-          .opt { padding: 8px 10px; border-radius: 10px; margin: 6px 0; border: 1px solid #e2e8f0; }
-          .correct { background: #dcfce7; border-color: #16a34a; }
-          .wrong { background: #fee2e2; border-color: #dc2626; }
-          .neutral { background: #ffffff; }
-          .explain { margin-top: 12px; background: #f8fafc; border-radius: 10px; padding: 12px; font-size: 14px; }
-          .block { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin: 16px 0; }
-          .small { font-size: 13px; color: #475569; }
-          .marks { font-weight: 700; }
-        </style>
-      `;
-    }
-
-    function generateMcqReviewHtml() {
-      let score = 0;
-      const total = state.mcqData.length;
-
-      const questionsHtml = state.mcqData.map((item, index) => {
-        const selected = state.selectedAnswers[index];
-        if (selected === item.ans) score += 1;
-
-        const optsHtml = item.opts.map((opt, optIndex) => {
-          let cls = 'neutral';
-          if (optIndex === item.ans) cls = 'correct';
-          if (selected === optIndex && selected !== item.ans) cls = 'wrong';
-          return `<div class="opt ${cls}"><strong>${String.fromCharCode(65 + optIndex)}.</strong> ${escapeHtml(opt)}</div>`;
-        }).join('');
-
-        return `
-          <div class="question">
-            <div class="qhead">Soalan ${index + 1}</div>
-            <div>${escapeHtml(item.q)}</div>
-            <div style="margin-top:12px;">${optsHtml}</div>
-            <div class="explain"><strong>Penjelasan:</strong> ${escapeHtml(item.exp || '-')}</div>
-          </div>
-        `;
-      }).join('');
-
-      return `
-        <html>
-          <head>
-            <meta charset="utf-8" />
-            <title>Review Kertas 1</title>
-            ${buildBaseReviewStyle()}
-          </head>
-          <body>
-            <div class="header">
-              <h1 class="title">Review Kertas 1</h1>
-              <div class="meta">${escapeHtml(getScopeLabel())}</div>
-              <div class="meta">Tarikh: ${escapeHtml(formatDisplayDate(new Date().toISOString()))}</div>
-            </div>
-            <div class="summary">
-              <div><strong>Markah:</strong> ${score} / ${total}</div>
-              <div><strong>Peratus:</strong> ${total ? Math.round((score / total) * 100) : 0}%</div>
-            </div>
-            ${questionsHtml}
-          </body>
-        </html>
-      `;
-    }
-
-    function generateStructuredReviewHtml() {
-      const totalText = structuredTotal.textContent || 'Jumlah Markah: -';
-      const questions = state.structuredData?.questions || [];
-
-      const questionBlocks = questions.map(question => {
-        const textarea = document.getElementById(`answer-${question.id}`);
-        const studentAnswer = textarea ? textarea.value.trim() : '';
-        const feedbackCard = [...structuredFeedbackList.children].find(el =>
-          el.querySelector('.font-bold')?.textContent?.trim()?.toLowerCase() === String(question.id).toLowerCase()
-        );
-
-        let feedback = '-';
-        let marks = '-';
-
-        if (feedbackCard) {
-          const markText = feedbackCard.querySelector('.text-sm.font-semibold.text-blue-700');
-          const feedbackText = feedbackCard.querySelector('.mt-2.text-sm');
-          marks = markText ? markText.textContent : '-';
-          feedback = feedbackText ? feedbackText.textContent.replace('Maklum balas:', '').trim() : '-';
-        }
-
-        return `
-          <div class="block">
-            <div class="qhead">Soalan ${escapeHtml(question.id.toUpperCase())}</div>
-            <div><strong>Soalan:</strong> ${escapeHtml(question.q)}</div>
-            <div class="small" style="margin-top:6px;"><strong>Markah soalan:</strong> ${escapeHtml(String(question.marks))}</div>
-            <div style="margin-top:12px;"><strong>Jawapan Pelajar:</strong></div>
-            <div class="explain">${escapeHtml(studentAnswer || '-')}</div>
-            <div style="margin-top:12px;"><strong>Maklum balas:</strong></div>
-            <div class="explain">${escapeHtml(feedback)}</div>
-            <div style="margin-top:12px;"><strong>Jawapan Model:</strong></div>
-            <div class="explain">${escapeHtml(question.model || '-')}</div>
-            <div class="small marks" style="margin-top:10px;">${escapeHtml(marks)}</div>
-          </div>
-        `;
-      }).join('');
-
-      return `
-        <html>
-          <head>
-            <meta charset="utf-8" />
-            <title>Review Kertas 2</title>
-            ${buildBaseReviewStyle()}
-          </head>
-          <body>
-            <div class="header">
-              <h1 class="title">Review Kertas 2</h1>
-              <div class="meta">${escapeHtml(getScopeLabel())}</div>
-              <div class="meta">Tarikh: ${escapeHtml(formatDisplayDate(new Date().toISOString()))}</div>
-            </div>
-            <div class="summary">
-              <div><strong>${escapeHtml(totalText)}</strong></div>
-              <div style="margin-top:10px;"><strong>Konteks:</strong></div>
-              <div class="small" style="margin-top:6px;">${escapeHtml(state.structuredData?.context || '-')}</div>
-            </div>
-            ${questionBlocks}
-          </body>
-        </html>
-      `;
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;')
-        .replaceAll('\n', '<br>');
-    }
-
-    function printReviewHtml(html) {
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
-      printWindow.document.open();
-      printWindow.document.write(html);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => {
-        printWindow.print();
-      }, 300);
-    }
-
-    function exportReviewHtml(filename, html) {
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function submitMcq(isAuto = false) {
-      if (!state.mcqData.length) return;
-
-      let score = 0;
-      submitMcqBtn.dataset.done = 'true';
-      stopTimer();
-
-      state.mcqData.forEach((item, index) => {
-        const selected = state.selectedAnswers[index];
-        const buttons = document.querySelectorAll(`.option-btn[data-qindex="${index}"]`);
-
-        buttons.forEach(btn => {
-          const optIndex = Number(btn.dataset.optindex);
-          btn.disabled = true;
-          btn.classList.remove('selected', 'dimmed');
-
-          if (optIndex === item.ans) btn.classList.add('reveal-correct');
-          if (selected === optIndex && selected === item.ans) {
-            btn.classList.remove('reveal-correct');
-            btn.classList.add('correct');
-          }
-          if (selected === optIndex && selected !== item.ans) btn.classList.add('wrong');
-        });
-
-        if (selected === item.ans) score += 1;
-        const expBox = document.getElementById(`exp-${index}`);
-        if (expBox) expBox.classList.remove('hidden');
-      });
-
-      mcqScore.textContent = `${score} / ${state.mcqData.length}`;
-      retryMcqBtn.classList.remove('hidden');
-      mcqReviewActions.classList.remove('hidden');
-      saveMcqProgress(score, state.mcqData.length);
-
-      if (isAuto) setStatus('Masa Tamat', 'error');
-    }
-
-    async function markStructuredAnswers() {
-      if (!state.structuredData || !Array.isArray(state.structuredData.questions)) return;
-
-      setStatus('Menyemak...', 'loading');
-      markStructuredBtn.disabled = true;
-      markStructuredBtn.textContent = 'Menyemak...';
-
-      const studentAnswers = {};
-      state.structuredData.questions.forEach(q => {
-        const textarea = document.getElementById(`answer-${q.id}`);
-        studentAnswers[q.id] = textarea ? textarea.value.trim() : '';
-      });
-
-      try {
-        const data = await fetchJsonPayload({
-          quizMode: state.quizMode,
-          mode: 'mark-structured',
-          context: state.structuredData.context || '',
-          questions: state.structuredData.questions || [],
-          studentAnswers
-        });
-
-        structuredResults.classList.remove('hidden');
-        structuredReviewActions.classList.remove('hidden');
-        structuredFeedbackList.innerHTML = '';
-        structuredTotal.textContent = `Jumlah Markah: ${data.total != null ? data.total : 0}`;
-
-        (state.structuredData.questions || []).forEach(question => {
-          const resultItem = (data.results || []).find(r => r.id === question.id) || {};
-          const div = document.createElement('div');
-          div.className = 'rounded-2xl border border-blue-200 bg-white p-4';
-          div.innerHTML = `
-            <div class="flex items-center justify-between gap-3">
-              <span class="font-bold uppercase text-blue-700">${question.id}</span>
-              <span class="text-sm font-semibold text-blue-700">${resultItem.marks_awarded != null ? resultItem.marks_awarded : 0} markah</span>
-            </div>
-            <p class="mt-2 text-sm text-slate-700 leading-7"><span class="font-semibold">Maklum balas:</span> ${resultItem.feedback || '-'}</p>
-            <div class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold mb-2">Jawapan Model</p>
-              <p class="text-sm text-slate-700 leading-7">${question.model || '-'}</p>
-            </div>
-          `;
-          structuredFeedbackList.appendChild(div);
-        });
-
-        setStatus('Berjaya', 'success');
-      } catch (err) {
-        showError(err.message || 'Ralat sambungan.');
-      } finally {
-        markStructuredBtn.disabled = false;
-        markStructuredBtn.textContent = 'Semak Jawapan';
-      }
     }
 
     function renderTopicCards(container, items, emptyText) {
@@ -1772,7 +1658,23 @@
     }
 
     function renderProgressDashboard() {
+      const student = getActiveStudent();
       const records = getFilteredProgressRecords();
+
+      if (!student) {
+        progressTotalSessions.textContent = '0';
+        progressAverage.textContent = '0%';
+        progressLastSession.textContent = 'Belum ada';
+        progressMostUsedMode.textContent = 'Belum ada';
+        renderTopicCards(strongTopicsList, [], 'Tambah murid dahulu.');
+        renderTopicCards(weakTopicsList, [], 'Tambah murid dahulu.');
+        renderRecentSessions([]);
+        renderScoreTrendChart([]);
+        renderFormPerformanceChart([]);
+        renderChapterPerformanceChart([]);
+        return;
+      }
+
       progressTotalSessions.textContent = String(records.length);
 
       if (!records.length) {
@@ -1825,11 +1727,272 @@
       renderChapterPerformanceChart(records);
     }
 
+    function buildBaseReviewStyle() {
+      return `
+        <style>
+          body { font-family: Arial, Helvetica, sans-serif; color: #1e293b; margin: 24px; line-height: 1.5; }
+          .header { border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px; }
+          .title { font-size: 28px; font-weight: 700; margin: 0; }
+          .meta { color: #475569; font-size: 14px; margin-top: 6px; }
+          .summary { margin: 18px 0; padding: 14px 16px; border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px; }
+          .question { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin: 16px 0; }
+          .qhead { font-weight: 700; margin-bottom: 10px; }
+          .opt { padding: 8px 10px; border-radius: 10px; margin: 6px 0; border: 1px solid #e2e8f0; }
+          .correct { background: #dcfce7; border-color: #16a34a; }
+          .wrong { background: #fee2e2; border-color: #dc2626; }
+          .neutral { background: #ffffff; }
+          .explain { margin-top: 12px; background: #f8fafc; border-radius: 10px; padding: 12px; font-size: 14px; }
+          .block { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin: 16px 0; }
+          .small { font-size: 13px; color: #475569; }
+          .marks { font-weight: 700; }
+        </style>
+      `;
+    }
+
+    function generateMcqReviewHtml() {
+      const student = getActiveStudent();
+      let score = 0;
+      const total = state.mcqData.length;
+
+      const questionsHtml = state.mcqData.map((item, index) => {
+        const selected = state.selectedAnswers[index];
+        if (selected === item.ans) score += 1;
+
+        const optsHtml = item.opts.map((opt, optIndex) => {
+          let cls = 'neutral';
+          if (optIndex === item.ans) cls = 'correct';
+          if (selected === optIndex && selected !== item.ans) cls = 'wrong';
+          return `<div class="opt ${cls}"><strong>${String.fromCharCode(65 + optIndex)}.</strong> ${escapeHtml(opt)}</div>`;
+        }).join('');
+
+        return `
+          <div class="question">
+            <div class="qhead">Soalan ${index + 1}</div>
+            <div>${escapeHtml(item.q)}</div>
+            <div style="margin-top:12px;">${optsHtml}</div>
+            <div class="explain"><strong>Penjelasan:</strong> ${escapeHtml(item.exp || '-')}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Review Kertas 1</title>
+            ${buildBaseReviewStyle()}
+          </head>
+          <body>
+            <div class="header">
+              <h1 class="title">Review Kertas 1</h1>
+              <div class="meta">Versi aplikasi: ${APP_VERSION}</div>
+              <div class="meta">Murid: ${escapeHtml(student?.name || '-')}</div>
+              <div class="meta">${escapeHtml(getScopeLabel())}</div>
+              <div class="meta">Tarikh: ${escapeHtml(formatDisplayDate(new Date().toISOString()))}</div>
+            </div>
+            <div class="summary">
+              <div><strong>Markah:</strong> ${score} / ${total}</div>
+              <div><strong>Peratus:</strong> ${total ? Math.round((score / total) * 100) : 0}%</div>
+            </div>
+            ${questionsHtml}
+          </body>
+        </html>
+      `;
+    }
+
+    function generateStructuredReviewHtml() {
+      const student = getActiveStudent();
+      const totalText = structuredTotal.textContent || 'Jumlah Markah: -';
+      const questions = state.structuredData?.questions || [];
+
+      const questionBlocks = questions.map(question => {
+        const textarea = document.getElementById(`answer-${question.id}`);
+        const studentAnswer = textarea ? textarea.value.trim() : '';
+        const feedbackCard = [...structuredFeedbackList.children].find(el =>
+          el.querySelector('.font-bold')?.textContent?.trim()?.toLowerCase() === String(question.id).toLowerCase()
+        );
+
+        let feedback = '-';
+        let marks = '-';
+
+        if (feedbackCard) {
+          const markText = feedbackCard.querySelector('.text-sm.font-semibold.text-blue-700');
+          const feedbackText = feedbackCard.querySelector('.mt-2.text-sm');
+          marks = markText ? markText.textContent : '-';
+          feedback = feedbackText ? feedbackText.textContent.replace('Maklum balas:', '').trim() : '-';
+        }
+
+        return `
+          <div class="block">
+            <div class="qhead">Soalan ${escapeHtml(question.id.toUpperCase())}</div>
+            <div><strong>Soalan:</strong> ${escapeHtml(question.q)}</div>
+            <div class="small" style="margin-top:6px;"><strong>Markah soalan:</strong> ${escapeHtml(String(question.marks))}</div>
+            <div style="margin-top:12px;"><strong>Jawapan Pelajar:</strong></div>
+            <div class="explain">${escapeHtml(studentAnswer || '-')}</div>
+            <div style="margin-top:12px;"><strong>Maklum balas:</strong></div>
+            <div class="explain">${escapeHtml(feedback)}</div>
+            <div style="margin-top:12px;"><strong>Jawapan Model:</strong></div>
+            <div class="explain">${escapeHtml(question.model || '-')}</div>
+            <div class="small marks" style="margin-top:10px;">${escapeHtml(marks)}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Review Kertas 2</title>
+            ${buildBaseReviewStyle()}
+          </head>
+          <body>
+            <div class="header">
+              <h1 class="title">Review Kertas 2</h1>
+              <div class="meta">Versi aplikasi: ${APP_VERSION}</div>
+              <div class="meta">Murid: ${escapeHtml(student?.name || '-')}</div>
+              <div class="meta">${escapeHtml(getScopeLabel())}</div>
+              <div class="meta">Tarikh: ${escapeHtml(formatDisplayDate(new Date().toISOString()))}</div>
+            </div>
+            <div class="summary">
+              <div><strong>${escapeHtml(totalText)}</strong></div>
+              <div style="margin-top:10px;"><strong>Konteks:</strong></div>
+              <div class="small" style="margin-top:6px;">${escapeHtml(state.structuredData?.context || '-')}</div>
+            </div>
+            ${questionBlocks}
+          </body>
+        </html>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+        .replaceAll('\n', '<br>');
+    }
+
+    function printReviewHtml(html) {
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => { printWindow.print(); }, 300);
+    }
+
+    function exportReviewHtml(filename, html) {
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function submitMcq(isAuto = false) {
+      if (!state.mcqData.length) return;
+
+      let score = 0;
+      submitMcqBtn.dataset.done = 'true';
+      stopTimer();
+
+      state.mcqData.forEach((item, index) => {
+        const selected = state.selectedAnswers[index];
+        const buttons = document.querySelectorAll(`.option-btn[data-qindex="${index}"]`);
+
+        buttons.forEach(btn => {
+          const optIndex = Number(btn.dataset.optindex);
+          btn.disabled = true;
+          btn.classList.remove('selected', 'dimmed');
+
+          if (optIndex === item.ans) btn.classList.add('reveal-correct');
+          if (selected === optIndex && selected === item.ans) {
+            btn.classList.remove('reveal-correct');
+            btn.classList.add('correct');
+          }
+          if (selected === optIndex && selected !== item.ans) btn.classList.add('wrong');
+        });
+
+        if (selected === item.ans) score += 1;
+        const expBox = document.getElementById(`exp-${index}`);
+        if (expBox) expBox.classList.remove('hidden');
+      });
+
+      mcqScore.textContent = `${score} / ${state.mcqData.length}`;
+      retryMcqBtn.classList.remove('hidden');
+      mcqReviewActions.classList.remove('hidden');
+      saveMcqProgress(score, state.mcqData.length);
+
+      if (isAuto) setStatus('Masa Tamat', 'error');
+    }
+
+    async function markStructuredAnswers() {
+      if (!state.structuredData || !Array.isArray(state.structuredData.questions)) return;
+
+      setStatus('Menyemak...', 'loading');
+      markStructuredBtn.disabled = true;
+      markStructuredBtn.textContent = 'Menyemak...';
+
+      const studentAnswers = {};
+      state.structuredData.questions.forEach(q => {
+        const textarea = document.getElementById(`answer-${q.id}`);
+        studentAnswers[q.id] = textarea ? textarea.value.trim() : '';
+      });
+
+      try {
+        const data = await fetchJsonPayload({
+          quizMode: state.quizMode,
+          mode: 'mark-structured',
+          context: state.structuredData.context || '',
+          questions: state.structuredData.questions || [],
+          studentAnswers
+        });
+
+        structuredResults.classList.remove('hidden');
+        structuredReviewActions.classList.remove('hidden');
+        structuredFeedbackList.innerHTML = '';
+        structuredTotal.textContent = `Jumlah Markah: ${data.total != null ? data.total : 0}`;
+
+        (state.structuredData.questions || []).forEach(question => {
+          const resultItem = (data.results || []).find(r => r.id === question.id) || {};
+          const div = document.createElement('div');
+          div.className = 'rounded-2xl border border-blue-200 bg-white p-4';
+          div.innerHTML = `
+            <div class="flex items-center justify-between gap-3">
+              <span class="font-bold uppercase text-blue-700">${question.id}</span>
+              <span class="text-sm font-semibold text-blue-700">${resultItem.marks_awarded != null ? resultItem.marks_awarded : 0} markah</span>
+            </div>
+            <p class="mt-2 text-sm text-slate-700 leading-7"><span class="font-semibold">Maklum balas:</span> ${resultItem.feedback || '-'}</p>
+            <div class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold mb-2">Jawapan Model</p>
+              <p class="text-sm text-slate-700 leading-7">${question.model || '-'}</p>
+            </div>
+          `;
+          structuredFeedbackList.appendChild(div);
+        });
+
+        setStatus('Berjaya', 'success');
+      } catch (err) {
+        showError(err.message || 'Ralat sambungan.');
+      } finally {
+        markStructuredBtn.disabled = false;
+        markStructuredBtn.textContent = 'Semak Jawapan';
+      }
+    }
+
     function resetAllSettings() {
       state.quizMode = 'chapter';
       state.paper = 'mcq';
       state.questionCount = 5;
-      tingkatanSelect.value = '1';
+      const activeStudent = getActiveStudent();
+      tingkatanSelect.value = activeStudent ? String(activeStudent.form) : '1';
       updateBabOptions();
       babSelect.value = '1';
       setQuizMode('chapter');
@@ -1840,7 +2003,9 @@
     }
 
     function clearProgress() {
-      localStorage.removeItem(PROGRESS_KEY);
+      const activeStudent = getActiveStudent();
+      if (!activeStudent) return;
+      localStorage.removeItem(getProgressKeyForStudent(activeStudent.id));
       updateProgressChapterFilterOptions();
       renderProgressDashboard();
     }
@@ -1909,6 +2074,25 @@
       donationMaybankBox.classList.add('hidden');
     });
 
+    addStudentBtn.addEventListener('click', openStudentModal);
+    switchStudentBtn.addEventListener('click', openSwitchStudentModal);
+    closeStudentModalBtn.addEventListener('click', closeStudentModal);
+    cancelStudentBtn.addEventListener('click', closeStudentModal);
+    saveStudentBtn.addEventListener('click', addStudent);
+    closeSwitchStudentModalBtn.addEventListener('click', closeSwitchStudentModal);
+
+    studentModal.addEventListener('click', (e) => {
+      if (e.target === studentModal) closeStudentModal();
+    });
+    switchStudentModal.addEventListener('click', (e) => {
+      if (e.target === switchStudentModal) closeSwitchStudentModal();
+    });
+
+    ensureDefaultStudent();
+    refreshActiveStudentCard();
+
+    const activeStudent = getActiveStudent();
+    tingkatanSelect.value = activeStudent ? String(activeStudent.form) : '1';
     updateBabOptions();
     setQuizMode('chapter');
     setPaper('mcq');
