@@ -21,12 +21,10 @@ function jsonResponse(statusCode, body) {
 
 function getQuestionDistribution(questionCount) {
   const count = Number(questionCount) || 10;
-
   if (count === 5) return { mudah: 1, sederhana: 2, kbat: 2 };
   if (count === 10) return { mudah: 2, sederhana: 5, kbat: 3 };
   if (count === 20) return { mudah: 5, sederhana: 10, kbat: 5 };
   if (count === 40) return { mudah: 8, sederhana: 20, kbat: 12 };
-
   return { mudah: 2, sederhana: 5, kbat: 3 };
 }
 
@@ -55,7 +53,6 @@ function readJsonFile(filePath) {
       console.log('JSON file not found:', filePath);
       return null;
     }
-
     const raw = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(raw);
   } catch (error) {
@@ -76,7 +73,6 @@ function loadChapterData(selectedSkop, selectedSesi) {
   );
 
   const parsed = readJsonFile(filePath);
-
   if (parsed) {
     console.log('Chapter file loaded:', {
       form: parsed.form,
@@ -84,7 +80,6 @@ function loadChapterData(selectedSkop, selectedSesi) {
       title: parsed.title,
     });
   }
-
   return parsed;
 }
 
@@ -107,7 +102,6 @@ function loadExamPattern(mode) {
   );
 
   const parsed = readJsonFile(filePath);
-
   if (parsed) {
     console.log('Exam pattern loaded:', {
       paper: parsed.paper,
@@ -115,7 +109,6 @@ function loadExamPattern(mode) {
       exam_type: parsed.exam_type,
     });
   }
-
   return parsed;
 }
 
@@ -289,7 +282,7 @@ ${listToBulletText(examPattern.topic_patterns?.form4 || [])}
 Topik Tingkatan 5:
 ${listToBulletText(examPattern.topic_patterns?.form5 || [])}
 
-Pelan variasi set ini:
+Pelan variasi:
 - Gaya: ${variationPlan?.questionStyles?.join(', ') || '-'}
 - Stem: ${variationPlan?.stemPatterns?.join(', ') || '-'}
 - KBAT: ${variationPlan?.kbatPatterns?.join(', ') || '-'}
@@ -317,7 +310,7 @@ ${listToBulletText(examPattern.stimulus_types)}
 Kata tugas biasa:
 ${listToBulletText(examPattern.common_command_words)}
 
-Pelan variasi set ini:
+Pelan variasi:
 - Stimulus: ${variationPlan?.stimulusMix?.join(', ') || '-'}
 - Kata tugas: ${variationPlan?.commandMix?.join(', ') || '-'}
 - KBAT: ${variationPlan?.kbatPromptMix?.join(', ') || '-'}
@@ -388,7 +381,23 @@ function dedupeMcqQuestions(questions) {
   });
 }
 
-async function requestModelJson({ model, systemText, userText, maxOutputTokens = 2200 }) {
+function cleanModelText(text) {
+  let cleaned = String(text || '').trim();
+
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```(?:json)?/i, '').replace(/```$/i, '').trim();
+  }
+
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    cleaned = cleaned.slice(firstBrace, lastBrace + 1);
+  }
+
+  return cleaned;
+}
+
+async function requestModelJsonOnce({ model, systemText, userText, maxOutputTokens = 2200 }) {
   const response = await client.responses.create({
     model,
     input: [
@@ -418,7 +427,45 @@ async function requestModelJson({ model, systemText, userText, maxOutputTokens =
     throw new Error('AI tidak memulangkan data.');
   }
 
-  return JSON.parse(outputText);
+  const cleaned = cleanModelText(outputText);
+  return JSON.parse(cleaned);
+}
+
+async function requestModelJsonWithRetry({
+  model,
+  systemText,
+  userText,
+  maxOutputTokens = 2200,
+  retries = 3,
+}) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      const retrySystem =
+        attempt === 1
+          ? systemText
+          : `${systemText}
+
+AMARAN TAMBAHAN:
+- Respons sebelum ini rosak.
+- Pulangkan JSON SAH sahaja.
+- Jangan tambah apa-apa di luar objek JSON.
+- Pastikan semua string ditutup dengan betul.`;
+
+      return await requestModelJsonOnce({
+        model,
+        systemText: retrySystem,
+        userText,
+        maxOutputTokens,
+      });
+    } catch (error) {
+      lastError = error;
+      console.error(`JSON parse/model attempt ${attempt} failed:`, error.message);
+    }
+  }
+
+  throw lastError || new Error('Gagal mendapatkan JSON sah daripada AI.');
 }
 
 function buildChapterMcqPrompts({
@@ -495,6 +542,7 @@ Tugas anda ialah menjana soalan objektif gaya trial sebenar berdasarkan pola pep
 JANGAN keluar daripada skop Sejarah SPM Tingkatan 4 dan Tingkatan 5.
 JANGAN jadikan semua soalan definisi semata-mata.
 JANGAN ulang stem yang sama terlalu banyak.
+JANGAN tulis penjelasan terlalu panjang.
 
 ${examContext}
 
@@ -522,6 +570,7 @@ Peraturan:
 - level mesti mudah / sederhana / kbat
 - jika boleh, nyatakan form dan chapter
 - soalan mesti pelbagai dan tidak berulang
+- exp maksimum 25 patah perkataan
 `;
 
   const userText = `
@@ -609,11 +658,12 @@ exports.handler = async (event) => {
             selectedSesi,
           });
 
-      const parsed = await requestModelJson({
+      const parsed = await requestModelJsonWithRetry({
         model,
         systemText,
         userText,
-        maxOutputTokens: isExamMode ? 2400 : 1800,
+        maxOutputTokens: isExamMode ? 2200 : 1600,
+        retries: 3,
       });
 
       const finalQuestions = normalizeMcqQuestions(
@@ -707,11 +757,12 @@ Jana satu set soalan struktur.
 `;
       }
 
-      const parsed = await requestModelJson({
+      const parsed = await requestModelJsonWithRetry({
         model,
         systemText,
         userText,
         maxOutputTokens: 900,
+        retries: 3,
       });
 
       return jsonResponse(200, {
@@ -736,7 +787,7 @@ Jana satu set soalan struktur.
     }
 
     if (mode === 'mark-structured') {
-      const parsed = await requestModelJson({
+      const parsed = await requestModelJsonWithRetry({
         model: 'gpt-5.4-mini',
         systemText: `
 Anda ialah pemeriksa Sejarah KSSM Malaysia.
@@ -761,6 +812,7 @@ Jawapan murid:
 ${JSON.stringify(studentAnswers || {})}
 `,
         maxOutputTokens: 1000,
+        retries: 3,
       });
 
       return jsonResponse(200, parsed);
@@ -806,8 +858,8 @@ ${JSON.stringify(studentAnswers || {})}
       debug: {
         message: apiMessage || null,
         code: errorCode,
-        type: errorType,
-        status: errorStatus,
+        type: errorType || null,
+        status: errorStatus || null,
       },
     });
   }
