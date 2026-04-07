@@ -32,8 +32,10 @@ exports.handler = async (event) => {
 
     let systemText = '';
     let userText = '';
+    let model = 'gpt-5.4-mini';
 
     if (mode === 'mcq') {
+      model = 'gpt-5.4-nano';
       systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang teliti.
 Jana TEPAT 10 soalan objektif berkualiti tinggi.
@@ -56,9 +58,11 @@ Peraturan:
 - Sesuai untuk murid sekolah menengah
 - Pilihan jawapan mesti 4 sahaja
 - "ans" ialah index 0 hingga 3
+- Pastikan jawapan tepat
 `;
       userText = `Jana 10 soalan objektif Sejarah KSSM bagi skop: ${scopeLabel}.`;
     } else if (mode === 'structured') {
+      model = 'gpt-5.4-mini';
       systemText = `
 Anda ialah guru Sejarah KSSM Malaysia.
 Jana satu set soalan Kertas 2 berstruktur.
@@ -77,9 +81,11 @@ Peraturan:
 - Jumlah markah 10
 - Fakta tepat
 - Sesuai gaya SPM Sejarah
+- Jawapan model perlu padat dan berguna
 `;
       userText = `Jana satu set soalan struktur Sejarah untuk skop: ${scopeLabel}.`;
     } else if (mode === 'mark-structured') {
+      model = 'gpt-5.4-mini';
       systemText = `
 Anda ialah pemeriksa Sejarah KSSM Malaysia.
 Semak jawapan murid dengan adil berdasarkan kehendak soalan dan jawapan model.
@@ -95,6 +101,7 @@ Peraturan:
 - Bahasa Melayu
 - Maklum balas jelas dan membina
 - Markah realistik
+- Jangan terlalu kedekut dan jangan terlalu murah markah
 `;
       userText = `
 Konteks:
@@ -111,7 +118,7 @@ ${JSON.stringify(studentAnswers || {})}
     }
 
     const response = await client.responses.create({
-      model: 'gpt-5.4-mini',
+      model,
       input: [
         {
           role: 'system',
@@ -143,6 +150,22 @@ ${JSON.stringify(studentAnswers || {})}
 
   } catch (error) {
     console.error('Function error:', error);
-    return jsonResponse(500, { error: 'Ralat backend AI.' });
+
+    let message = 'Ralat backend AI.';
+    const apiMessage = error?.error?.message || error?.message || '';
+
+    if (error?.status === 429 || error?.code === 'insufficient_quota') {
+      message = 'Kuota AI telah habis atau billing API belum aktif. Sila semak OpenAI billing.';
+    } else if (error?.status === 401) {
+      message = 'API key tidak sah atau tidak dibaca oleh server.';
+    } else if (error?.status === 404) {
+      message = 'Model AI tidak dijumpai.';
+    } else if (apiMessage) {
+      message = apiMessage;
+    }
+
+    return jsonResponse(500, {
+      error: message
+    });
   }
 };
