@@ -25,6 +25,7 @@ function getQuestionDistribution(questionCount) {
   if (count === 5) return { mudah: 1, sederhana: 2, kbat: 2 };
   if (count === 10) return { mudah: 2, sederhana: 5, kbat: 3 };
   if (count === 20) return { mudah: 5, sederhana: 10, kbat: 5 };
+  if (count === 40) return { mudah: 8, sederhana: 20, kbat: 12 };
 
   return { mudah: 2, sederhana: 5, kbat: 3 };
 }

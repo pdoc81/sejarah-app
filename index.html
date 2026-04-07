@@ -10,7 +10,7 @@
       background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
     }
     .glass {
-      background: rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.9);
       backdrop-filter: blur(8px);
     }
     .tab-btn.active,
@@ -22,25 +22,58 @@
       border-color: #dc2626;
       box-shadow: 0 8px 20px rgba(220, 38, 38, 0.18);
     }
+    .tab-btn.help-tab {
+      background: #ecfeff;
+      color: #0f766e;
+      border-color: #99f6e4;
+    }
+    .tab-btn.help-tab.active {
+      background: #0f766e;
+      color: white;
+      border-color: #0f766e;
+      box-shadow: 0 8px 20px rgba(15, 118, 110, 0.18);
+    }
+    .tab-btn.donation-tab {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+    .tab-btn.donation-tab.active {
+      background: #d97706;
+      color: white;
+      border-color: #d97706;
+      box-shadow: 0 8px 20px rgba(217, 119, 6, 0.18);
+    }
     .disabled-soft {
       opacity: 0.45;
       pointer-events: none;
       filter: grayscale(0.15);
     }
-    .option-btn.correct {
-      background: #dcfce7;
-      border-color: #16a34a;
-      color: #166534;
-    }
-    .option-btn.wrong {
-      background: #fee2e2;
+    .option-btn.selected {
+      background: #fef2f2;
       border-color: #dc2626;
       color: #991b1b;
+      box-shadow: 0 0 0 2px rgba(252, 165, 165, 0.45);
+    }
+    .option-btn.dimmed {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+      color: #94a3b8;
+    }
+    .option-btn.correct {
+      background: #dcfce7 !important;
+      border-color: #16a34a !important;
+      color: #166534 !important;
+    }
+    .option-btn.wrong {
+      background: #fee2e2 !important;
+      border-color: #dc2626 !important;
+      color: #991b1b !important;
     }
     .option-btn.reveal-correct {
-      background: #dbeafe;
-      border-color: #2563eb;
-      color: #1d4ed8;
+      background: #dbeafe !important;
+      border-color: #2563eb !important;
+      color: #1d4ed8 !important;
     }
     .fade-in {
       animation: fadeIn 0.25s ease;
@@ -53,7 +86,6 @@
 </head>
 <body class="text-slate-800 min-h-screen">
   <div class="max-w-7xl mx-auto px-4 py-6">
-    <!-- Header -->
     <header class="glass rounded-3xl border border-slate-200 shadow-sm px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-4">
         <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-bold text-xl shadow">
@@ -80,27 +112,23 @@
       <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="progres">
         Progres Semasa
       </button>
-      <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="panduan">
-        Panduan
+      <button class="tab-btn help-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="bantuan">
+        Bantuan
       </button>
-      <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="sumbangan">
-        Mohon Sumbangan
+      <button class="tab-btn donation-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="sumbangan">
+        Sumbangan
       </button>
     </div>
 
-    <!-- TAB: LATIHAN -->
+    <!-- TAB LATIHAN -->
     <section id="tab-latihan" class="tab-panel mt-6">
-      <div class="grid lg:grid-cols-[380px,1fr] gap-6">
-        <!-- Control Panel -->
+      <div class="grid lg:grid-cols-[390px,1fr] gap-6">
         <aside class="glass rounded-3xl border border-slate-200 shadow-sm p-5 h-fit">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold">Tetapan Latihan</h2>
-            <span id="statusBadge" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">
-              Sedia
-            </span>
+            <span id="statusBadge" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Sedia</span>
           </div>
 
-          <!-- Quiz Mode -->
           <div class="mb-5">
             <p class="text-sm font-semibold mb-2">Pilih Mod</p>
             <div class="grid grid-cols-2 gap-2">
@@ -113,7 +141,6 @@
             </div>
           </div>
 
-          <!-- Paper -->
           <div class="mb-5">
             <p class="text-sm font-semibold mb-2">Pilih Kertas</p>
             <div class="grid grid-cols-2 gap-2">
@@ -126,7 +153,7 @@
             </div>
           </div>
 
-          <!-- Chapter Mode Fields -->
+          <!-- Chapter Fields -->
           <div id="chapterFields" class="space-y-4">
             <div>
               <label for="tingkatanSelect" class="block text-sm font-semibold mb-2">Tingkatan</label>
@@ -150,13 +177,13 @@
             </div>
           </div>
 
-          <!-- Exam Mode Fields -->
+          <!-- Exam Fields -->
           <div id="examFields" class="hidden space-y-4">
             <div class="rounded-2xl bg-red-50 border border-red-100 px-4 py-4">
               <p class="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold mb-1">Mod Percubaan</p>
               <p class="text-sm font-semibold text-slate-800">SPM Sejarah Tingkatan 4 + Tingkatan 5</p>
               <p class="mt-2 text-sm text-slate-600">
-                Set ini dijana berpandukan pola soalan percubaan SPM sebenar. Fokusnya ialah gabungan gaya soalan Tingkatan 4 dan Tingkatan 5.
+                Soalan dijana mengikut pola soalan percubaan sebenar. Untuk Kertas 1, sistem akan jana <span class="font-semibold">40 soalan penuh</span>.
               </p>
             </div>
 
@@ -170,22 +197,15 @@
           <div class="mt-5">
             <p class="text-sm font-semibold mb-2">Bilangan Soalan</p>
             <div id="countWrap" class="grid grid-cols-3 gap-2">
-              <button class="count-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="5">
-                5
-              </button>
-              <button class="count-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="10">
-                10
-              </button>
-              <button class="count-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="20">
-                20
-              </button>
+              <button class="count-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="5">5</button>
+              <button class="count-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="10">10</button>
+              <button class="count-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="20">20</button>
             </div>
             <p id="countHint" class="mt-2 text-xs text-slate-500">
-              Untuk Kertas 1 sahaja.
+              Untuk Kertas 1 dalam Latih Tubi Bab sahaja.
             </p>
           </div>
 
-          <!-- Actions -->
           <div class="mt-6 grid grid-cols-2 gap-3">
             <button id="generateBtn" class="rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-3 shadow-sm transition">
               Jana Soalan
@@ -197,11 +217,10 @@
 
           <div class="mt-4 rounded-2xl bg-amber-50 border border-amber-100 px-4 py-3 text-sm text-amber-800">
             <span class="font-semibold">Nota:</span>
-            Kertas 2 menggunakan format struktur dan semakan jawapan model. Bilangan 5 / 10 / 20 dinyahaktifkan apabila Kertas 2 dipilih.
+            Kertas 2 tidak menggunakan timer. Jawapan model hanya dipaparkan selepas semakan.
           </div>
         </aside>
 
-        <!-- Content Panel -->
         <main class="space-y-6">
           <section class="glass rounded-3xl border border-slate-200 shadow-sm p-5">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
@@ -211,7 +230,11 @@
                   Pilih mod, kertas dan skop sebelum menjana soalan.
                 </p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2 items-center">
+                <div id="timerBox" class="hidden rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3">
+                  <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">Masa Baki</p>
+                  <p id="timerText" class="text-lg font-black text-slate-800">00:00</p>
+                </div>
                 <button id="markStructuredBtn" class="hidden rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 transition">
                   Semak Jawapan
                 </button>
@@ -295,49 +318,35 @@
       </div>
     </section>
 
-    <!-- TAB: PROGRES -->
+    <!-- TAB PROGRES -->
     <section id="tab-progres" class="tab-panel hidden mt-6">
       <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
         <h2 class="text-2xl font-bold">Progres Semasa</h2>
         <p class="mt-2 text-slate-600">
           Ruang ini boleh kita sambungkan kemudian kepada rekod markah, bab lemah, bab kuat dan cadangan ulang kaji automatik.
         </p>
-        <div class="mt-5 grid md:grid-cols-3 gap-4">
-          <div class="rounded-2xl border border-slate-200 bg-white p-4">
-            <p class="text-sm text-slate-500">Bab Sering Dilatih</p>
-            <p class="mt-2 text-lg font-bold">Belum direkodkan</p>
-          </div>
-          <div class="rounded-2xl border border-slate-200 bg-white p-4">
-            <p class="text-sm text-slate-500">Purata Markah</p>
-            <p class="mt-2 text-lg font-bold">Belum direkodkan</p>
-          </div>
-          <div class="rounded-2xl border border-slate-200 bg-white p-4">
-            <p class="text-sm text-slate-500">Cadangan Fokus</p>
-            <p class="mt-2 text-lg font-bold">Akan ditambah</p>
-          </div>
-        </div>
       </div>
     </section>
 
-    <!-- TAB: PANDUAN -->
-    <section id="tab-panduan" class="tab-panel hidden mt-6">
+    <!-- TAB BANTUAN -->
+    <section id="tab-bantuan" class="tab-panel hidden mt-6">
       <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
-        <h2 class="text-2xl font-bold">Panduan Penggunaan</h2>
+        <h2 class="text-2xl font-bold">Bantuan</h2>
         <div class="mt-4 space-y-4 text-slate-700 leading-7">
           <p><span class="font-semibold">Latih Tubi Bab</span> sesuai untuk fokus kepada satu bab tertentu mengikut tingkatan.</p>
           <p><span class="font-semibold">Mod Percubaan SPM</span> sesuai untuk melatih pelajar dengan gaya soalan yang lebih hampir kepada peperiksaan sebenar.</p>
           <p><span class="font-semibold">Kertas 1</span> menjana soalan objektif dan boleh disemak terus.</p>
-          <p><span class="font-semibold">Kertas 2</span> menjana soalan struktur. Jawapan pelajar boleh ditaip dan disemak dengan butang <span class="font-semibold">Semak Jawapan</span>.</p>
+          <p><span class="font-semibold">Kertas 2</span> menjana soalan struktur. Jawapan model hanya dipaparkan selepas semakan.</p>
         </div>
       </div>
     </section>
 
-    <!-- TAB: SUMBANGAN -->
+    <!-- TAB SUMBANGAN -->
     <section id="tab-sumbangan" class="tab-panel hidden mt-6">
       <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
         <div class="grid lg:grid-cols-[1.3fr,0.9fr] gap-6">
           <div>
-            <span class="inline-flex items-center rounded-full border border-red-100 bg-red-50 px-4 py-2 text-xs font-bold tracking-[0.22em] uppercase text-red-500">
+            <span class="inline-flex items-center rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-xs font-bold tracking-[0.22em] uppercase text-amber-600">
               Sokongan Pembangunan Aplikasi
             </span>
             <h2 class="mt-4 text-4xl font-black leading-tight tracking-tight text-slate-800">
@@ -401,12 +410,63 @@
   </div>
 
   <script>
-    const chapterMap = {
-      1: 8,
-      2: 10,
-      3: 8,
-      4: 10,
-      5: 10
+    const chapterTitles = {
+      1: {
+        1: "Mengenali Sejarah",
+        2: "Zaman Air Batu",
+        3: "Zaman Prasejarah",
+        4: "Mengenali Tamadun",
+        5: "Tamadun Awal Dunia",
+        6: "Peningkatan Tamadun Yunani dan Rom",
+        7: "Peningkatan Tamadun India dan China",
+        8: "Tamadun Islam dan Sumbangannya"
+      },
+      2: {
+        1: "Kerajaan Alam Melayu",
+        2: "Sistem Pemerintahan dan Kegiatan Ekonomi Masyarakat Kerajaan Alam Melayu",
+        3: "Sosiobudaya Masyarakat Kerajaan Alam Melayu",
+        4: "Agama, Kepercayaan dan Keunikan Warisan Masyarakat Kerajaan Alam Melayu",
+        5: "Kesultanan Melayu Melaka",
+        6: "Kesultanan Johor Riau",
+        7: "Kesultanan Melayu Pahang, Perak, Terengganu dan Selangor",
+        8: "Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",
+        9: "Warisan Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",
+        10: "Sarawak dan Sabah"
+      },
+      3: {
+        1: "Kedatangan Kuasa Barat",
+        2: "Pentadbiran Negeri-negeri Selat",
+        3: "Pentadbiran Negeri-negeri Melayu Bersekutu",
+        4: "Pentadbiran Negeri-negeri Melayu Tidak Bersekutu",
+        5: "Pentadbiran Barat di Sarawak dan Sabah",
+        6: "Kesan Pentadbiran Barat terhadap Ekonomi dan Sosial",
+        7: "Penentangan Masyarakat Tempatan",
+        8: "Kebijaksanaan Raja dan Pembesar Melayu Menangani Cabaran Barat"
+      },
+      4: {
+        1: "Warisan Negara Bangsa",
+        2: "Kebangkitan Nasionalisme",
+        3: "Konflik Dunia dan Pendudukan Jepun di Negara Kita",
+        4: "Era Peralihan Kuasa British di Negara Kita",
+        5: "Persekutuan Tanah Melayu 1948",
+        6: "Ancaman Komunis dan Perisytiharan Darurat",
+        7: "Usaha ke Arah Kemerdekaan",
+        8: "Pilihan Raya",
+        9: "Perlembagaan Persekutuan Tanah Melayu 1957",
+        10: "Pemasyhuran Kemerdekaan"
+      },
+      5: {
+        1: "Kedaulatan Negara",
+        2: "Perlembagaan Persekutuan",
+        3: "Raja Berperlembagaan dan Demokrasi Berparlimen",
+        4: "Sistem Persekutuan",
+        5: "Pembentukan Malaysia",
+        6: "Cabaran Selepas Pembentukan Malaysia",
+        7: "Membina Kesejahteraan Negara",
+        8: "Membina Kemakmuran Negara",
+        9: "Dasar Luar Malaysia",
+        10: "Kecemerlangan Malaysia di Persada Dunia"
+      }
     };
 
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -463,6 +523,12 @@
     const donationMaybankBox = document.getElementById('donationMaybankBox');
     const donationTngBox = document.getElementById('donationTngBox');
 
+    const timerBox = document.getElementById('timerBox');
+    const timerText = document.getElementById('timerText');
+
+    let timerInterval = null;
+    let timerSeconds = 0;
+
     let state = {
       quizMode: 'chapter',
       paper: 'mcq',
@@ -486,22 +552,60 @@
       }
     }
 
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerBox.classList.add('hidden');
+      timerText.textContent = '00:00';
+    }
+
+    function formatTime(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function startTimer(totalSeconds) {
+      stopTimer();
+      timerSeconds = totalSeconds;
+      timerBox.classList.remove('hidden');
+      timerText.textContent = formatTime(timerSeconds);
+
+      timerInterval = setInterval(() => {
+        timerSeconds -= 1;
+        timerText.textContent = formatTime(Math.max(0, timerSeconds));
+
+        if (timerSeconds <= 0) {
+          stopTimer();
+          if (state.paper === 'mcq' && state.quizMode === 'chapter' && submitMcqBtn.dataset.done !== 'true') {
+            submitMcq(true);
+          }
+        }
+      }, 1000);
+    }
+
     function updateBabOptions() {
       const form = Number(tingkatanSelect.value);
-      const totalBab = chapterMap[form] || 1;
+      const chapters = chapterTitles[form] || {};
       babSelect.innerHTML = '';
 
-      for (let i = 1; i <= totalBab; i++) {
+      Object.keys(chapters).forEach(chNo => {
         const option = document.createElement('option');
-        option.value = String(i);
-        option.textContent = `Bab ${i}`;
+        option.value = String(chNo);
+        option.textContent = `Bab ${chNo} – ${chapters[chNo]}`;
         babSelect.appendChild(option);
-      }
+      });
+
       updateScopePreview();
     }
 
     function updateScopePreview() {
-      scopePreview.textContent = `Tingkatan ${tingkatanSelect.value} · Bab ${babSelect.value}`;
+      const form = Number(tingkatanSelect.value);
+      const chapter = Number(babSelect.value);
+      const title = chapterTitles[form]?.[chapter] || '';
+      scopePreview.textContent = `Tingkatan ${form} · Bab ${chapter}${title ? ` – ${title}` : ''}`;
     }
 
     function setQuizMode(mode) {
@@ -518,6 +622,8 @@
       } else {
         resultSubtitle.textContent = 'Mod percubaan menjana set berpandukan pola soalan trial SPM Tingkatan 4 dan 5.';
       }
+
+      updateCountState();
     }
 
     function setPaper(mode) {
@@ -526,20 +632,35 @@
       paper1Btn.classList.toggle('active', mode === 'mcq');
       paper2Btn.classList.toggle('active', mode === 'structured');
 
-      const disabled = mode !== 'mcq';
-      countWrap.classList.toggle('disabled-soft', disabled);
-      countHint.textContent = disabled
-        ? 'Pilihan ini dinyahaktifkan untuk Kertas 2.'
-        : 'Untuk Kertas 1 sahaja.';
-
       markStructuredBtn.classList.toggle('hidden', mode !== 'structured');
+      updateCountState();
+    }
 
-      if (disabled) {
-        countButtons.forEach(btn => btn.classList.remove('active'));
-      } else {
-        const activeBtn = [...countButtons].find(btn => Number(btn.dataset.count) === state.questionCount) || countButtons[0];
-        countButtons.forEach(btn => btn.classList.toggle('active', btn === activeBtn));
+    function updateCountState() {
+      let disabled = false;
+      let hint = 'Untuk Kertas 1 dalam Latih Tubi Bab sahaja.';
+
+      if (state.paper === 'structured') {
+        disabled = true;
+        hint = 'Pilihan ini dinyahaktifkan untuk Kertas 2.';
       }
+
+      if (state.quizMode === 'exam' && state.paper === 'mcq') {
+        disabled = true;
+        hint = 'Mod Percubaan SPM Kertas 1 akan menjana 40 soalan penuh.';
+      }
+
+      if (state.quizMode === 'exam' && state.paper === 'structured') {
+        disabled = true;
+        hint = 'Kertas 2 menggunakan set struktur gaya percubaan.';
+      }
+
+      countWrap.classList.toggle('disabled-soft', disabled);
+      countHint.textContent = hint;
+
+      countButtons.forEach(btn => {
+        btn.classList.toggle('active', !disabled && Number(btn.dataset.count) === state.questionCount);
+      });
     }
 
     function switchTab(tabName) {
@@ -553,6 +674,7 @@
     }
 
     function resetOutput() {
+      stopTimer();
       errorBox.classList.add('hidden');
       loadingBox.classList.add('hidden');
       mcqBox.classList.add('hidden');
@@ -571,9 +693,11 @@
       structuredFeedbackList.innerHTML = '';
       mcqScore.textContent = '0 / 0';
       setStatus('Sedia', 'ready');
+      submitMcqBtn.dataset.done = 'false';
     }
 
     function showError(message) {
+      stopTimer();
       errorBox.classList.remove('hidden');
       errorText.textContent = message || 'Ralat tidak diketahui.';
       setStatus('Ralat', 'error');
@@ -585,7 +709,24 @@
           ? 'Percubaan SPM Sejarah Kertas 1 Tingkatan 4 dan 5'
           : 'Percubaan SPM Sejarah Kertas 2 Tingkatan 4 dan 5';
       }
-      return `Tingkatan ${tingkatanSelect.value} Bab ${babSelect.value}`;
+
+      const form = Number(tingkatanSelect.value);
+      const chapter = Number(babSelect.value);
+      const title = chapterTitles[form]?.[chapter] || '';
+      return `Tingkatan ${form} Bab ${chapter}${title ? ` - ${title}` : ''}`;
+    }
+
+    function setQuestionSelectionVisual(qIndex, selectedIndex) {
+      const buttons = document.querySelectorAll(`.option-btn[data-qindex="${qIndex}"]`);
+      buttons.forEach(btn => {
+        btn.classList.remove('selected', 'dimmed', 'ring-2', 'ring-red-300');
+        const optIndex = Number(btn.dataset.optindex);
+        if (optIndex === selectedIndex) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.add('dimmed');
+        }
+      });
     }
 
     function renderMcq(data) {
@@ -629,7 +770,7 @@
           <div class="mt-4 grid gap-2">
             ${item.opts.map((opt, optIndex) => `
               <button
-                class="option-btn text-left rounded-2xl border border-slate-200 bg-white px-4 py-3 transition hover:bg-slate-50"
+                class="option-btn text-left rounded-2xl border border-slate-200 bg-white px-4 py-3 transition"
                 data-qindex="${index}"
                 data-optindex="${optIndex}"
               >
@@ -653,16 +794,17 @@
           if (submitMcqBtn.dataset.done === 'true') return;
 
           state.selectedAnswers[qIndex] = optIndex;
-
-          document.querySelectorAll(`.option-btn[data-qindex="${qIndex}"]`).forEach(b => {
-            b.classList.remove('ring-2', 'ring-red-300', 'bg-red-50');
-          });
-
-          btn.classList.add('ring-2', 'ring-red-300', 'bg-red-50');
+          setQuestionSelectionVisual(qIndex, optIndex);
         });
       });
 
       submitMcqBtn.dataset.done = 'false';
+
+      if (state.quizMode === 'chapter') {
+        startTimer(state.questionCount * 30);
+      } else {
+        stopTimer();
+      }
     }
 
     function renderStructured(data) {
@@ -671,6 +813,8 @@
       mcqBox.classList.add('hidden');
       structuredResults.classList.add('hidden');
       newSetBtn.classList.remove('hidden');
+
+      stopTimer();
 
       state.structuredData = data;
       structuredMeta.textContent = state.quizMode === 'exam'
@@ -697,10 +841,6 @@
               placeholder="Taip jawapan anda di sini..."
             ></textarea>
           </div>
-          <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold mb-2">Jawapan Model</p>
-            <p class="text-sm text-slate-700 leading-7">${item.model}</p>
-          </div>
         `;
         structuredQuestions.appendChild(block);
       });
@@ -714,7 +854,12 @@
       const payload = {
         quizMode: state.quizMode,
         mode: state.paper,
-        questionCount: state.paper === 'mcq' ? state.questionCount : 10,
+        questionCount:
+          state.quizMode === 'exam' && state.paper === 'mcq'
+            ? 40
+            : state.paper === 'mcq'
+              ? state.questionCount
+              : 10,
         selectedSkop: state.quizMode === 'chapter' ? tingkatanSelect.value : null,
         selectedSesi: state.quizMode === 'chapter' ? babSelect.value : null,
         scopeLabel: getScopeLabel()
@@ -758,11 +903,12 @@
       }
     }
 
-    function submitMcq() {
+    function submitMcq(isAuto = false) {
       if (!state.mcqData.length) return;
 
       let score = 0;
       submitMcqBtn.dataset.done = 'true';
+      stopTimer();
 
       state.mcqData.forEach((item, index) => {
         const selected = state.selectedAnswers[index];
@@ -771,6 +917,7 @@
         buttons.forEach(btn => {
           const optIndex = Number(btn.dataset.optindex);
           btn.disabled = true;
+          btn.classList.remove('selected', 'dimmed');
 
           if (optIndex === item.ans) {
             btn.classList.add('reveal-correct');
@@ -794,6 +941,10 @@
 
       mcqScore.textContent = `${score} / ${state.mcqData.length}`;
       retryMcqBtn.classList.remove('hidden');
+
+      if (isAuto) {
+        setStatus('Masa Tamat', 'error');
+      }
     }
 
     async function markStructuredAnswers() {
@@ -835,15 +986,20 @@
         structuredFeedbackList.innerHTML = '';
         structuredTotal.textContent = `Jumlah Markah: ${data.total ?? 0}`;
 
-        (data.results || []).forEach(item => {
+        (state.structuredData.questions || []).forEach(question => {
+          const resultItem = (data.results || []).find(r => r.id === question.id) || {};
           const div = document.createElement('div');
           div.className = 'rounded-2xl border border-blue-200 bg-white p-4';
           div.innerHTML = `
             <div class="flex items-center justify-between gap-3">
-              <span class="font-bold uppercase text-blue-700">${item.id}</span>
-              <span class="text-sm font-semibold text-blue-700">${item.marks_awarded} markah</span>
+              <span class="font-bold uppercase text-blue-700">${question.id}</span>
+              <span class="text-sm font-semibold text-blue-700">${resultItem.marks_awarded ?? 0} markah</span>
             </div>
-            <p class="mt-2 text-sm text-slate-700 leading-7">${item.feedback}</p>
+            <p class="mt-2 text-sm text-slate-700 leading-7"><span class="font-semibold">Maklum balas:</span> ${resultItem.feedback || '-'}</p>
+            <div class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold mb-2">Jawapan Model</p>
+              <p class="text-sm text-slate-700 leading-7">${question.model || '-'}</p>
+            </div>
           `;
           structuredFeedbackList.appendChild(div);
         });
@@ -877,7 +1033,6 @@
       resetOutput();
     }
 
-    // Events
     tabButtons.forEach(btn => {
       btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
@@ -891,6 +1046,7 @@
     countButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         if (state.paper !== 'mcq') return;
+        if (state.quizMode !== 'chapter') return;
         state.questionCount = Number(btn.dataset.count);
         countButtons.forEach(b => b.classList.toggle('active', b === btn));
       });
@@ -901,7 +1057,7 @@
 
     generateBtn.addEventListener('click', generateQuestions);
     resetBtn.addEventListener('click', resetAllSettings);
-    submitMcqBtn.addEventListener('click', submitMcq);
+    submitMcqBtn.addEventListener('click', () => submitMcq(false));
     retryMcqBtn.addEventListener('click', generateQuestions);
     newSetBtn.addEventListener('click', generateQuestions);
     markStructuredBtn.addEventListener('click', markStructuredAnswers);
@@ -920,7 +1076,6 @@
       donationMaybankBox.classList.add('hidden');
     });
 
-    // Init
     updateBabOptions();
     setQuizMode('chapter');
     setPaper('mcq');
