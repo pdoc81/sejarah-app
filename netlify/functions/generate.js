@@ -24,7 +24,6 @@ function getQuestionDistribution(questionCount) {
   if (count === 5) return { mudah: 1, sederhana: 2, kbat: 2 };
   if (count === 10) return { mudah: 2, sederhana: 5, kbat: 3 };
   if (count === 20) return { mudah: 5, sederhana: 10, kbat: 5 };
-  if (count === 40) return { mudah: 8, sederhana: 20, kbat: 12 };
   return { mudah: 2, sederhana: 5, kbat: 3 };
 }
 
@@ -73,6 +72,7 @@ function loadChapterData(selectedSkop, selectedSesi) {
   );
 
   const parsed = readJsonFile(filePath);
+
   if (parsed) {
     console.log('Chapter file loaded:', {
       form: parsed.form,
@@ -80,6 +80,7 @@ function loadChapterData(selectedSkop, selectedSesi) {
       title: parsed.title,
     });
   }
+
   return parsed;
 }
 
@@ -102,6 +103,7 @@ function loadExamPattern(mode) {
   );
 
   const parsed = readJsonFile(filePath);
+
   if (parsed) {
     console.log('Exam pattern loaded:', {
       paper: parsed.paper,
@@ -109,6 +111,7 @@ function loadExamPattern(mode) {
       exam_type: parsed.exam_type,
     });
   }
+
   return parsed;
 }
 
@@ -117,10 +120,7 @@ function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
     return {
       sourceType: 'chapter',
       focusMix: pickItems(chapterData.focus_areas || [], mode === 'mcq' ? 5 : 4),
-      questionAngles: pickItems(
-        chapterData.possible_question_angles || [],
-        mode === 'mcq' ? 6 : 4
-      ),
+      questionAngles: pickItems(chapterData.possible_question_angles || [], mode === 'mcq' ? 6 : 4),
       kbatMix: pickItems(chapterData.kbat_angles || [], mode === 'mcq' ? 3 : 2),
     };
   }
@@ -202,51 +202,37 @@ ${listToBulletText(variationPlan?.kbatMix || [])}
 function getExamBatchPlan(examBatchLabel) {
   const plans = {
     form4_a: {
-      label: 'Form 4 A',
+      label: 'Form 4',
       form: 4,
-      chapters: [1, 2, 3, 4, 5],
+      chapters: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       topics: [
         'warisan negara bangsa',
         'nasionalisme',
         'konflik dunia dan pendudukan Jepun',
         'era peralihan kuasa British',
         'Persekutuan Tanah Melayu 1948',
-      ],
-    },
-    form4_b: {
-      label: 'Form 4 B',
-      form: 4,
-      chapters: [6, 7, 8, 9, 10],
-      topics: [
         'darurat',
         'usaha ke arah kemerdekaan',
         'pilihan raya',
         'Perlembagaan Persekutuan Tanah Melayu 1957',
-        'pemasyhuran kemerdekaan',
+        'pemasyhuran kemerdekaan'
       ],
     },
     form5_a: {
-      label: 'Form 5 A',
+      label: 'Form 5',
       form: 5,
-      chapters: [1, 2, 3, 4, 5],
+      chapters: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       topics: [
         'kedaulatan negara',
         'Perlembagaan Persekutuan',
         'Raja Berperlembagaan dan Demokrasi Berparlimen',
         'sistem Persekutuan',
         'pembentukan Malaysia',
-      ],
-    },
-    form5_b: {
-      label: 'Form 5 B',
-      form: 5,
-      chapters: [6, 7, 8, 9, 10],
-      topics: [
         'cabaran selepas pembentukan Malaysia',
         'membina kesejahteraan negara',
         'membina kemakmuran negara',
         'dasar luar Malaysia',
-        'kecemerlangan Malaysia di persada dunia',
+        'kecemerlangan Malaysia di persada dunia'
       ],
     },
   };
@@ -262,9 +248,9 @@ function buildExamContext(examPattern, variationPlan, mode, examBatchPlan = null
 === POLA MOD PERCUBAAN KERTAS 1 ===
 Sumber: ${examPattern.source || 'Tidak dinyatakan'}
 Struktur:
-- 40 soalan penuh
-- 20 soalan Tingkatan 4
-- 20 soalan Tingkatan 5
+- 20 soalan
+- 10 soalan Tingkatan 4
+- 10 soalan Tingkatan 5
 - 4 pilihan jawapan
 
 Gaya soalan:
@@ -662,7 +648,7 @@ exports.handler = async (event) => {
         model,
         systemText,
         userText,
-        maxOutputTokens: isExamMode ? 2200 : 1600,
+        maxOutputTokens: isExamMode ? 1800 : 1600,
         retries: 3,
       });
 
@@ -674,23 +660,6 @@ exports.handler = async (event) => {
 
       return jsonResponse(200, {
         questions: finalQuestions,
-        debug_source: chapterData
-          ? {
-              type: 'chapter',
-              form: chapterData.form,
-              chapter: chapterData.chapter,
-              title: chapterData.title,
-            }
-          : examPattern
-            ? {
-                type: 'exam',
-                paper: examPattern.paper,
-                source: examPattern.source,
-                exam_type: examPattern.exam_type,
-              }
-            : null,
-        debug_variation_plan: variationPlan || null,
-        debug_exam_batch: examBatchPlan || null,
       });
     }
 
@@ -767,22 +736,6 @@ Jana satu set soalan struktur.
 
       return jsonResponse(200, {
         ...parsed,
-        debug_source: chapterData
-          ? {
-              type: 'chapter',
-              form: chapterData.form,
-              chapter: chapterData.chapter,
-              title: chapterData.title,
-            }
-          : examPattern
-            ? {
-                type: 'exam',
-                paper: examPattern.paper,
-                source: examPattern.source,
-                exam_type: examPattern.exam_type,
-              }
-            : null,
-        debug_variation_plan: variationPlan || null,
       });
     }
 

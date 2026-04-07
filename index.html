@@ -179,7 +179,8 @@
               <p class="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold mb-1">Mod Percubaan</p>
               <p class="text-sm font-semibold text-slate-800">SPM Sejarah Tingkatan 4 + Tingkatan 5</p>
               <p class="mt-2 text-sm text-slate-600">
-                Soalan dijana mengikut pola soalan percubaan sebenar. Untuk Kertas 1, sistem akan jana <span class="font-semibold">40 soalan penuh</span>.
+                Untuk Kertas 1, sistem akan jana <span class="font-semibold">20 soalan</span> sahaja:
+                <span class="font-semibold">10 Tingkatan 4 + 10 Tingkatan 5</span>.
               </p>
             </div>
 
@@ -303,11 +304,6 @@
               <p id="structuredTotal" class="mt-1 text-blue-800 font-semibold"></p>
               <div id="structuredFeedbackList" class="mt-4 space-y-3"></div>
             </div>
-          </section>
-
-          <section id="debugBox" class="hidden glass rounded-3xl border border-slate-200 shadow-sm p-5">
-            <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold mb-3">Debug</p>
-            <pre id="debugText" class="text-xs text-slate-600 whitespace-pre-wrap break-words"></pre>
           </section>
         </main>
       </div>
@@ -505,8 +501,6 @@
     const structuredTotal = document.getElementById('structuredTotal');
     const structuredFeedbackList = document.getElementById('structuredFeedbackList');
 
-    const debugBox = document.getElementById('debugBox');
-    const debugText = document.getElementById('debugText');
     const statusBadge = document.getElementById('statusBadge');
     const resultSubtitle = document.getElementById('resultSubtitle');
 
@@ -596,7 +590,7 @@
     function updateScopePreview() {
       const form = Number(tingkatanSelect.value);
       const chapter = Number(babSelect.value);
-      const title = chapterTitles[form] && chapterTitles[form][chapter] ? chapterTitles[form][chapter] : '';
+      const title = chapterTitles[form]?.[chapter] || '';
       scopePreview.textContent = `Tingkatan ${form} · Bab ${chapter}${title ? ` – ${title}` : ''}`;
     }
 
@@ -635,7 +629,7 @@
 
       if (state.quizMode === 'exam' && state.paper === 'mcq') {
         disabled = true;
-        hint = 'Mod Percubaan SPM Kertas 1 akan menjana 40 soalan penuh.';
+        hint = 'Mod Percubaan SPM Kertas 1 akan menjana 20 soalan: 10 Tingkatan 4 + 10 Tingkatan 5.';
       }
 
       if (state.quizMode === 'exam' && state.paper === 'structured') {
@@ -671,8 +665,6 @@
       welcomeBox.classList.remove('hidden');
       newSetBtn.classList.add('hidden');
       retryMcqBtn.classList.add('hidden');
-      debugBox.classList.add('hidden');
-      debugText.textContent = '';
       state.selectedAnswers = {};
       state.mcqData = [];
       state.structuredData = null;
@@ -700,7 +692,7 @@
 
       const form = Number(tingkatanSelect.value);
       const chapter = Number(babSelect.value);
-      const title = chapterTitles[form] && chapterTitles[form][chapter] ? chapterTitles[form][chapter] : '';
+      const title = chapterTitles[form]?.[chapter] || '';
       return `Tingkatan ${form} Bab ${chapter}${title ? ` - ${title}` : ''}`;
     }
 
@@ -839,21 +831,70 @@
       loadingBox.classList.remove('hidden');
       setStatus('Menjana...', 'loading');
 
-      const payload = {
-        quizMode: state.quizMode,
-        mode: state.paper,
-        questionCount:
-          state.quizMode === 'exam' && state.paper === 'mcq'
-            ? 40
-            : state.paper === 'mcq'
-              ? state.questionCount
-              : 10,
-        selectedSkop: state.quizMode === 'chapter' ? tingkatanSelect.value : null,
-        selectedSesi: state.quizMode === 'chapter' ? babSelect.value : null,
-        scopeLabel: getScopeLabel()
-      };
-
       try {
+        if (state.quizMode === 'exam' && state.paper === 'mcq') {
+          const batchPlans = [
+            { label: 'form4_a' },
+            { label: 'form5_a' }
+          ];
+
+          const allQuestions = [];
+
+          for (let i = 0; i < batchPlans.length; i++) {
+            setStatus(`Menjana batch ${i + 1}/2...`, 'loading');
+
+            const res = await fetch('/.netlify/functions/generate', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                quizMode: 'exam',
+                mode: 'mcq',
+                questionCount: 10,
+                scopeLabel: getScopeLabel(),
+                examBatchLabel: batchPlans[i].label
+              })
+            });
+
+            const rawText = await res.text();
+            let data = {};
+
+            try {
+              data = rawText ? JSON.parse(rawText) : {};
+            } catch (parseError) {
+              console.error('Raw response parse error:', rawText);
+              throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
+            }
+
+            if (!res.ok || data.error) {
+              throw new Error(data.error || 'Gagal menjana batch soalan.');
+            }
+
+            if (Array.isArray(data.questions)) {
+              allQuestions.push(...data.questions);
+            }
+          }
+
+          loadingBox.classList.add('hidden');
+
+          renderMcq({
+            questions: allQuestions.slice(0, 20)
+          });
+
+          setStatus('Berjaya', 'success');
+          return;
+        }
+
+        const payload = {
+          quizMode: state.quizMode,
+          mode: state.paper,
+          questionCount: state.paper === 'mcq' ? state.questionCount : 10,
+          selectedSkop: state.quizMode === 'chapter' ? tingkatanSelect.value : null,
+          selectedSesi: state.quizMode === 'chapter' ? babSelect.value : null,
+          scopeLabel: getScopeLabel()
+        };
+
         const res = await fetch('/.netlify/functions/generate', {
           method: 'POST',
           headers: {
@@ -877,14 +918,6 @@
         if (!res.ok || data.error) {
           showError(data.error || 'Gagal menjana soalan.');
           return;
-        }
-
-        if (data.debug_source || data.debug_variation_plan) {
-          debugBox.classList.remove('hidden');
-          debugText.textContent = JSON.stringify({
-            debug_source: data.debug_source || null,
-            debug_variation_plan: data.debug_variation_plan || null
-          }, null, 2);
         }
 
         if (state.paper === 'mcq') {
