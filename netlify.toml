@@ -3,4 +3,4 @@
 
 [functions]
   directory = "netlify/functions"
-  included_files = ["data/textbooks/**"]
+  included_files = ["data/textbooks/**", "data/exams/**"]
