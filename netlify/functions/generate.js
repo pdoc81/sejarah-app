@@ -22,17 +22,9 @@ function jsonResponse(statusCode, body) {
 function getQuestionDistribution(questionCount) {
   const count = Number(questionCount) || 10;
 
-  if (count === 5) {
-    return { mudah: 1, sederhana: 2, kbat: 2 };
-  }
-
-  if (count === 10) {
-    return { mudah: 2, sederhana: 5, kbat: 3 };
-  }
-
-  if (count === 20) {
-    return { mudah: 5, sederhana: 10, kbat: 5 };
-  }
+  if (count === 5) return { mudah: 1, sederhana: 2, kbat: 2 };
+  if (count === 10) return { mudah: 2, sederhana: 5, kbat: 3 };
+  if (count === 20) return { mudah: 5, sederhana: 10, kbat: 5 };
 
   return { mudah: 2, sederhana: 5, kbat: 3 };
 }
@@ -49,12 +41,23 @@ function loadChapterData(selectedSkop, selectedSesi) {
       `chapter${selectedSesi}.json`
     );
 
+    console.log('Trying chapter file:', filePath);
+
     if (!fs.existsSync(filePath)) {
+      console.log('Chapter file not found:', filePath);
       return null;
     }
 
     const raw = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+
+    console.log('Chapter file loaded:', {
+      form: parsed.form,
+      chapter: parsed.chapter,
+      title: parsed.title
+    });
+
+    return parsed;
   } catch (error) {
     console.error('Error loading chapter data:', error);
     return null;
@@ -81,8 +84,7 @@ function buildChapterContext(chapterData) {
     : '';
 
   return `
-Gunakan kandungan bab sebenar berikut sebagai asas utama pembinaan soalan.
-
+=== KANDUNGAN WAJIB BAB ===
 Tingkatan: ${chapterData.form}
 Bab: ${chapterData.chapter}
 Tajuk: ${chapterData.title}
@@ -101,6 +103,7 @@ ${keyFacts}
 
 Sudut KBAT:
 ${kbatAngles}
+=== AKHIR KANDUNGAN WAJIB BAB ===
 `;
 }
 
@@ -177,7 +180,12 @@ exports.handler = async (event) => {
       model = 'gpt-5.4-nano';
 
       systemText = `
-Anda ialah guru Sejarah KSSM Malaysia yang teliti.
+Anda ialah guru Sejarah KSSM Malaysia yang sangat ketat terhadap skop bab.
+Tugas anda ialah menjana soalan HANYA daripada kandungan bab yang diberi.
+JANGAN campurkan fakta daripada bab lain.
+JANGAN guna pengetahuan umum jika kandungan bab telah diberi.
+Jika maklumat tiada dalam kandungan bab, jangan reka fakta tambahan.
+
 Jana TEPAT ${totalQuestions} soalan objektif berkualiti tinggi.
 Campuran aras mestilah:
 - ${distribution.mudah} soalan mudah
@@ -193,7 +201,7 @@ Balas dalam JSON SAHAJA dengan format:
       "q": "Soalan",
       "opts": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
       "ans": 0,
-      "exp": "Penjelasan ringkas",
+      "exp": "Penjelasan ringkas yang merujuk kandungan bab",
       "level": "mudah"
     }
   ]
@@ -201,43 +209,54 @@ Balas dalam JSON SAHAJA dengan format:
 
 Peraturan:
 - Bahasa Melayu
-- Fakta tepat
+- Semua soalan mesti datang daripada kandungan bab yang diberi
+- Jangan masukkan topik daripada bab lain
+- Fakta mesti tepat
 - Tiada soalan berulang
-- Sesuai untuk murid sekolah menengah
 - Pilihan jawapan mesti 4 sahaja
 - "ans" ialah index 0 hingga 3
 - "level" mesti salah satu daripada: mudah, sederhana, kbat
-- Pastikan jawapan tepat
 - Elakkan pilihan jawapan yang terlalu jelas salah
 - Elakkan meletakkan jawapan betul terlalu kerap pada pilihan pertama
-- Soalan mudah = fakta asas / pengetahuan langsung
-- Soalan sederhana = kefahaman / sebab-akibat / aplikasi mudah
-- Soalan KBAT = analisis / perbandingan / inferens / penilaian
-- Jika kandungan bab disediakan, utamakan kandungan itu berbanding pengetahuan umum
+- Soalan mudah = fakta asas / pengetahuan langsung dalam bab
+- Soalan sederhana = kefahaman / sebab-akibat / aplikasi mudah dalam bab
+- Soalan KBAT = analisis / inferens / penilaian berdasarkan bab
+- Penjelasan "exp" mesti selaras dengan fakta bab yang diberi
 `;
 
       userText = `
-Jana ${totalQuestions} soalan objektif Sejarah KSSM bagi skop: ${scopeLabel}.
+Skop dipilih pengguna:
+${scopeLabel}
 
-Pastikan agihan tepat:
+Tingkatan dipilih:
+${selectedSkop}
+
+Bab dipilih:
+${selectedSesi}
+
+${chapterData ? `Tajuk bab sebenar: ${chapterData.title}` : 'TIADA DATA BAB DIJUMPAI'}
+
+Jana ${totalQuestions} soalan objektif yang mematuhi kandungan bab ini sahaja.
+
+Agihan wajib:
 - Mudah: ${distribution.mudah}
 - Sederhana: ${distribution.sederhana}
 - KBAT: ${distribution.kbat}
-
-${chapterData ? `Gunakan fokus bab: ${chapterData.title}` : ''}
 `;
     } else if (mode === 'structured') {
       model = 'gpt-5.4-mini';
 
       systemText = `
-Anda ialah guru Sejarah KSSM Malaysia.
-Jana satu set soalan Kertas 2 berstruktur.
+Anda ialah guru Sejarah KSSM Malaysia yang sangat ketat terhadap skop bab.
+Tugas anda ialah menjana soalan struktur HANYA daripada kandungan bab yang diberi.
+JANGAN campurkan fakta daripada bab lain.
+JANGAN guna pengetahuan umum jika kandungan bab telah diberi.
 
 ${chapterContext}
 
 Balas dalam JSON SAHAJA dengan format:
 {
-  "context": "Petikan atau rangsangan ringkas",
+  "context": "Petikan atau rangsangan ringkas berdasarkan bab",
   "questions": [
     { "id": "a", "q": "Soalan", "marks": 2, "model": "Jawapan contoh" },
     { "id": "b", "q": "Soalan", "marks": 4, "model": "Jawapan contoh" },
@@ -247,17 +266,30 @@ Balas dalam JSON SAHAJA dengan format:
 
 Peraturan:
 - Bahasa Melayu
+- Semua soalan mesti datang daripada kandungan bab yang diberi
+- Jangan masukkan topik daripada bab lain
 - Jumlah markah 10
 - Fakta tepat
-- Sesuai gaya SPM Sejarah
-- Jawapan model perlu padat dan berguna
 - Bahagian (a) lebih asas
 - Bahagian (b) sederhana
 - Bahagian (c) lebih mencabar / berunsur KBAT
-- Jika kandungan bab disediakan, utamakan kandungan itu berbanding pengetahuan umum
+- Jawapan model mesti padat dan berpandukan bab
 `;
 
-      userText = `Jana satu set soalan struktur Sejarah untuk skop: ${scopeLabel}.`;
+      userText = `
+Skop dipilih pengguna:
+${scopeLabel}
+
+Tingkatan dipilih:
+${selectedSkop}
+
+Bab dipilih:
+${selectedSesi}
+
+${chapterData ? `Tajuk bab sebenar: ${chapterData.title}` : 'TIADA DATA BAB DIJUMPAI'}
+
+Jana satu set soalan struktur berdasarkan bab ini sahaja.
+`;
     } else if (mode === 'mark-structured') {
       model = 'gpt-5.4-mini';
 
@@ -327,7 +359,16 @@ ${JSON.stringify(studentAnswers || {})}
       parsed.questions = normalizeMcqQuestions(parsed.questions);
     }
 
-    return jsonResponse(200, parsed);
+    return jsonResponse(200, {
+      ...parsed,
+      debug_source: chapterData
+        ? {
+            form: chapterData.form,
+            chapter: chapterData.chapter,
+            title: chapterData.title
+          }
+        : null
+    });
 
   } catch (error) {
     console.error('Function error full:', error);
