@@ -217,7 +217,7 @@
                     </div>
                 </div>
 
-                <div class="pt-4">
+                <div id="distribution-box" class="pt-4">
                     <div class="rounded-[2rem] border border-rose-100 bg-rose-50 p-4 text-xs text-rose-700 leading-relaxed">
                         <span class="font-black uppercase tracking-widest block mb-2">Agihan Automatik Kertas 1</span>
                         <div id="distribution-info" class="font-semibold">
@@ -624,6 +624,7 @@
 
     function updateQuestionCountAvailability() {
         const buttons = [5, 10, 20].map(n => document.getElementById(`btn-qcount-${n}`));
+        const distributionBox = document.getElementById('distribution-box');
         const isPaper1 = state.selectedPaper === 1;
 
         buttons.forEach((btn) => {
@@ -641,17 +642,16 @@
             }
         });
 
+        if (distributionBox) {
+            distributionBox.classList.toggle('hidden', !isPaper1);
+        }
+
         updateDistributionInfo();
     }
 
     function updateDistributionInfo() {
         const el = document.getElementById('distribution-info');
         if (!el) return;
-
-        if (state.selectedPaper !== 1) {
-            el.innerText = 'Pilihan ini hanya aktif untuk Kertas 1.';
-            return;
-        }
 
         el.innerText = getDistributionText(state.selectedQuestionCount);
     }
@@ -906,8 +906,11 @@
                 const div = document.createElement('div');
                 div.className = `bg-white p-8 rounded-[2.5rem] border-2 shadow-sm flex items-start space-x-6 ${ans?.isCorrect ? 'border-emerald-50' : 'border-rose-50'}`;
                 const selectedText = ans?.selected >= 0 ? q.opts[ans.selected] : 'Tiada jawapan';
-                const levelText = q.level ? ` <span class="ml-2 text-[10px] uppercase tracking-widest text-slate-400">(${q.level})</span>` : '';
-                div.innerHTML = `<div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 font-black ${ans?.isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}">${i + 1}</div><div class="space-y-3 pt-1"><p class="font-bold text-slate-800 text-lg leading-tight">${q.q}${levelText}</p><p class="text-sm font-black text-slate-500 uppercase tracking-widest">Pilihan anda: ${selectedText}</p><p class="text-sm font-black ${ans?.isCorrect ? 'text-emerald-600' : 'text-rose-600'} uppercase tracking-widest">Jawapan betul: ${q.opts[q.ans]}</p><div class="p-4 bg-slate-50 rounded-2xl text-xs text-slate-500 italic border border-slate-100 font-medium leading-relaxed shadow-inner"><span class="font-black text-slate-800 uppercase block mb-1">Nota:</span> ${q.exp}</div></div>`;
+                const levelBadge = q.level
+                    ? `<span class="inline-flex items-center px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-500">${q.level}</span>`
+                    : '';
+
+                div.innerHTML = `<div class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 font-black ${ans?.isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'}">${i + 1}</div><div class="space-y-3 pt-1"><div class="flex flex-wrap items-center gap-2"><p class="font-bold text-slate-800 text-lg leading-tight">${q.q}</p>${levelBadge}</div><p class="text-sm font-black text-slate-500 uppercase tracking-widest">Pilihan anda: ${selectedText}</p><p class="text-sm font-black ${ans?.isCorrect ? 'text-emerald-600' : 'text-rose-600'} uppercase tracking-widest">Jawapan betul: ${q.opts[q.ans]}</p><div class="p-4 bg-slate-50 rounded-2xl text-xs text-slate-500 italic border border-slate-100 font-medium leading-relaxed shadow-inner"><span class="font-black text-slate-800 uppercase block mb-1">Nota:</span> ${q.exp}</div></div>`;
                 list.appendChild(div);
             });
         } else {
