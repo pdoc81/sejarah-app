@@ -1,4 +1,6 @@
 const OpenAI = require('openai');
+const fs = require('fs');
+const path = require('path');
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -35,6 +37,73 @@ function getQuestionDistribution(questionCount) {
   return { mudah: 2, sederhana: 5, kbat: 3 };
 }
 
+function loadChapterData(selectedSkop, selectedSesi) {
+  try {
+    if (!selectedSkop || !selectedSesi) return null;
+
+    const filePath = path.join(
+      process.cwd(),
+      'data',
+      'textbooks',
+      `form${selectedSkop}`,
+      `chapter${selectedSesi}.json`
+    );
+
+    if (!fs.existsSync(filePath)) {
+      return null;
+    }
+
+    const raw = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error('Error loading chapter data:', error);
+    return null;
+  }
+}
+
+function buildChapterContext(chapterData) {
+  if (!chapterData) return '';
+
+  const learningPoints = Array.isArray(chapterData.learning_points)
+    ? chapterData.learning_points.map(item => `- ${item}`).join('\n')
+    : '';
+
+  const keyTerms = Array.isArray(chapterData.key_terms)
+    ? chapterData.key_terms.map(item => `- ${item}`).join('\n')
+    : '';
+
+  const keyFacts = Array.isArray(chapterData.key_facts)
+    ? chapterData.key_facts.map(item => `- ${item}`).join('\n')
+    : '';
+
+  const kbatAngles = Array.isArray(chapterData.kbat_angles)
+    ? chapterData.kbat_angles.map(item => `- ${item}`).join('\n')
+    : '';
+
+  return `
+Gunakan kandungan bab sebenar berikut sebagai asas utama pembinaan soalan.
+
+Tingkatan: ${chapterData.form}
+Bab: ${chapterData.chapter}
+Tajuk: ${chapterData.title}
+
+Sinopsis:
+${chapterData.synopsis || ''}
+
+Isi pembelajaran:
+${learningPoints}
+
+Istilah penting:
+${keyTerms}
+
+Fakta penting:
+${keyFacts}
+
+Sudut KBAT:
+${kbatAngles}
+`;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return jsonResponse(200, {});
@@ -52,7 +121,10 @@ exports.handler = async (event) => {
       questions,
       context,
       studentAnswers,
-      questionCount
+      questionCount,
+      quizMode,
+      selectedSkop,
+      selectedSesi
     } = body;
 
     let systemText = '';
@@ -60,6 +132,13 @@ exports.handler = async (event) => {
     let model = 'gpt-5.4-mini';
     const totalQuestions = Number(questionCount) || 10;
     const distribution = getQuestionDistribution(totalQuestions);
+
+    const chapterData =
+      quizMode === 'chapter'
+        ? loadChapterData(selectedSkop, selectedSesi)
+        : null;
+
+    const chapterContext = buildChapterContext(chapterData);
 
     if (mode === 'mcq') {
       model = 'gpt-5.4-nano';
@@ -71,6 +150,8 @@ Campuran aras mestilah:
 - ${distribution.mudah} soalan mudah
 - ${distribution.sederhana} soalan sederhana
 - ${distribution.kbat} soalan KBAT
+
+${chapterContext}
 
 Balas dalam JSON SAHAJA dengan format:
 {
@@ -98,6 +179,7 @@ Peraturan:
 - Soalan mudah = fakta asas / pengetahuan langsung
 - Soalan sederhana = kefahaman / sebab-akibat / aplikasi mudah
 - Soalan KBAT = analisis / perbandingan / inferens / penilaian
+- Jika kandungan bab disediakan, utamakan kandungan itu berbanding pengetahuan umum
 `;
 
       userText = `
@@ -107,6 +189,8 @@ Pastikan agihan tepat:
 - Mudah: ${distribution.mudah}
 - Sederhana: ${distribution.sederhana}
 - KBAT: ${distribution.kbat}
+
+${chapterData ? `Gunakan fokus bab: ${chapterData.title}` : ''}
 `;
     } else if (mode === 'structured') {
       model = 'gpt-5.4-mini';
@@ -114,6 +198,9 @@ Pastikan agihan tepat:
       systemText = `
 Anda ialah guru Sejarah KSSM Malaysia.
 Jana satu set soalan Kertas 2 berstruktur.
+
+${chapterContext}
+
 Balas dalam JSON SAHAJA dengan format:
 {
   "context": "Petikan atau rangsangan ringkas",
@@ -133,6 +220,7 @@ Peraturan:
 - Bahagian (a) lebih asas
 - Bahagian (b) sederhana
 - Bahagian (c) lebih mencabar / berunsur KBAT
+- Jika kandungan bab disediakan, utamakan kandungan itu berbanding pengetahuan umum
 `;
 
       userText = `Jana satu set soalan struktur Sejarah untuk skop: ${scopeLabel}.`;
