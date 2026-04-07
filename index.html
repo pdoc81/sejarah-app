@@ -175,16 +175,18 @@
                     <span class="w-7 h-7 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold text-[10px]">3</span>
                     <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Format</h3>
                 </div>
+
                 <div class="space-y-3">
                     <button onclick="selectPaper(1)" id="btn-paper-1" class="w-full text-left p-5 rounded-3xl border-2 border-slate-50 transition-all active-step">
                         <div class="flex items-center space-x-4">
                             <div class="text-2xl">🗒</div>
                             <div>
                                 <div class="font-black text-slate-800 uppercase text-xs">Kertas 1</div>
-                                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">10 Soalan Objektif</div>
+                                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Objektif</div>
                             </div>
                         </div>
                     </button>
+
                     <button onclick="selectPaper(2)" id="btn-paper-2" class="w-full text-left p-5 rounded-3xl border-2 border-slate-50 transition-all">
                         <div class="flex items-center space-x-4">
                             <div class="text-2xl">✍</div>
@@ -195,6 +197,26 @@
                         </div>
                     </button>
                 </div>
+
+                <div class="pt-4 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-7 h-7 bg-slate-800 text-white rounded-full flex items-center justify-center font-bold text-[10px]">4</span>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Bilangan Soalan</h3>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="selectQuestionCount(5)" id="btn-qcount-5" class="py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-700 font-black text-sm hover:border-rose-300 transition-all">
+                            5
+                        </button>
+                        <button onclick="selectQuestionCount(10)" id="btn-qcount-10" class="py-4 rounded-2xl border-2 active-step text-slate-700 font-black text-sm transition-all">
+                            10
+                        </button>
+                        <button onclick="selectQuestionCount(20)" id="btn-qcount-20" class="py-4 rounded-2xl border-2 border-slate-100 bg-white text-slate-700 font-black text-sm hover:border-rose-300 transition-all">
+                            20
+                        </button>
+                    </div>
+                </div>
+
                 <div class="pt-6">
                     <button id="btn-start" onclick="startLearning()" class="w-full py-5 bg-rose-600 text-white rounded-[2rem] font-black shadow-xl shadow-rose-100 hover:scale-[1.02] active:scale-95 transition-all uppercase tracking-widest text-xs">
                         MULA SEKARANG
@@ -292,8 +314,8 @@
 
                     <div class="space-y-3 text-slate-600 leading-relaxed text-sm">
                         <p>
-                            Aplikasi ini pada asalnya dibangunkan untuk membantu anak saya sendiri yang sedang membuat persediaan menghadapi SPM.
-                            Anak saya memerlukan satu medium pembelajaran yang lebih mudah, tersusun dan mesra pengguna
+                            Aplikasi ini pada asalnya dibangunkan untuk anak saya sendiri yang sedang membuat persediaan menghadapi SPM.
+                            Saya nak anak saya mempunyai satu medium pembelajaran yang lebih mudah, tersusun dan mesra pengguna
                             untuk mengulang kaji matapelajaran, khususnya dalam membuat latih tubi, serta membina keyakinan sebelum peperiksaan.
                         </p>
 
@@ -304,6 +326,13 @@
                         </p>
 
                         <p>
+                            Aplikasi ini juga menggunakan teknologi kecerdasan buatan (AI), bagi membantu memproses menjana soalan bersesuaian,
+                            serta menilai jawapan yang diberikan oleh pelajar. Pendekatan ini membolehkan pembelajaran menjadi lebih interaktif,
+                            responsif dan membantu pelajar memahami kelemahan serta kekuatan mereka dengan lebih baik. Namun begitu,
+                            penggunaan teknologi ini turut melibatkan kos kepada saya untuk mendapatkan suntikan AI.
+                        </p>
+
+                        <p>
                             Atas sebab itu, aplikasi ini terus dibangunkan bukan sekadar untuk kegunaan sendiri, tetapi dengan harapan ia dapat
                             memberi manfaat kepada lebih ramai pelajar yang sedang berjuang menghadapi SPM. Setiap penambahbaikan yang dibuat
                             adalah dengan niat agar aplikasi ini dapat menjadi teman ulang kaji yang benar-benar membantu anak-anak kita belajar
@@ -311,16 +340,9 @@
                         </p>
 
                         <p>
-                            Aplikasi ini juga menggunakan teknologi kecerdasan buatan (AI), bagi membantu memproses menjana soalan bersesuaian,
-                            serta menilai jawapan yang diberikan oleh pelajar. Pendekatan ini membolehkan pembelajaran menjadi lebih interaktif,
-                            responsif dan membantu pelajar memahami kelemahan serta kekuatan mereka dengan lebih baik. Namun begitu,
-                            penggunaan teknologi ini turut melibatkan kos kepada saya bagi menggunakan AI.
-                        </p>
-
-                        <p>
                             Sekiranya tuan/puan merasakan aplikasi ini bermanfaat dan ingin membantu saya menambah baik kandungan,
                             membangunkan ciri-ciri baharu, serta menampung kos operasi termasuk penggunaan AI, tuan/puan bolehlah memberi
-                            sumbangan secara sukarela seikhlas hati. Sumbangan tuan/puan amat bermakna dan akan membantu saya meneruskan
+                            sumbangan secara sukarela seikhlas hati. Sumbangan tuan/puan amat bermakna dan akan membantu kami meneruskan
                             usaha ini demi manfaat lebih ramai pelajar. Insyallah.
                         </p>
                     </div>
@@ -411,6 +433,7 @@
         selectedSkop: null,
         selectedSesi: null,
         selectedPaper: 1,
+        selectedQuestionCount: 10,
         timeLeft: 30,
         timerInterval: null,
         questions: [],
@@ -486,6 +509,7 @@
         state.quizMode = mode;
         state.selectedSkop = null;
         state.selectedSesi = null;
+        state.selectedQuestionCount = 10;
 
         const title = document.getElementById('selector-title');
         if (title) title.innerText = mode === 'chapter' ? 'Latih Tubi Bab' : 'Simulasi Peperiksaan';
@@ -493,6 +517,10 @@
         selectPaper(1);
         renderSkopList();
         showView('selector');
+
+        setTimeout(() => {
+            selectQuestionCount(10);
+        }, 0);
     }
 
     function renderSkopList() {
@@ -552,6 +580,23 @@
         if (p2) p2.classList.toggle('active-step', num === 2);
     }
 
+    function selectQuestionCount(num) {
+        state.selectedQuestionCount = num;
+
+        [5, 10, 20].forEach(n => {
+            const btn = document.getElementById(`btn-qcount-${n}`);
+            if (!btn) return;
+
+            if (n === num) {
+                btn.classList.add('active-step');
+                btn.classList.remove('bg-white', 'border-slate-100');
+            } else {
+                btn.classList.remove('active-step');
+                btn.classList.add('bg-white', 'border-slate-100');
+            }
+        });
+    }
+
     async function startLearning() {
         if (!state.selectedSkop || !state.selectedSesi) {
             return alert('Sila lengkapkan pilihan.');
@@ -569,10 +614,11 @@
                     scopeLabel,
                     quizMode: state.quizMode,
                     selectedSkop: state.selectedSkop,
-                    selectedSesi: state.selectedSesi
+                    selectedSesi: state.selectedSesi,
+                    questionCount: state.selectedQuestionCount
                 });
 
-                state.questions = (data.questions || []).slice(0, 10);
+                state.questions = (data.questions || []).slice(0, state.selectedQuestionCount);
                 state.currentIndex = 0;
                 state.score = 0;
                 state.answers = [];
@@ -585,7 +631,8 @@
                     scopeLabel,
                     quizMode: state.quizMode,
                     selectedSkop: state.selectedSkop,
-                    selectedSesi: state.selectedSesi
+                    selectedSesi: state.selectedSesi,
+                    questionCount: state.selectedQuestionCount
                 });
 
                 state.p2Data = data;
