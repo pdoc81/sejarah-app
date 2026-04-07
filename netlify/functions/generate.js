@@ -55,6 +55,7 @@ function readJsonFile(filePath) {
       console.log('JSON file not found:', filePath);
       return null;
     }
+
     const raw = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(raw);
   } catch (error) {
@@ -64,69 +65,67 @@ function readJsonFile(filePath) {
 }
 
 function loadChapterData(selectedSkop, selectedSesi) {
-  try {
-    if (!selectedSkop || !selectedSesi) return null;
+  if (!selectedSkop || !selectedSesi) return null;
 
-    const filePath = path.join(
-      process.cwd(),
-      'data',
-      'textbooks',
-      `form${selectedSkop}`,
-      `chapter${selectedSesi}.json`
-    );
+  const filePath = path.join(
+    process.cwd(),
+    'data',
+    'textbooks',
+    `form${selectedSkop}`,
+    `chapter${selectedSesi}.json`
+  );
 
-    console.log('Trying chapter file:', filePath);
-    return readJsonFile(filePath);
-  } catch (error) {
-    console.error('Error loading chapter data:', error);
-    return null;
+  const parsed = readJsonFile(filePath);
+
+  if (parsed) {
+    console.log('Chapter file loaded:', {
+      form: parsed.form,
+      chapter: parsed.chapter,
+      title: parsed.title
+    });
   }
+
+  return parsed;
 }
 
 function loadExamPattern(mode) {
-  try {
-    const fileName =
-      mode === 'mcq'
-        ? 'kertas1_patterns.json'
-        : mode === 'structured'
-          ? 'kertas2_patterns.json'
-          : null;
+  const fileName =
+    mode === 'mcq'
+      ? 'kertas1_patterns.json'
+      : mode === 'structured'
+        ? 'kertas2_patterns.json'
+        : null;
 
-    if (!fileName) return null;
+  if (!fileName) return null;
 
-    const filePath = path.join(
-      process.cwd(),
-      'data',
-      'exams',
-      'form45',
-      fileName
-    );
+  const filePath = path.join(
+    process.cwd(),
+    'data',
+    'exams',
+    'form45',
+    fileName
+  );
 
-    console.log('Trying exam pattern file:', filePath);
-    return readJsonFile(filePath);
-  } catch (error) {
-    console.error('Error loading exam pattern:', error);
-    return null;
+  const parsed = readJsonFile(filePath);
+
+  if (parsed) {
+    console.log('Exam pattern loaded:', {
+      paper: parsed.paper,
+      source: parsed.source,
+      exam_type: parsed.exam_type
+    });
   }
+
+  return parsed;
 }
 
 function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
   if (chapterData) {
-    const focusLimit = mode === 'mcq'
-      ? Math.min(5, Math.max(3, Math.ceil(totalQuestions / 3)))
-      : 4;
-
-    const angleLimit = mode === 'mcq'
-      ? Math.min(6, Math.max(4, Math.ceil(totalQuestions / 2)))
-      : 4;
-
-    const kbatLimit = mode === 'mcq' ? 3 : 2;
-
     return {
       sourceType: 'chapter',
-      focusMix: pickItems(chapterData.focus_areas || [], focusLimit),
-      questionAngles: pickItems(chapterData.possible_question_angles || [], angleLimit),
-      kbatMix: pickItems(chapterData.kbat_angles || [], kbatLimit)
+      focusMix: pickItems(chapterData.focus_areas || [], mode === 'mcq' ? 5 : 4),
+      questionAngles: pickItems(chapterData.possible_question_angles || [], mode === 'mcq' ? 6 : 4),
+      kbatMix: pickItems(chapterData.kbat_angles || [], mode === 'mcq' ? 3 : 2)
     };
   }
 
@@ -134,34 +133,27 @@ function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
     if (mode === 'mcq') {
       return {
         sourceType: 'exam',
-        questionStyles: pickItems(examPattern.question_styles || [], 6),
-        stemPatterns: pickItems(examPattern.common_stem_patterns || [], 5),
-        distractorPatterns: pickItems(examPattern.distractor_patterns || [], 4),
-        kbatPatterns: pickItems(
-          examPattern.difficulty_profile?.kbat || examPattern.kbat_patterns || [],
-          4
-        ),
+        questionStyles: pickItems(examPattern.question_styles || [], 5),
+        stemPatterns: pickItems(examPattern.common_stem_patterns || [], 4),
+        distractorPatterns: pickItems(examPattern.distractor_patterns || [], 3),
+        kbatPatterns: pickItems(examPattern.difficulty_profile?.kbat || [], 3),
         topicMix: pickItems(
           [
             ...(examPattern.topic_patterns?.form4 || []),
             ...(examPattern.topic_patterns?.form5 || [])
           ],
-          Math.min(8, Math.max(4, Math.ceil(totalQuestions / 3)))
+          Math.min(6, Math.max(4, Math.ceil(totalQuestions / 2)))
         )
       };
     }
 
-    if (mode === 'structured') {
-      return {
-        sourceType: 'exam',
-        stimulusMix: pickItems(examPattern.stimulus_types || [], 3),
-        commandMix: pickItems(examPattern.common_command_words || [], 5),
-        sectionAPatterns: examPattern.section_a_patterns || [],
-        sectionBPatterns: examPattern.section_b_patterns || [],
-        kbatPromptMix: pickItems(examPattern.kbat_prompt_patterns || [], 3),
-        topicMix: pickItems(examPattern.topic_coverage_examples || [], 4)
-      };
-    }
+    return {
+      sourceType: 'exam',
+      stimulusMix: pickItems(examPattern.stimulus_types || [], 3),
+      commandMix: pickItems(examPattern.common_command_words || [], 5),
+      kbatPromptMix: pickItems(examPattern.kbat_prompt_patterns || [], 3),
+      topicMix: pickItems(examPattern.topic_coverage_examples || [], 4)
+    };
   }
 
   return { sourceType: 'none' };
@@ -211,7 +203,62 @@ ${listToBulletText(variationPlan?.kbatMix || [])}
 `;
 }
 
-function buildExamContext(examPattern, variationPlan, mode) {
+function getExamBatchPlan(examBatchLabel) {
+  const plans = {
+    form4_a: {
+      label: 'Form 4 A',
+      form: 4,
+      chapters: [1, 2, 3, 4, 5],
+      topics: [
+        'warisan negara bangsa',
+        'nasionalisme',
+        'konflik dunia dan pendudukan Jepun',
+        'era peralihan kuasa British',
+        'Persekutuan Tanah Melayu 1948'
+      ]
+    },
+    form4_b: {
+      label: 'Form 4 B',
+      form: 4,
+      chapters: [6, 7, 8, 9, 10],
+      topics: [
+        'darurat',
+        'usaha ke arah kemerdekaan',
+        'pilihan raya',
+        'Perlembagaan Persekutuan Tanah Melayu 1957',
+        'pemasyhuran kemerdekaan'
+      ]
+    },
+    form5_a: {
+      label: 'Form 5 A',
+      form: 5,
+      chapters: [1, 2, 3, 4, 5],
+      topics: [
+        'kedaulatan negara',
+        'Perlembagaan Persekutuan',
+        'Raja Berperlembagaan dan Demokrasi Berparlimen',
+        'sistem Persekutuan',
+        'pembentukan Malaysia'
+      ]
+    },
+    form5_b: {
+      label: 'Form 5 B',
+      form: 5,
+      chapters: [6, 7, 8, 9, 10],
+      topics: [
+        'cabaran selepas pembentukan Malaysia',
+        'membina kesejahteraan negara',
+        'membina kemakmuran negara',
+        'dasar luar Malaysia',
+        'kecemerlangan Malaysia di persada dunia'
+      ]
+    }
+  };
+
+  return plans[examBatchLabel] || null;
+}
+
+function buildExamContext(examPattern, variationPlan, mode, examBatchPlan = null) {
   if (!examPattern) return '';
 
   if (mode === 'mcq') {
@@ -233,17 +280,26 @@ ${listToBulletText(examPattern.common_stem_patterns)}
 Corak distractor:
 ${listToBulletText(examPattern.distractor_patterns)}
 
-Topik campuran:
-${listToBulletText([
-  ...(examPattern.topic_patterns?.form4 || []),
-  ...(examPattern.topic_patterns?.form5 || [])
-])}
+Topik Tingkatan 4:
+${listToBulletText(examPattern.topic_patterns?.form4 || [])}
+
+Topik Tingkatan 5:
+${listToBulletText(examPattern.topic_patterns?.form5 || [])}
 
 Pelan variasi set ini:
 - Gaya: ${variationPlan?.questionStyles?.join(', ') || '-'}
 - Stem: ${variationPlan?.stemPatterns?.join(', ') || '-'}
 - KBAT: ${variationPlan?.kbatPatterns?.join(', ') || '-'}
 - Topik: ${variationPlan?.topicMix?.join(', ') || '-'}
+
+${examBatchPlan ? `
+=== FOKUS BATCH INI ===
+Label batch: ${examBatchPlan.label}
+Tingkatan fokus: ${examBatchPlan.form}
+Bab fokus: ${examBatchPlan.chapters.join(', ')}
+Topik fokus: ${examBatchPlan.topics.join(', ')}
+=== AKHIR FOKUS BATCH ===
+` : ''}
 === AKHIR POLA ===
 `;
   }
@@ -278,9 +334,7 @@ function normalizeMcqQuestions(questions) {
     const originalOptions = [...q.opts];
     const correctAnswerText = originalOptions[q.ans];
     const shuffledOptions = shuffleArray(originalOptions);
-    const newAnswerIndex = shuffledOptions.findIndex(
-      (opt) => opt === correctAnswerText
-    );
+    const newAnswerIndex = shuffledOptions.findIndex(opt => opt === correctAnswerText);
 
     return {
       ...q,
@@ -331,7 +385,7 @@ function dedupeMcqQuestions(questions) {
   });
 }
 
-async function requestModelJson({ model, systemText, userText, maxOutputTokens = 3200 }) {
+async function requestModelJson({ model, systemText, userText, maxOutputTokens = 2200 }) {
   const response = await client.responses.create({
     model,
     input: [
@@ -364,152 +418,16 @@ async function requestModelJson({ model, systemText, userText, maxOutputTokens =
   return JSON.parse(outputText);
 }
 
-async function generateExactMcqSet({
+function buildChapterMcqPrompts({
   totalQuestions,
-  model,
-  baseSystemText,
-  baseUserText
+  distribution,
+  chapterData,
+  chapterContext,
+  scopeLabel,
+  selectedSkop,
+  selectedSesi
 }) {
-  let allQuestions = [];
-  let attempts = 0;
-
-  while (allQuestions.length < totalQuestions && attempts < 3) {
-    attempts += 1;
-    const remaining = totalQuestions - allQuestions.length;
-
-    const systemText = `${baseSystemText}
-
-Anda WAJIB pulangkan TEPAT ${remaining} soalan untuk pusingan ini.
-Jangan pulangkan kurang daripada ${remaining}.
-Jangan ulang soalan yang sudah dihasilkan sebelum ini.`;
-
-    const alreadyUsed = allQuestions.map(q => `- ${q.q}`).join('\n') || '- Tiada';
-
-    const userText = `${baseUserText}
-
-Bilangan soalan yang masih diperlukan: ${remaining}
-
-Soalan yang telah digunakan dan DILARANG diulang:
-${alreadyUsed}`;
-
-    const parsed = await requestModelJson({
-      model,
-      systemText,
-      userText,
-      maxOutputTokens: remaining >= 20 ? 5200 : 2600
-    });
-
-    const cleaned = sanitizeMcqQuestions(parsed.questions || [], remaining);
-    allQuestions = dedupeMcqQuestions([...allQuestions, ...cleaned]);
-  }
-
-  return allQuestions.slice(0, totalQuestions);
-}
-
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') {
-    return jsonResponse(200, {});
-  }
-
-  if (event.httpMethod !== 'POST') {
-    return jsonResponse(405, { error: 'Method tidak dibenarkan.' });
-  }
-
-  try {
-    const body = JSON.parse(event.body || '{}');
-    const {
-      mode,
-      scopeLabel,
-      questions,
-      context,
-      studentAnswers,
-      questionCount,
-      quizMode,
-      selectedSkop,
-      selectedSesi
-    } = body;
-
-    let systemText = '';
-    let userText = '';
-    let model = 'gpt-5.4-mini';
-
-    const totalQuestions = Number(questionCount) || 10;
-    const distribution = getQuestionDistribution(totalQuestions);
-
-    const isChapterMode = quizMode === 'chapter';
-    const isExamMode = quizMode === 'exam';
-
-    const chapterData = isChapterMode
-      ? loadChapterData(selectedSkop, selectedSesi)
-      : null;
-
-    const examPattern = isExamMode
-      ? loadExamPattern(mode)
-      : null;
-
-    const variationPlan = buildVariationPlan(chapterData, examPattern, mode, totalQuestions);
-    const chapterContext = buildChapterContext(chapterData, variationPlan);
-    const examContext = buildExamContext(examPattern, variationPlan, mode);
-
-    if (mode === 'mcq') {
-      model = isExamMode ? 'gpt-5.4-mini' : 'gpt-5.4-nano';
-
-      if (isExamMode) {
-        systemText = `
-Anda ialah guru Sejarah KSSM Malaysia yang membina set soalan gaya percubaan SPM.
-Tugas anda ialah menjana soalan objektif gaya trial sebenar berdasarkan pola peperiksaan yang diberi.
-
-JANGAN keluar daripada skop Sejarah SPM Tingkatan 4 dan Tingkatan 5.
-JANGAN jadikan semua soalan definisi semata-mata.
-JANGAN ulang stem yang sama terlalu banyak.
-JANGAN pulangkan kurang daripada bilangan yang diminta.
-
-${examContext}
-
-Balas dalam JSON SAHAJA dengan format:
-{
-  "questions": [
-    {
-      "q": "Soalan",
-      "opts": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
-      "ans": 0,
-      "exp": "Penjelasan ringkas",
-      "level": "mudah",
-      "form": 4,
-      "chapter": 1
-    }
-  ]
-}
-
-Peraturan:
-- Bahasa Melayu
-- gaya trial SPM Sejarah
-- campurkan Tingkatan 4 dan 5
-- pilihan jawapan mesti 4
-- ans ialah 0 hingga 3
-- level mesti mudah / sederhana / kbat
-- jika boleh, nyatakan form dan chapter
-- soalan mesti pelbagai dan tidak berulang
-`;
-        userText = `
-Mod dipilih:
-Percubaan SPM Sejarah Kertas 1
-
-Skop:
-${scopeLabel || 'Gabungan Tingkatan 4 dan Tingkatan 5'}
-
-Set penuh:
-- 40 soalan
-- Tingkatan 4 dan 5
-- gaya trial sebenar
-
-Agihan aras:
-- Mudah: ${distribution.mudah}
-- Sederhana: ${distribution.sederhana}
-- KBAT: ${distribution.kbat}
-`;
-      } else {
-        systemText = `
+  const systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang sangat ketat terhadap skop bab.
 Tugas anda ialah menjana soalan HANYA daripada kandungan bab yang diberi.
 JANGAN campurkan fakta daripada bab lain.
@@ -536,8 +454,10 @@ Peraturan:
 - ans ialah 0 hingga 3
 - level mesti mudah / sederhana / kbat
 - jangan ulang pola soalan yang sama
+- pulangkan TEPAT ${totalQuestions} soalan
 `;
-        userText = `
+
+  const userText = `
 Skop dipilih pengguna:
 ${scopeLabel}
 
@@ -555,19 +475,152 @@ Agihan wajib:
 - Sederhana: ${distribution.sederhana}
 - KBAT: ${distribution.kbat}
 `;
-      }
 
-      const finalQuestions = await generateExactMcqSet({
-        totalQuestions,
+  return { systemText, userText };
+}
+
+function buildExamMcqPrompts({
+  totalQuestions,
+  distribution,
+  scopeLabel,
+  examContext
+}) {
+  const systemText = `
+Anda ialah guru Sejarah KSSM Malaysia yang membina set soalan gaya percubaan SPM.
+Tugas anda ialah menjana soalan objektif gaya trial sebenar berdasarkan pola peperiksaan yang diberi.
+
+JANGAN keluar daripada skop Sejarah SPM Tingkatan 4 dan Tingkatan 5.
+JANGAN jadikan semua soalan definisi semata-mata.
+JANGAN ulang stem yang sama terlalu banyak.
+
+${examContext}
+
+Balas dalam JSON SAHAJA dengan format:
+{
+  "questions": [
+    {
+      "q": "Soalan",
+      "opts": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
+      "ans": 0,
+      "exp": "Penjelasan ringkas",
+      "level": "mudah",
+      "form": 4,
+      "chapter": 1
+    }
+  ]
+}
+
+Peraturan:
+- Bahasa Melayu
+- gaya trial SPM Sejarah
+- pulangkan TEPAT ${totalQuestions} soalan
+- pilihan jawapan mesti 4
+- ans ialah 0 hingga 3
+- level mesti mudah / sederhana / kbat
+- jika boleh, nyatakan form dan chapter
+- soalan mesti pelbagai dan tidak berulang
+`;
+
+  const userText = `
+Mod dipilih:
+Percubaan SPM Sejarah Kertas 1
+
+Skop:
+${scopeLabel || 'Gabungan Tingkatan 4 dan Tingkatan 5'}
+
+Bilangan soalan:
+${totalQuestions}
+
+Agihan aras:
+- Mudah: ${distribution.mudah}
+- Sederhana: ${distribution.sederhana}
+- KBAT: ${distribution.kbat}
+`;
+
+  return { systemText, userText };
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return jsonResponse(200, {});
+  }
+
+  if (event.httpMethod !== 'POST') {
+    return jsonResponse(405, { error: 'Method tidak dibenarkan.' });
+  }
+
+  try {
+    const body = JSON.parse(event.body || '{}');
+    const {
+      mode,
+      scopeLabel,
+      questions,
+      context,
+      studentAnswers,
+      questionCount,
+      quizMode,
+      selectedSkop,
+      selectedSesi,
+      examBatchLabel
+    } = body;
+
+    const totalQuestions = Number(questionCount) || 10;
+    const distribution = getQuestionDistribution(totalQuestions);
+
+    const isChapterMode = quizMode === 'chapter';
+    const isExamMode = quizMode === 'exam';
+
+    const chapterData = isChapterMode
+      ? loadChapterData(selectedSkop, selectedSesi)
+      : null;
+
+    const examPattern = isExamMode
+      ? loadExamPattern(mode)
+      : null;
+
+    const examBatchPlan = isExamMode && mode === 'mcq'
+      ? getExamBatchPlan(examBatchLabel)
+      : null;
+
+    const variationPlan = buildVariationPlan(chapterData, examPattern, mode, totalQuestions);
+    const chapterContext = buildChapterContext(chapterData, variationPlan);
+    const examContext = buildExamContext(examPattern, variationPlan, mode, examBatchPlan);
+
+    if (mode === 'mcq') {
+      const model = isExamMode ? 'gpt-5.4-mini' : 'gpt-5.4-nano';
+
+      const { systemText, userText } = isExamMode
+        ? buildExamMcqPrompts({
+            totalQuestions,
+            distribution,
+            scopeLabel,
+            examContext
+          })
+        : buildChapterMcqPrompts({
+            totalQuestions,
+            distribution,
+            chapterData,
+            chapterContext,
+            scopeLabel,
+            selectedSkop,
+            selectedSesi
+          });
+
+      const parsed = await requestModelJson({
         model,
-        baseSystemText: systemText,
-        baseUserText: userText
+        systemText,
+        userText,
+        maxOutputTokens: isExamMode ? 2400 : 1800
       });
 
-      const normalized = normalizeMcqQuestions(finalQuestions);
+      const finalQuestions = normalizeMcqQuestions(
+        dedupeMcqQuestions(
+          sanitizeMcqQuestions(parsed.questions || [], totalQuestions)
+        )
+      );
 
       return jsonResponse(200, {
-        questions: normalized,
+        questions: finalQuestions,
         debug_source: chapterData
           ? {
               type: 'chapter',
@@ -583,12 +636,15 @@ Agihan wajib:
                 exam_type: examPattern.exam_type
               }
             : null,
-        debug_variation_plan: variationPlan || null
+        debug_variation_plan: variationPlan || null,
+        debug_exam_batch: examBatchPlan || null
       });
     }
 
     if (mode === 'structured') {
-      model = 'gpt-5.4-mini';
+      const model = 'gpt-5.4-mini';
+      let systemText = '';
+      let userText = '';
 
       if (isExamMode) {
         systemText = `
@@ -598,9 +654,9 @@ Tugas anda:
 - jana SATU set sahaja
 - ringkas dan tepat
 - jangan terlalu panjang
-- jangan beri penerangan tambahan di luar JSON
-- elakkan konteks terlalu panjang
+- context maksimum 60 patah perkataan
 - hasilkan hanya 3 subsoalan: a, b, c
+- jawapan model padat
 
 ${examContext}
 
@@ -613,27 +669,15 @@ Balas dalam JSON SAHAJA dengan format:
     { "id": "c", "q": "Soalan", "marks": 4, "model": "Jawapan contoh ringkas" }
   ]
 }
-
-Peraturan:
-- Bahasa Melayu
-- gaya trial SPM
-- context maksimum 90 patah perkataan
-- jawapan model padat
-- bahagian a asas
-- bahagian b huraian
-- bahagian c KBAT / ulasan
 `;
         userText = `
 Mod dipilih:
 Percubaan SPM Sejarah Kertas 2
 
-Skop:
-${scopeLabel || 'Gabungan Tingkatan 4 dan Tingkatan 5'}
-
-Jana satu set ringkas dan berkualiti:
-- 1 konteks
-- 3 bahagian: a, b, c
-- format sesuai untuk calon SPM
+Jana satu set ringkas:
+- 1 konteks pendek
+- 3 subsoalan sahaja
+- sesuai untuk calon SPM
 `;
       } else {
         systemText = `
@@ -651,24 +695,10 @@ Balas dalam JSON SAHAJA dengan format:
     { "id": "c", "q": "Soalan", "marks": 4, "model": "Jawapan contoh" }
   ]
 }
-
-Peraturan:
-- Bahasa Melayu
-- hanya skop bab
-- context ringkas
-- jawapan model padat
 `;
         userText = `
 Skop dipilih pengguna:
 ${scopeLabel}
-
-Tingkatan dipilih:
-${selectedSkop}
-
-Bab dipilih:
-${selectedSesi}
-
-${chapterData ? `Tajuk bab sebenar: ${chapterData.title}` : 'TIADA DATA BAB DIJUMPAI'}
 
 Jana satu set soalan struktur.
 `;
@@ -678,7 +708,7 @@ Jana satu set soalan struktur.
         model,
         systemText,
         userText,
-        maxOutputTokens: 1200
+        maxOutputTokens: 900
       });
 
       return jsonResponse(200, {
@@ -703,10 +733,8 @@ Jana satu set soalan struktur.
     }
 
     if (mode === 'mark-structured') {
-      model = 'gpt-5.4-mini';
-
       const parsed = await requestModelJson({
-        model,
+        model: 'gpt-5.4-mini',
         systemText: `
 Anda ialah pemeriksa Sejarah KSSM Malaysia.
 Semak jawapan murid dengan adil.
@@ -729,7 +757,7 @@ ${JSON.stringify(questions || [])}
 Jawapan murid:
 ${JSON.stringify(studentAnswers || {})}
 `,
-        maxOutputTokens: 1400
+        maxOutputTokens: 1000
       });
 
       return jsonResponse(200, parsed);
@@ -756,16 +784,16 @@ ${JSON.stringify(studentAnswers || {})}
     } else if (errorStatus === 404) {
       userMessage = 'Model AI tidak dijumpai.';
     } else if (
+      String(apiMessage).toLowerCase().includes('timeout') ||
+      String(apiMessage).toLowerCase().includes('inactivity timeout')
+    ) {
+      userMessage = 'Permintaan mengambil masa terlalu lama. Cuba jana semula set itu.';
+    } else if (
       String(apiMessage).toLowerCase().includes('mismatched source ip') ||
       String(apiMessage).toLowerCase().includes('mismatched client ip') ||
       String(errorCode).toLowerCase().includes('mismatched_client_ip')
     ) {
       userMessage = 'Ralat sambungan rangkaian dikesan (mismatched source IP). Cuba matikan VPN/Private Relay dan mulakan semula netlify dev.';
-    } else if (
-      String(apiMessage).toLowerCase().includes('timeout') ||
-      String(apiMessage).toLowerCase().includes('inactivity timeout')
-    ) {
-      userMessage = 'Permintaan mengambil masa terlalu lama. Cuba jana semula set itu.';
     } else if (apiMessage) {
       userMessage = apiMessage;
     }
