@@ -537,6 +537,7 @@
 
         setTimeout(() => {
             selectQuestionCount(10);
+            updateQuestionCountAvailability();
         }, 0);
     }
 
@@ -593,11 +594,16 @@
         state.selectedPaper = num;
         const p1 = document.getElementById('btn-paper-1');
         const p2 = document.getElementById('btn-paper-2');
+
         if (p1) p1.classList.toggle('active-step', num === 1);
         if (p2) p2.classList.toggle('active-step', num === 2);
+
+        updateQuestionCountAvailability();
     }
 
     function selectQuestionCount(num) {
+        if (state.selectedPaper !== 1) return;
+
         state.selectedQuestionCount = num;
 
         [5, 10, 20].forEach(n => {
@@ -616,9 +622,38 @@
         updateDistributionInfo();
     }
 
+    function updateQuestionCountAvailability() {
+        const buttons = [5, 10, 20].map(n => document.getElementById(`btn-qcount-${n}`));
+        const isPaper1 = state.selectedPaper === 1;
+
+        buttons.forEach((btn) => {
+            if (!btn) return;
+
+            if (isPaper1) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-40', 'cursor-not-allowed', 'bg-slate-100', 'text-slate-400');
+                btn.classList.add('cursor-pointer');
+            } else {
+                btn.disabled = true;
+                btn.classList.remove('active-step');
+                btn.classList.add('opacity-40', 'cursor-not-allowed', 'bg-slate-100', 'text-slate-400');
+                btn.classList.remove('cursor-pointer');
+            }
+        });
+
+        updateDistributionInfo();
+    }
+
     function updateDistributionInfo() {
         const el = document.getElementById('distribution-info');
-        if (el) el.innerText = getDistributionText(state.selectedQuestionCount);
+        if (!el) return;
+
+        if (state.selectedPaper !== 1) {
+            el.innerText = 'Pilihan ini hanya aktif untuk Kertas 1.';
+            return;
+        }
+
+        el.innerText = getDistributionText(state.selectedQuestionCount);
     }
 
     async function startLearning() {
