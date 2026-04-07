@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
-    .glass { background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); }
+    .glass { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); }
     .tab-btn.active, .seg-btn.active, .count-btn.active, .paper-btn.active {
       background: #dc2626; color: white; border-color: #dc2626;
       box-shadow: 0 8px 20px rgba(220, 38, 38, 0.18);
@@ -26,16 +26,29 @@
     .disabled-soft { opacity: 0.45; pointer-events: none; filter: grayscale(0.15); }
     .option-btn.selected {
       background: #fef2f2; border-color: #dc2626; color: #991b1b;
-      box-shadow: 0 0 0 2px rgba(252, 165, 165, 0.45);
+      box-shadow: 0 0 0 2px rgba(252, 165, 165, 0.35);
     }
     .option-btn.dimmed { background: #f8fafc; border-color: #e2e8f0; color: #94a3b8; }
     .option-btn.correct { background: #dcfce7 !important; border-color: #16a34a !important; color: #166534 !important; }
     .option-btn.wrong { background: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b !important; }
     .option-btn.reveal-correct { background: #dbeafe !important; border-color: #2563eb !important; color: #1d4ed8 !important; }
     .fade-in { animation: fadeIn 0.25s ease; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .soft-shadow { box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06); }
+    .panel-title { letter-spacing: -0.02em; }
+    .badge-soft {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .review-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
     }
     .chart-wrap {
       position: relative;
@@ -47,16 +60,27 @@
       width: 100%;
       height: 280px;
     }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media print {
+      body {
+        background: white !important;
+      }
+    }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
   <div class="max-w-7xl mx-auto px-4 py-6">
-    <header class="glass rounded-3xl border border-slate-200 shadow-sm px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <header class="glass rounded-3xl border border-slate-200 soft-shadow px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-bold text-xl shadow">H</div>
+        <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-bold text-xl shadow">
+          H
+        </div>
         <div>
           <p class="text-xs font-bold tracking-[0.24em] text-red-500 uppercase">Sejarah Bersama</p>
-          <h1 class="text-2xl md:text-3xl font-black tracking-tight">Cikgu Habibah</h1>
+          <h1 class="text-2xl md:text-3xl font-black tracking-tight panel-title">Cikgu Habibah</h1>
           <p class="text-sm text-slate-500">Latih tubi Sejarah KSSM dengan sokongan AI</p>
         </div>
       </div>
@@ -68,17 +92,17 @@
     </header>
 
     <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
-      <button class="tab-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="latihan">Latihan</button>
-      <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="progres">Progres Semasa</button>
-      <button class="tab-btn help-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="bantuan">Bantuan</button>
-      <button class="tab-btn donation-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="sumbangan">Sumbangan</button>
+      <button class="tab-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold soft-shadow transition" data-tab="latihan">Latihan</button>
+      <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold soft-shadow transition" data-tab="progres">Progres Semasa</button>
+      <button class="tab-btn help-tab rounded-2xl border px-4 py-3 text-sm font-semibold soft-shadow transition" data-tab="bantuan">Bantuan</button>
+      <button class="tab-btn donation-tab rounded-2xl border px-4 py-3 text-sm font-semibold soft-shadow transition" data-tab="sumbangan">Sumbangan</button>
     </div>
 
     <section id="tab-latihan" class="tab-panel mt-6">
       <div class="grid lg:grid-cols-[390px,1fr] gap-6">
-        <aside class="glass rounded-3xl border border-slate-200 shadow-sm p-5 h-fit">
+        <aside class="glass rounded-3xl border border-slate-200 soft-shadow p-5 h-fit">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-bold">Tetapan Latihan</h2>
+            <h2 class="text-xl font-bold panel-title">Tetapan Latihan</h2>
             <span id="statusBadge" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Sedia</span>
           </div>
 
@@ -158,10 +182,10 @@
         </aside>
 
         <main class="space-y-6">
-          <section class="glass rounded-3xl border border-slate-200 shadow-sm p-5">
+          <section class="glass rounded-3xl border border-slate-200 soft-shadow p-5">
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div>
-                <h2 class="text-2xl font-bold">Ruang Latihan</h2>
+                <h2 class="text-2xl font-bold panel-title">Ruang Latihan</h2>
                 <p id="resultSubtitle" class="text-sm text-slate-500 mt-1">Pilih mod, kertas dan skop sebelum menjana soalan.</p>
               </div>
               <div class="flex flex-wrap gap-2 items-center">
@@ -175,7 +199,7 @@
             </div>
           </section>
 
-          <section id="loadingBox" class="hidden glass rounded-3xl border border-slate-200 shadow-sm p-6">
+          <section id="loadingBox" class="hidden glass rounded-3xl border border-slate-200 soft-shadow p-6">
             <div class="flex items-center gap-3">
               <div class="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
               <p class="font-semibold">AI sedang menjana soalan...</p>
@@ -188,18 +212,18 @@
             <p id="errorText" class="text-red-700 mt-1 text-sm"></p>
           </section>
 
-          <section id="welcomeBox" class="glass rounded-3xl border border-slate-200 shadow-sm p-8">
-            <h3 class="text-2xl font-black mb-3">Mulakan sesi ulang kaji</h3>
+          <section id="welcomeBox" class="glass rounded-3xl border border-slate-200 soft-shadow p-8">
+            <h3 class="text-2xl font-black mb-3 panel-title">Mulakan sesi ulang kaji</h3>
             <p class="text-slate-600 leading-7">
               Gunakan <span class="font-semibold">Latih Tubi Bab</span> untuk fokus kepada sesuatu bab tertentu,
               atau pilih <span class="font-semibold">Mod Percubaan SPM</span> untuk jana set yang lebih mirip gaya peperiksaan sebenar.
             </p>
           </section>
 
-          <section id="mcqBox" class="hidden glass rounded-3xl border border-slate-200 shadow-sm p-5 fade-in">
+          <section id="mcqBox" class="hidden glass rounded-3xl border border-slate-200 soft-shadow p-5 fade-in">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
               <div>
-                <h3 class="text-xl font-bold">Kertas 1</h3>
+                <h3 class="text-xl font-bold panel-title">Kertas 1</h3>
                 <p id="mcqMeta" class="text-sm text-slate-500"></p>
               </div>
               <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3">
@@ -214,11 +238,28 @@
               <button id="submitMcqBtn" class="rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold px-5 py-3 transition">Semak Jawapan</button>
               <button id="retryMcqBtn" class="hidden rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-5 py-3 transition">Cuba Set Baharu</button>
             </div>
+
+            <div id="mcqReviewActions" class="hidden mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                  <p class="text-sm font-bold text-slate-800">Review Keputusan</p>
+                  <p class="text-sm text-slate-500">Cetak atau eksport review selepas semakan jawapan.</p>
+                </div>
+                <div class="review-actions">
+                  <button id="printMcqReviewBtn" class="rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2 transition">
+                    Cetak Review
+                  </button>
+                  <button id="exportMcqReviewBtn" class="rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-4 py-2 transition">
+                    Eksport Review
+                  </button>
+                </div>
+              </div>
+            </div>
           </section>
 
-          <section id="structuredBox" class="hidden glass rounded-3xl border border-slate-200 shadow-sm p-5 fade-in">
+          <section id="structuredBox" class="hidden glass rounded-3xl border border-slate-200 soft-shadow p-5 fade-in">
             <div class="mb-5">
-              <h3 class="text-xl font-bold">Kertas 2</h3>
+              <h3 class="text-xl font-bold panel-title">Kertas 2</h3>
               <p id="structuredMeta" class="text-sm text-slate-500 mt-1"></p>
             </div>
 
@@ -234,6 +275,23 @@
               <p id="structuredTotal" class="mt-1 text-blue-800 font-semibold"></p>
               <div id="structuredFeedbackList" class="mt-4 space-y-3"></div>
             </div>
+
+            <div id="structuredReviewActions" class="hidden mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                  <p class="text-sm font-bold text-slate-800">Review Keputusan</p>
+                  <p class="text-sm text-slate-500">Cetak atau eksport review selepas semakan jawapan.</p>
+                </div>
+                <div class="review-actions">
+                  <button id="printStructuredReviewBtn" class="rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2 transition">
+                    Cetak Review
+                  </button>
+                  <button id="exportStructuredReviewBtn" class="rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-4 py-2 transition">
+                    Eksport Review
+                  </button>
+                </div>
+              </div>
+            </div>
           </section>
         </main>
       </div>
@@ -241,10 +299,10 @@
 
     <section id="tab-progres" class="tab-panel hidden mt-6">
       <div class="space-y-6">
-        <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
+        <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <h2 class="text-2xl font-bold">Progres Semasa</h2>
+              <h2 class="text-2xl font-bold panel-title">Progres Semasa</h2>
               <p class="mt-1 text-slate-500 text-sm">Prestasi ini disimpan dalam pelayar peranti semasa.</p>
             </div>
             <button id="clearProgressBtn" class="rounded-2xl border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50">
@@ -253,10 +311,10 @@
           </div>
         </div>
 
-        <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
+        <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <h3 class="text-xl font-bold">Penapis</h3>
+              <h3 class="text-xl font-bold panel-title">Penapis</h3>
               <p class="text-sm text-slate-500 mt-1">Tapis paparan graf dan statistik mengikut pilihan di bawah.</p>
             </div>
           </div>
@@ -301,28 +359,28 @@
         </div>
 
         <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-5">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-5">
             <p class="text-sm text-slate-500">Jumlah Sesi</p>
             <p id="progressTotalSessions" class="mt-2 text-3xl font-black">0</p>
           </div>
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-5">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-5">
             <p class="text-sm text-slate-500">Purata Markah</p>
             <p id="progressAverage" class="mt-2 text-3xl font-black">0%</p>
           </div>
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-5">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-5">
             <p class="text-sm text-slate-500">Latihan Terakhir</p>
             <p id="progressLastSession" class="mt-2 text-base font-bold">Belum ada</p>
           </div>
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-5">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-5">
             <p class="text-sm text-slate-500">Mod Paling Kerap</p>
             <p id="progressMostUsedMode" class="mt-2 text-base font-bold">Belum ada</p>
           </div>
         </div>
 
-        <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
+        <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <h3 class="text-xl font-bold">Trend Markah</h3>
+              <h3 class="text-xl font-bold panel-title">Trend Markah</h3>
               <p class="text-sm text-slate-500 mt-1">10 sesi terakhir Kertas 1 mengikut penapis semasa</p>
             </div>
           </div>
@@ -332,10 +390,10 @@
         </div>
 
         <div class="grid xl:grid-cols-2 gap-6">
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
             <div class="flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <h3 class="text-xl font-bold">Prestasi Ikut Tingkatan</h3>
+                <h3 class="text-xl font-bold panel-title">Prestasi Ikut Tingkatan</h3>
                 <p class="text-sm text-slate-500 mt-1">Purata markah mengikut tingkatan</p>
               </div>
             </div>
@@ -344,10 +402,10 @@
             </div>
           </div>
 
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
             <div class="flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <h3 class="text-xl font-bold">Prestasi Ikut Bab</h3>
+                <h3 class="text-xl font-bold panel-title">Prestasi Ikut Bab</h3>
                 <p class="text-sm text-slate-500 mt-1">6 bab paling kerap dijawab mengikut penapis semasa</p>
               </div>
             </div>
@@ -358,23 +416,23 @@
         </div>
 
         <div class="grid xl:grid-cols-2 gap-6">
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
-            <h3 class="text-xl font-bold">Bab Paling Kuat</h3>
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+            <h3 class="text-xl font-bold panel-title">Bab Paling Kuat</h3>
             <div id="strongTopicsList" class="mt-4 space-y-3">
               <p class="text-slate-500">Belum ada rekod.</p>
             </div>
           </div>
 
-          <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
-            <h3 class="text-xl font-bold">Bab Perlu Ditingkatkan</h3>
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+            <h3 class="text-xl font-bold panel-title">Bab Perlu Ditingkatkan</h3>
             <div id="weakTopicsList" class="mt-4 space-y-3">
               <p class="text-slate-500">Belum ada rekod.</p>
             </div>
           </div>
         </div>
 
-        <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
-          <h3 class="text-xl font-bold">Rekod Terkini</h3>
+        <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+          <h3 class="text-xl font-bold panel-title">Rekod Terkini</h3>
           <div id="recentSessionsList" class="mt-4 space-y-3">
             <p class="text-slate-500">Belum ada rekod.</p>
           </div>
@@ -383,8 +441,8 @@
     </section>
 
     <section id="tab-bantuan" class="tab-panel hidden mt-6">
-      <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
-        <h2 class="text-2xl font-bold">Bantuan</h2>
+      <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+        <h2 class="text-2xl font-bold panel-title">Bantuan</h2>
         <div class="mt-4 space-y-4 text-slate-700 leading-7">
           <p><span class="font-semibold">Latih Tubi Bab</span> sesuai untuk fokus kepada satu bab tertentu mengikut tingkatan.</p>
           <p><span class="font-semibold">Mod Percubaan SPM</span> sesuai untuk melatih pelajar dengan gaya soalan lebih hampir kepada peperiksaan sebenar.</p>
@@ -395,13 +453,13 @@
     </section>
 
     <section id="tab-sumbangan" class="tab-panel hidden mt-6">
-      <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
+      <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
         <div class="grid lg:grid-cols-[1.3fr,0.9fr] gap-6">
           <div>
             <span class="inline-flex items-center rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-xs font-bold tracking-[0.22em] uppercase text-amber-600">
               Sokongan Pembangunan Aplikasi
             </span>
-            <h2 class="mt-4 text-4xl font-black leading-tight tracking-tight text-slate-800">
+            <h2 class="mt-4 text-4xl font-black leading-tight tracking-tight text-slate-800 panel-title">
               Bersama membantu aplikasi ini terus berkembang
             </h2>
             <div class="mt-5 space-y-5 text-slate-600 leading-8">
@@ -413,7 +471,7 @@
           </div>
 
           <div>
-            <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="rounded-[28px] border border-slate-200 bg-white p-5 soft-shadow">
               <div class="flex gap-2 mb-4">
                 <button id="donationMaybankBtn" class="seg-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold w-full">Maybank</button>
                 <button id="donationTngBtn" class="seg-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold w-full">TnG eWallet</button>
@@ -493,6 +551,9 @@
     const mcqScore = document.getElementById('mcqScore');
     const submitMcqBtn = document.getElementById('submitMcqBtn');
     const retryMcqBtn = document.getElementById('retryMcqBtn');
+    const mcqReviewActions = document.getElementById('mcqReviewActions');
+    const printMcqReviewBtn = document.getElementById('printMcqReviewBtn');
+    const exportMcqReviewBtn = document.getElementById('exportMcqReviewBtn');
 
     const structuredBox = document.getElementById('structuredBox');
     const structuredMeta = document.getElementById('structuredMeta');
@@ -501,6 +562,9 @@
     const structuredResults = document.getElementById('structuredResults');
     const structuredTotal = document.getElementById('structuredTotal');
     const structuredFeedbackList = document.getElementById('structuredFeedbackList');
+    const structuredReviewActions = document.getElementById('structuredReviewActions');
+    const printStructuredReviewBtn = document.getElementById('printStructuredReviewBtn');
+    const exportStructuredReviewBtn = document.getElementById('exportStructuredReviewBtn');
 
     const statusBadge = document.getElementById('statusBadge');
     const resultSubtitle = document.getElementById('resultSubtitle');
@@ -662,6 +726,8 @@
       mcqBox.classList.add('hidden');
       structuredBox.classList.add('hidden');
       structuredResults.classList.add('hidden');
+      mcqReviewActions.classList.add('hidden');
+      structuredReviewActions.classList.add('hidden');
       welcomeBox.classList.remove('hidden');
       newSetBtn.classList.add('hidden');
       retryMcqBtn.classList.add('hidden');
@@ -717,6 +783,7 @@
       structuredBox.classList.add('hidden');
       newSetBtn.classList.remove('hidden');
       retryMcqBtn.classList.add('hidden');
+      mcqReviewActions.classList.add('hidden');
 
       state.mcqData = data.questions || [];
       state.selectedAnswers = {};
@@ -729,11 +796,11 @@
 
       state.mcqData.forEach((item, index) => {
         const wrap = document.createElement('div');
-        wrap.className = 'rounded-2xl border border-slate-200 bg-white p-4';
+        wrap.className = 'rounded-[24px] border border-slate-200 bg-white p-5 soft-shadow';
 
         const qNo = index + 1;
         const levelBadge = item.level
-          ? `<span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">${item.level}</span>`
+          ? `<span class="badge-soft border border-slate-200 bg-slate-50 text-slate-500">${item.level}</span>`
           : '';
 
         const chapterMeta = (item.form && item.chapter)
@@ -741,14 +808,14 @@
           : '';
 
         wrap.innerHTML = `
-          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             <div class="flex items-center gap-2">
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-600 font-bold text-sm">${qNo}</span>
+              <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-red-50 text-red-600 font-bold text-sm">${qNo}</span>
               ${levelBadge}
             </div>
             ${chapterMeta}
           </div>
-          <p class="font-semibold leading-7 text-slate-800">${item.q}</p>
+          <p class="font-semibold leading-7 text-slate-800 text-[1.02rem]">${item.q}</p>
           <div class="mt-4 grid gap-2">
             ${item.opts.map((opt, optIndex) => `
               <button
@@ -789,6 +856,7 @@
       structuredBox.classList.remove('hidden');
       mcqBox.classList.add('hidden');
       structuredResults.classList.add('hidden');
+      structuredReviewActions.classList.add('hidden');
       newSetBtn.classList.remove('hidden');
 
       stopTimer();
@@ -802,7 +870,7 @@
 
       (data.questions || []).forEach((item) => {
         const block = document.createElement('div');
-        block.className = 'rounded-2xl border border-slate-200 bg-white p-4';
+        block.className = 'rounded-[24px] border border-slate-200 bg-white p-5 soft-shadow';
         block.innerHTML = `
           <div class="flex items-center justify-between gap-3 mb-3">
             <span class="inline-flex items-center rounded-full bg-red-50 text-red-600 px-3 py-1 text-sm font-bold uppercase">${item.id}</span>
@@ -1058,12 +1126,8 @@
 
       let records = [...allRecords];
 
-      if (modeValue !== 'all') {
-        records = records.filter(r => r.quizMode === modeValue);
-      }
-      if (formValue !== 'all') {
-        records = records.filter(r => String(r.form) === String(formValue));
-      }
+      if (modeValue !== 'all') records = records.filter(r => r.quizMode === modeValue);
+      if (formValue !== 'all') records = records.filter(r => String(r.form) === String(formValue));
 
       const chapterStats = buildGroupedChapterStats(records)
         .sort((a, b) => a.form - b.form || a.chapter - b.chapter);
@@ -1297,6 +1361,171 @@
       renderChapterPerformanceChart(records);
     }
 
+    function buildBaseReviewStyle() {
+      return `
+        <style>
+          body { font-family: Arial, Helvetica, sans-serif; color: #1e293b; margin: 24px; line-height: 1.5; }
+          .header { border-bottom: 2px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 20px; }
+          .title { font-size: 28px; font-weight: 700; margin: 0; }
+          .meta { color: #475569; font-size: 14px; margin-top: 6px; }
+          .summary { margin: 18px 0; padding: 14px 16px; border: 1px solid #e2e8f0; background: #f8fafc; border-radius: 12px; }
+          .question { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin: 16px 0; }
+          .qhead { font-weight: 700; margin-bottom: 10px; }
+          .opt { padding: 8px 10px; border-radius: 10px; margin: 6px 0; border: 1px solid #e2e8f0; }
+          .correct { background: #dcfce7; border-color: #16a34a; }
+          .wrong { background: #fee2e2; border-color: #dc2626; }
+          .neutral { background: #ffffff; }
+          .explain { margin-top: 12px; background: #f8fafc; border-radius: 10px; padding: 12px; font-size: 14px; }
+          .block { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; margin: 16px 0; }
+          .small { font-size: 13px; color: #475569; }
+          .marks { font-weight: 700; }
+        </style>
+      `;
+    }
+
+    function generateMcqReviewHtml() {
+      let score = 0;
+      const total = state.mcqData.length;
+
+      const questionsHtml = state.mcqData.map((item, index) => {
+        const selected = state.selectedAnswers[index];
+        if (selected === item.ans) score += 1;
+
+        const optsHtml = item.opts.map((opt, optIndex) => {
+          let cls = 'neutral';
+          if (optIndex === item.ans) cls = 'correct';
+          if (selected === optIndex && selected !== item.ans) cls = 'wrong';
+          return `<div class="opt ${cls}"><strong>${String.fromCharCode(65 + optIndex)}.</strong> ${escapeHtml(opt)}</div>`;
+        }).join('');
+
+        return `
+          <div class="question">
+            <div class="qhead">Soalan ${index + 1}</div>
+            <div>${escapeHtml(item.q)}</div>
+            <div style="margin-top:12px;">${optsHtml}</div>
+            <div class="explain"><strong>Penjelasan:</strong> ${escapeHtml(item.exp || '-')}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Review Kertas 1</title>
+            ${buildBaseReviewStyle()}
+          </head>
+          <body>
+            <div class="header">
+              <h1 class="title">Review Kertas 1</h1>
+              <div class="meta">${escapeHtml(getScopeLabel())}</div>
+              <div class="meta">Tarikh: ${escapeHtml(formatDisplayDate(new Date().toISOString()))}</div>
+            </div>
+            <div class="summary">
+              <div><strong>Markah:</strong> ${score} / ${total}</div>
+              <div><strong>Peratus:</strong> ${total ? Math.round((score / total) * 100) : 0}%</div>
+            </div>
+            ${questionsHtml}
+          </body>
+        </html>
+      `;
+    }
+
+    function generateStructuredReviewHtml() {
+      const totalText = structuredTotal.textContent || 'Jumlah Markah: -';
+      const questions = state.structuredData?.questions || [];
+
+      const questionBlocks = questions.map(question => {
+        const textarea = document.getElementById(`answer-${question.id}`);
+        const studentAnswer = textarea ? textarea.value.trim() : '';
+        const feedbackCard = [...structuredFeedbackList.children].find(el =>
+          el.querySelector('.font-bold')?.textContent?.trim()?.toLowerCase() === String(question.id).toLowerCase()
+        );
+
+        let feedback = '-';
+        let marks = '-';
+
+        if (feedbackCard) {
+          const markText = feedbackCard.querySelector('.text-sm.font-semibold.text-blue-700');
+          const feedbackText = feedbackCard.querySelector('.mt-2.text-sm');
+          marks = markText ? markText.textContent : '-';
+          feedback = feedbackText ? feedbackText.textContent.replace('Maklum balas:', '').trim() : '-';
+        }
+
+        return `
+          <div class="block">
+            <div class="qhead">Soalan ${escapeHtml(question.id.toUpperCase())}</div>
+            <div><strong>Soalan:</strong> ${escapeHtml(question.q)}</div>
+            <div class="small" style="margin-top:6px;"><strong>Markah soalan:</strong> ${escapeHtml(String(question.marks))}</div>
+            <div style="margin-top:12px;"><strong>Jawapan Pelajar:</strong></div>
+            <div class="explain">${escapeHtml(studentAnswer || '-')}</div>
+            <div style="margin-top:12px;"><strong>Maklum balas:</strong></div>
+            <div class="explain">${escapeHtml(feedback)}</div>
+            <div style="margin-top:12px;"><strong>Jawapan Model:</strong></div>
+            <div class="explain">${escapeHtml(question.model || '-')}</div>
+            <div class="small marks" style="margin-top:10px;">${escapeHtml(marks)}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Review Kertas 2</title>
+            ${buildBaseReviewStyle()}
+          </head>
+          <body>
+            <div class="header">
+              <h1 class="title">Review Kertas 2</h1>
+              <div class="meta">${escapeHtml(getScopeLabel())}</div>
+              <div class="meta">Tarikh: ${escapeHtml(formatDisplayDate(new Date().toISOString()))}</div>
+            </div>
+            <div class="summary">
+              <div><strong>${escapeHtml(totalText)}</strong></div>
+              <div style="margin-top:10px;"><strong>Konteks:</strong></div>
+              <div class="small" style="margin-top:6px;">${escapeHtml(state.structuredData?.context || '-')}</div>
+            </div>
+            ${questionBlocks}
+          </body>
+        </html>
+      `;
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;')
+        .replaceAll('\n', '<br>');
+    }
+
+    function printReviewHtml(html) {
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+      printWindow.document.open();
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 300);
+    }
+
+    function exportReviewHtml(filename, html) {
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
     function submitMcq(isAuto = false) {
       if (!state.mcqData.length) return;
 
@@ -1328,6 +1557,7 @@
 
       mcqScore.textContent = `${score} / ${state.mcqData.length}`;
       retryMcqBtn.classList.remove('hidden');
+      mcqReviewActions.classList.remove('hidden');
       saveMcqProgress(score, state.mcqData.length);
 
       if (isAuto) setStatus('Masa Tamat', 'error');
@@ -1356,6 +1586,7 @@
         });
 
         structuredResults.classList.remove('hidden');
+        structuredReviewActions.classList.remove('hidden');
         structuredFeedbackList.innerHTML = '';
         structuredTotal.textContent = `Jumlah Markah: ${data.total != null ? data.total : 0}`;
 
@@ -1384,6 +1615,214 @@
         markStructuredBtn.disabled = false;
         markStructuredBtn.textContent = 'Semak Jawapan';
       }
+    }
+
+    function renderTopicCards(container, items, emptyText) {
+      container.innerHTML = '';
+      if (!items.length) {
+        container.innerHTML = `<p class="text-slate-500">${emptyText}</p>`;
+        return;
+      }
+
+      items.forEach((item, index) => {
+        const el = document.createElement('div');
+        el.className = 'rounded-2xl border border-slate-200 bg-white p-4';
+        el.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm text-slate-500">#${index + 1}</p>
+              <p class="mt-1 font-bold text-slate-800">${item.label}</p>
+              <p class="mt-1 text-sm text-slate-500">${item.count} sesi</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">Purata</p>
+              <p class="mt-1 text-xl font-black">${item.avg}%</p>
+            </div>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+    }
+
+    function renderRecentSessions(records) {
+      recentSessionsList.innerHTML = '';
+      if (!records.length) {
+        recentSessionsList.innerHTML = `<p class="text-slate-500">Belum ada rekod bagi penapis ini.</p>`;
+        return;
+      }
+
+      records.slice(0, 8).forEach((record) => {
+        const el = document.createElement('div');
+        el.className = 'rounded-2xl border border-slate-200 bg-white p-4';
+        el.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div>
+              <p class="font-bold text-slate-800">${getModeLabel(record)} · ${getScopeDisplay(record)}</p>
+              <p class="text-sm text-slate-500 mt-1">${formatDisplayDate(record.timestamp)}</p>
+            </div>
+            <div class="text-left md:text-right">
+              <p class="text-sm text-slate-500">${record.score} / ${record.totalQuestions}</p>
+              <p class="text-xl font-black">${record.percent}%</p>
+            </div>
+          </div>
+        `;
+        recentSessionsList.appendChild(el);
+      });
+    }
+
+    function destroyChart(chartRef) {
+      if (chartRef) chartRef.destroy();
+    }
+
+    function renderScoreTrendChart(records) {
+      const canvas = document.getElementById('scoreTrendChart');
+      if (!canvas) return;
+      destroyChart(scoreTrendChart);
+
+      const mcqRecords = records.filter(r => r.paper === 'mcq').slice(0, 10).reverse();
+      const labels = mcqRecords.map((r, i) => `Sesi ${i + 1}`);
+      const values = mcqRecords.map(r => Number(r.percent) || 0);
+
+      scoreTrendChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Markah (%)',
+            data: values,
+            borderWidth: 3,
+            tension: 0.3,
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: true } },
+          scales: { y: { min: 0, max: 100, ticks: { stepSize: 20 } } }
+        }
+      });
+    }
+
+    function renderFormPerformanceChart(records) {
+      const canvas = document.getElementById('formPerformanceChart');
+      if (!canvas) return;
+      destroyChart(formPerformanceChart);
+
+      const grouped = {};
+      records.filter(r => r.quizMode === 'chapter' && r.form).forEach(r => {
+        if (!grouped[r.form]) grouped[r.form] = { total: 0, count: 0 };
+        grouped[r.form].total += Number(r.percent) || 0;
+        grouped[r.form].count += 1;
+      });
+
+      const forms = [1,2,3,4,5].filter(f => grouped[f]);
+      const labels = forms.map(f => `Tingkatan ${f}`);
+      const values = forms.map(f => Math.round(grouped[f].total / grouped[f].count));
+
+      formPerformanceChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Purata Markah (%)',
+            data: values,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: true } },
+          scales: { y: { min: 0, max: 100, ticks: { stepSize: 20 } } }
+        }
+      });
+    }
+
+    function renderChapterPerformanceChart(records) {
+      const canvas = document.getElementById('chapterPerformanceChart');
+      if (!canvas) return;
+      destroyChart(chapterPerformanceChart);
+
+      const topicStats = buildGroupedChapterStats(records)
+        .sort((a, b) => b.count - a.count || b.avg - a.avg)
+        .slice(0, 6);
+
+      const labels = topicStats.map(item => item.label);
+      const values = topicStats.map(item => item.avg);
+
+      chapterPerformanceChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Purata Markah (%)',
+            data: values,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: true } },
+          scales: { x: { min: 0, max: 100, ticks: { stepSize: 20 } } }
+        }
+      });
+    }
+
+    function renderProgressDashboard() {
+      const records = getFilteredProgressRecords();
+      progressTotalSessions.textContent = String(records.length);
+
+      if (!records.length) {
+        progressAverage.textContent = '0%';
+        progressLastSession.textContent = 'Belum ada';
+        progressMostUsedMode.textContent = 'Belum ada';
+        renderTopicCards(strongTopicsList, [], 'Belum ada rekod bagi penapis ini.');
+        renderTopicCards(weakTopicsList, [], 'Belum ada rekod bagi penapis ini.');
+        renderRecentSessions([]);
+        renderScoreTrendChart([]);
+        renderFormPerformanceChart([]);
+        renderChapterPerformanceChart([]);
+        return;
+      }
+
+      const totalPercent = records.reduce((sum, r) => sum + (Number(r.percent) || 0), 0);
+      const avgPercent = Math.round(totalPercent / records.length);
+      progressAverage.textContent = `${avgPercent}%`;
+
+      const latest = records[0];
+      progressLastSession.textContent = `${latest.percent}% · ${formatDisplayDate(latest.timestamp)}`;
+
+      const modeCount = records.reduce((acc, r) => {
+        const key = getModeLabel(r);
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+      const mostUsed = Object.entries(modeCount).sort((a, b) => b[1] - a[1])[0];
+      progressMostUsedMode.textContent = mostUsed ? `${mostUsed[0]} (${mostUsed[1]})` : 'Belum ada';
+
+      const topicStats = buildGroupedChapterStats(records);
+      const strong = [...topicStats].sort((a, b) => b.avg - a.avg || b.count - a.count).slice(0, 3);
+      const weak = [...topicStats].sort((a, b) => a.avg - b.avg || b.count - a.count).slice(0, 3);
+
+      renderTopicCards(
+        strongTopicsList,
+        strong.map(item => ({ ...item, label: item.longLabel })),
+        'Belum ada rekod bab bagi penapis ini.'
+      );
+
+      renderTopicCards(
+        weakTopicsList,
+        weak.map(item => ({ ...item, label: item.longLabel })),
+        'Belum ada rekod bab bagi penapis ini.'
+      );
+
+      renderRecentSessions(records);
+      renderScoreTrendChart(records);
+      renderFormPerformanceChart(records);
+      renderChapterPerformanceChart(records);
     }
 
     function resetAllSettings() {
@@ -1442,6 +1881,19 @@
     newSetBtn.addEventListener('click', generateQuestions);
     markStructuredBtn.addEventListener('click', markStructuredAnswers);
     clearProgressBtn.addEventListener('click', clearProgress);
+
+    printMcqReviewBtn.addEventListener('click', () => {
+      printReviewHtml(generateMcqReviewHtml());
+    });
+    exportMcqReviewBtn.addEventListener('click', () => {
+      exportReviewHtml('review-kertas-1.html', generateMcqReviewHtml());
+    });
+    printStructuredReviewBtn.addEventListener('click', () => {
+      printReviewHtml(generateStructuredReviewHtml());
+    });
+    exportStructuredReviewBtn.addEventListener('click', () => {
+      exportReviewHtml('review-kertas-2.html', generateStructuredReviewHtml());
+    });
 
     donationMaybankBtn.addEventListener('click', () => {
       donationMaybankBtn.classList.add('active');
