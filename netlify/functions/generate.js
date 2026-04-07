@@ -13,7 +13,7 @@ function jsonResponse(statusCode, body) {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
     },
     body: JSON.stringify(body),
   };
@@ -32,12 +32,12 @@ function getQuestionDistribution(questionCount) {
 
 function listToBulletText(items) {
   if (!Array.isArray(items) || items.length === 0) return '- Tiada';
-  return items.map(item => `- ${item}`).join('\n');
+  return items.map((item) => `- ${item}`).join('\n');
 }
 
 function shuffleArray(array) {
   const arr = [...array];
-  for (let i = arr.length - 1; i > 0; i--) {
+  for (let i = arr.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
@@ -81,7 +81,7 @@ function loadChapterData(selectedSkop, selectedSesi) {
     console.log('Chapter file loaded:', {
       form: parsed.form,
       chapter: parsed.chapter,
-      title: parsed.title
+      title: parsed.title,
     });
   }
 
@@ -112,7 +112,7 @@ function loadExamPattern(mode) {
     console.log('Exam pattern loaded:', {
       paper: parsed.paper,
       source: parsed.source,
-      exam_type: parsed.exam_type
+      exam_type: parsed.exam_type,
     });
   }
 
@@ -124,8 +124,11 @@ function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
     return {
       sourceType: 'chapter',
       focusMix: pickItems(chapterData.focus_areas || [], mode === 'mcq' ? 5 : 4),
-      questionAngles: pickItems(chapterData.possible_question_angles || [], mode === 'mcq' ? 6 : 4),
-      kbatMix: pickItems(chapterData.kbat_angles || [], mode === 'mcq' ? 3 : 2)
+      questionAngles: pickItems(
+        chapterData.possible_question_angles || [],
+        mode === 'mcq' ? 6 : 4
+      ),
+      kbatMix: pickItems(chapterData.kbat_angles || [], mode === 'mcq' ? 3 : 2),
     };
   }
 
@@ -140,10 +143,10 @@ function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
         topicMix: pickItems(
           [
             ...(examPattern.topic_patterns?.form4 || []),
-            ...(examPattern.topic_patterns?.form5 || [])
+            ...(examPattern.topic_patterns?.form5 || []),
           ],
           Math.min(6, Math.max(4, Math.ceil(totalQuestions / 2)))
-        )
+        ),
       };
     }
 
@@ -152,7 +155,7 @@ function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
       stimulusMix: pickItems(examPattern.stimulus_types || [], 3),
       commandMix: pickItems(examPattern.common_command_words || [], 5),
       kbatPromptMix: pickItems(examPattern.kbat_prompt_patterns || [], 3),
-      topicMix: pickItems(examPattern.topic_coverage_examples || [], 4)
+      topicMix: pickItems(examPattern.topic_coverage_examples || [], 4),
     };
   }
 
@@ -214,8 +217,8 @@ function getExamBatchPlan(examBatchLabel) {
         'nasionalisme',
         'konflik dunia dan pendudukan Jepun',
         'era peralihan kuasa British',
-        'Persekutuan Tanah Melayu 1948'
-      ]
+        'Persekutuan Tanah Melayu 1948',
+      ],
     },
     form4_b: {
       label: 'Form 4 B',
@@ -226,8 +229,8 @@ function getExamBatchPlan(examBatchLabel) {
         'usaha ke arah kemerdekaan',
         'pilihan raya',
         'Perlembagaan Persekutuan Tanah Melayu 1957',
-        'pemasyhuran kemerdekaan'
-      ]
+        'pemasyhuran kemerdekaan',
+      ],
     },
     form5_a: {
       label: 'Form 5 A',
@@ -238,8 +241,8 @@ function getExamBatchPlan(examBatchLabel) {
         'Perlembagaan Persekutuan',
         'Raja Berperlembagaan dan Demokrasi Berparlimen',
         'sistem Persekutuan',
-        'pembentukan Malaysia'
-      ]
+        'pembentukan Malaysia',
+      ],
     },
     form5_b: {
       label: 'Form 5 B',
@@ -250,9 +253,9 @@ function getExamBatchPlan(examBatchLabel) {
         'membina kesejahteraan negara',
         'membina kemakmuran negara',
         'dasar luar Malaysia',
-        'kecemerlangan Malaysia di persada dunia'
-      ]
-    }
+        'kecemerlangan Malaysia di persada dunia',
+      ],
+    },
   };
 
   return plans[examBatchLabel] || null;
@@ -334,12 +337,12 @@ function normalizeMcqQuestions(questions) {
     const originalOptions = [...q.opts];
     const correctAnswerText = originalOptions[q.ans];
     const shuffledOptions = shuffleArray(originalOptions);
-    const newAnswerIndex = shuffledOptions.findIndex(opt => opt === correctAnswerText);
+    const newAnswerIndex = shuffledOptions.findIndex((opt) => opt === correctAnswerText);
 
     return {
       ...q,
       opts: shuffledOptions,
-      ans: newAnswerIndex >= 0 ? newAnswerIndex : q.ans
+      ans: newAnswerIndex >= 0 ? newAnswerIndex : q.ans,
     };
   });
 }
@@ -348,7 +351,7 @@ function sanitizeMcqQuestions(questions, totalQuestions) {
   if (!Array.isArray(questions)) return [];
 
   const cleaned = questions
-    .filter(q =>
+    .filter((q) =>
       q &&
       typeof q.q === 'string' &&
       q.q.trim() &&
@@ -360,16 +363,16 @@ function sanitizeMcqQuestions(questions, totalQuestions) {
       typeof q.exp === 'string' &&
       q.exp.trim()
     )
-    .map(q => ({
+    .map((q) => ({
       q: String(q.q).trim(),
-      opts: q.opts.map(opt => String(opt).trim()),
+      opts: q.opts.map((opt) => String(opt).trim()),
       ans: Number(q.ans),
       exp: String(q.exp).trim(),
       level: ['mudah', 'sederhana', 'kbat'].includes(String(q.level).toLowerCase())
         ? String(q.level).toLowerCase()
         : 'sederhana',
       form: q.form ? Number(q.form) : undefined,
-      chapter: q.chapter ? Number(q.chapter) : undefined
+      chapter: q.chapter ? Number(q.chapter) : undefined,
     }));
 
   return cleaned.slice(0, totalQuestions);
@@ -377,7 +380,7 @@ function sanitizeMcqQuestions(questions, totalQuestions) {
 
 function dedupeMcqQuestions(questions) {
   const seen = new Set();
-  return questions.filter(q => {
+  return questions.filter((q) => {
     const key = String(q.q || '').trim().toLowerCase();
     if (!key || seen.has(key)) return false;
     seen.add(key);
@@ -391,19 +394,19 @@ async function requestModelJson({ model, systemText, userText, maxOutputTokens =
     input: [
       {
         role: 'system',
-        content: [{ type: 'input_text', text: systemText }]
+        content: [{ type: 'input_text', text: systemText }],
       },
       {
         role: 'user',
-        content: [{ type: 'input_text', text: userText }]
-      }
+        content: [{ type: 'input_text', text: userText }],
+      },
     ],
     text: {
       format: {
-        type: 'json_object'
-      }
+        type: 'json_object',
+      },
     },
-    max_output_tokens: maxOutputTokens
+    max_output_tokens: maxOutputTokens,
   });
 
   const outputText =
@@ -425,7 +428,7 @@ function buildChapterMcqPrompts({
   chapterContext,
   scopeLabel,
   selectedSkop,
-  selectedSesi
+  selectedSesi,
 }) {
   const systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang sangat ketat terhadap skop bab.
@@ -483,7 +486,7 @@ function buildExamMcqPrompts({
   totalQuestions,
   distribution,
   scopeLabel,
-  examContext
+  examContext,
 }) {
   const systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang membina set soalan gaya percubaan SPM.
@@ -561,7 +564,7 @@ exports.handler = async (event) => {
       quizMode,
       selectedSkop,
       selectedSesi,
-      examBatchLabel
+      examBatchLabel,
     } = body;
 
     const totalQuestions = Number(questionCount) || 10;
@@ -594,7 +597,7 @@ exports.handler = async (event) => {
             totalQuestions,
             distribution,
             scopeLabel,
-            examContext
+            examContext,
           })
         : buildChapterMcqPrompts({
             totalQuestions,
@@ -603,14 +606,14 @@ exports.handler = async (event) => {
             chapterContext,
             scopeLabel,
             selectedSkop,
-            selectedSesi
+            selectedSesi,
           });
 
       const parsed = await requestModelJson({
         model,
         systemText,
         userText,
-        maxOutputTokens: isExamMode ? 2400 : 1800
+        maxOutputTokens: isExamMode ? 2400 : 1800,
       });
 
       const finalQuestions = normalizeMcqQuestions(
@@ -626,18 +629,18 @@ exports.handler = async (event) => {
               type: 'chapter',
               form: chapterData.form,
               chapter: chapterData.chapter,
-              title: chapterData.title
+              title: chapterData.title,
             }
           : examPattern
             ? {
                 type: 'exam',
                 paper: examPattern.paper,
                 source: examPattern.source,
-                exam_type: examPattern.exam_type
+                exam_type: examPattern.exam_type,
               }
             : null,
         debug_variation_plan: variationPlan || null,
-        debug_exam_batch: examBatchPlan || null
+        debug_exam_batch: examBatchPlan || null,
       });
     }
 
@@ -708,7 +711,7 @@ Jana satu set soalan struktur.
         model,
         systemText,
         userText,
-        maxOutputTokens: 900
+        maxOutputTokens: 900,
       });
 
       return jsonResponse(200, {
@@ -718,17 +721,17 @@ Jana satu set soalan struktur.
               type: 'chapter',
               form: chapterData.form,
               chapter: chapterData.chapter,
-              title: chapterData.title
+              title: chapterData.title,
             }
           : examPattern
             ? {
                 type: 'exam',
                 paper: examPattern.paper,
                 source: examPattern.source,
-                exam_type: examPattern.exam_type
+                exam_type: examPattern.exam_type,
               }
             : null,
-        debug_variation_plan: variationPlan || null
+        debug_variation_plan: variationPlan || null,
       });
     }
 
@@ -757,7 +760,7 @@ ${JSON.stringify(questions || [])}
 Jawapan murid:
 ${JSON.stringify(studentAnswers || {})}
 `,
-        maxOutputTokens: 1000
+        maxOutputTokens: 1000,
       });
 
       return jsonResponse(200, parsed);
@@ -804,8 +807,8 @@ ${JSON.stringify(studentAnswers || {})}
         message: apiMessage || null,
         code: errorCode,
         type: errorType,
-        status: errorStatus
-      }
+        status: errorStatus,
+      },
     });
   }
 };
