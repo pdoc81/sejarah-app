@@ -29,41 +29,6 @@ function getQuestionDistribution(questionCount) {
   return { mudah: 2, sederhana: 5, kbat: 3 };
 }
 
-function loadChapterData(selectedSkop, selectedSesi) {
-  try {
-    if (!selectedSkop || !selectedSesi) return null;
-
-    const filePath = path.join(
-      process.cwd(),
-      'data',
-      'textbooks',
-      `form${selectedSkop}`,
-      `chapter${selectedSesi}.json`
-    );
-
-    console.log('Trying chapter file:', filePath);
-
-    if (!fs.existsSync(filePath)) {
-      console.log('Chapter file not found:', filePath);
-      return null;
-    }
-
-    const raw = fs.readFileSync(filePath, 'utf8');
-    const parsed = JSON.parse(raw);
-
-    console.log('Chapter file loaded:', {
-      form: parsed.form,
-      chapter: parsed.chapter,
-      title: parsed.title
-    });
-
-    return parsed;
-  } catch (error) {
-    console.error('Error loading chapter data:', error);
-    return null;
-  }
-}
-
 function listToBulletText(items) {
   if (!Array.isArray(items) || items.length === 0) return '- Tiada';
   return items.map(item => `- ${item}`).join('\n');
@@ -83,29 +48,144 @@ function pickItems(items, limit = 4) {
   return shuffleArray(items).slice(0, Math.min(limit, items.length));
 }
 
-function buildVariationPlan(chapterData, mode, totalQuestions) {
-  if (!chapterData) {
+function readJsonFile(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) {
+      console.log('JSON file not found:', filePath);
+      return null;
+    }
+    const raw = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error('Error reading JSON file:', filePath, error);
+    return null;
+  }
+}
+
+function loadChapterData(selectedSkop, selectedSesi) {
+  try {
+    if (!selectedSkop || !selectedSesi) return null;
+
+    const filePath = path.join(
+      process.cwd(),
+      'data',
+      'textbooks',
+      `form${selectedSkop}`,
+      `chapter${selectedSesi}.json`
+    );
+
+    console.log('Trying chapter file:', filePath);
+    const parsed = readJsonFile(filePath);
+
+    if (parsed) {
+      console.log('Chapter file loaded:', {
+        form: parsed.form,
+        chapter: parsed.chapter,
+        title: parsed.title
+      });
+    }
+
+    return parsed;
+  } catch (error) {
+    console.error('Error loading chapter data:', error);
+    return null;
+  }
+}
+
+function loadExamPattern(mode) {
+  try {
+    const fileName =
+      mode === 'mcq'
+        ? 'kertas1_patterns.json'
+        : mode === 'structured'
+          ? 'kertas2_patterns.json'
+          : null;
+
+    if (!fileName) return null;
+
+    const filePath = path.join(
+      process.cwd(),
+      'data',
+      'exams',
+      'form45',
+      fileName
+    );
+
+    console.log('Trying exam pattern file:', filePath);
+
+    const parsed = readJsonFile(filePath);
+
+    if (parsed) {
+      console.log('Exam pattern loaded:', {
+        paper: parsed.paper,
+        source: parsed.source,
+        exam_type: parsed.exam_type
+      });
+    }
+
+    return parsed;
+  } catch (error) {
+    console.error('Error loading exam pattern:', error);
+    return null;
+  }
+}
+
+function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
+  if (chapterData) {
+    const focusLimit = mode === 'mcq'
+      ? Math.min(5, Math.max(3, Math.ceil(totalQuestions / 3)))
+      : 4;
+
+    const angleLimit = mode === 'mcq'
+      ? Math.min(6, Math.max(4, Math.ceil(totalQuestions / 2)))
+      : 4;
+
+    const kbatLimit = mode === 'mcq' ? 3 : 2;
+
     return {
-      focusMix: [],
-      questionAngles: [],
-      kbatMix: []
+      sourceType: 'chapter',
+      focusMix: pickItems(chapterData.focus_areas || [], focusLimit),
+      questionAngles: pickItems(chapterData.possible_question_angles || [], angleLimit),
+      kbatMix: pickItems(chapterData.kbat_angles || [], kbatLimit)
     };
   }
 
-  const focusLimit = mode === 'mcq'
-    ? Math.min(5, Math.max(3, Math.ceil(totalQuestions / 3)))
-    : 4;
+  if (examPattern) {
+    if (mode === 'mcq') {
+      return {
+        sourceType: 'exam',
+        questionStyles: pickItems(examPattern.question_styles || [], 6),
+        stemPatterns: pickItems(examPattern.common_stem_patterns || [], 5),
+        distractorPatterns: pickItems(examPattern.distractor_patterns || [], 4),
+        kbatPatterns: pickItems(
+          examPattern.difficulty_profile?.kbat || examPattern.kbat_patterns || [],
+          4
+        ),
+        topicMix: pickItems(
+          [
+            ...(examPattern.topic_patterns?.form4 || []),
+            ...(examPattern.topic_patterns?.form5 || [])
+          ],
+          Math.min(8, Math.max(4, Math.ceil(totalQuestions / 3)))
+        )
+      };
+    }
 
-  const angleLimit = mode === 'mcq'
-    ? Math.min(6, Math.max(4, Math.ceil(totalQuestions / 2)))
-    : 4;
-
-  const kbatLimit = mode === 'mcq' ? 3 : 2;
+    if (mode === 'structured') {
+      return {
+        sourceType: 'exam',
+        stimulusMix: pickItems(examPattern.stimulus_types || [], 4),
+        commandMix: pickItems(examPattern.common_command_words || [], 6),
+        sectionAPatterns: examPattern.section_a_patterns || [],
+        sectionBPatterns: examPattern.section_b_patterns || [],
+        kbatPromptMix: pickItems(examPattern.kbat_prompt_patterns || [], 4),
+        topicMix: pickItems(examPattern.topic_coverage_examples || [], 5)
+      };
+    }
+  }
 
   return {
-    focusMix: pickItems(chapterData.focus_areas || [], focusLimit),
-    questionAngles: pickItems(chapterData.possible_question_angles || [], angleLimit),
-    kbatMix: pickItems(chapterData.kbat_angles || [], kbatLimit)
+    sourceType: 'none'
   };
 }
 
@@ -164,6 +244,142 @@ ${selectedKbatMix}
 `;
 }
 
+function buildExamContext(examPattern, variationPlan, mode, totalQuestions) {
+  if (!examPattern) return '';
+
+  if (mode === 'mcq') {
+    return `
+=== POLA WAJIB MOD PERCUBAAN KERTAS 1 ===
+Sumber pola: ${examPattern.source || 'Tidak dinyatakan'}
+Jenis peperiksaan: ${examPattern.exam_type || 'trial'}
+Skop tingkatan: ${Array.isArray(examPattern.form_scope) ? examPattern.form_scope.join(', ') : '4,5'}
+
+Struktur rasmi:
+- Jumlah soalan penuh: ${examPattern.structure?.total_questions || 40}
+- Bentuk jawapan: objektif
+- Pilihan jawapan setiap soalan: ${examPattern.structure?.options_per_question || 4}
+- Agihan Tingkatan 4: ${examPattern.structure?.form4_questions || 20}
+- Agihan Tingkatan 5: ${examPattern.structure?.form5_questions || 20}
+
+Gaya soalan biasa:
+${listToBulletText(examPattern.question_styles)}
+
+Stem soalan biasa:
+${listToBulletText(examPattern.common_stem_patterns)}
+
+Jenis stimulus biasa:
+${listToBulletText(examPattern.stimulus_types)}
+
+Corak distractor:
+${listToBulletText(examPattern.distractor_patterns)}
+
+Profil aras mudah:
+${listToBulletText(examPattern.difficulty_profile?.mudah)}
+
+Profil aras sederhana:
+${listToBulletText(examPattern.difficulty_profile?.sederhana)}
+
+Profil aras KBAT:
+${listToBulletText(examPattern.difficulty_profile?.kbat)}
+
+Topik Tingkatan 4:
+${listToBulletText(examPattern.topic_patterns?.form4)}
+
+Topik Tingkatan 5:
+${listToBulletText(examPattern.topic_patterns?.form5)}
+=== AKHIR POLA WAJIB ===
+
+=== PELAN VARIASI MOD PERCUBAAN UNTUK SET INI ===
+Gaya soalan terpilih:
+${listToBulletText(variationPlan?.questionStyles)}
+
+Stem soalan terpilih:
+${listToBulletText(variationPlan?.stemPatterns)}
+
+Corak distractor terpilih:
+${listToBulletText(variationPlan?.distractorPatterns)}
+
+Corak KBAT terpilih:
+${listToBulletText(variationPlan?.kbatPatterns)}
+
+Campuran topik terpilih:
+${listToBulletText(variationPlan?.topicMix)}
+=== AKHIR PELAN VARIASI ===
+
+=== PERATURAN AGIHAN SET INI ===
+- Jika pengguna minta ${totalQuestions} soalan, cuba campurkan Tingkatan 4 dan Tingkatan 5 secara seimbang
+- Jika set besar, seboleh mungkin sentuh pelbagai bab
+- Kekalkan gaya seperti trial sebenar: ringkas, padat, tepat
+=== AKHIR PERATURAN ===
+`;
+  }
+
+  if (mode === 'structured') {
+    const sectionAPatterns = Array.isArray(variationPlan?.sectionAPatterns)
+      ? variationPlan.sectionAPatterns.map(item => `- Bahagian ${item.part}: ${item.style} (${item.typical_marks} markah biasa)`).join('\n')
+      : '- Tiada';
+
+    const sectionBPatterns = Array.isArray(variationPlan?.sectionBPatterns)
+      ? variationPlan.sectionBPatterns.map(item => `- Bahagian ${item.part}: ${item.style} (${item.typical_marks} markah biasa)`).join('\n')
+      : '- Tiada';
+
+    return `
+=== POLA WAJIB MOD PERCUBAAN KERTAS 2 ===
+Sumber pola: ${examPattern.source || 'Tidak dinyatakan'}
+Jenis peperiksaan: ${examPattern.exam_type || 'trial'}
+Skop tingkatan: ${Array.isArray(examPattern.form_scope) ? examPattern.form_scope.join(', ') : '4,5'}
+
+Struktur Bahagian A:
+- Bilangan soalan: ${examPattern.structure?.section_a?.question_count || 4}
+- Wajib jawab: ${examPattern.structure?.section_a?.must_answer ? 'Ya' : 'Tidak'}
+- Jumlah markah: ${examPattern.structure?.section_a?.total_marks || 40}
+
+Struktur Bahagian B:
+- Bilangan soalan: ${examPattern.structure?.section_b?.question_count || 5}
+- Pilih jawab: ${examPattern.structure?.section_b?.choose || 3}
+- Jumlah markah: ${examPattern.structure?.section_b?.total_marks || 60}
+
+Jenis stimulus biasa:
+${listToBulletText(examPattern.stimulus_types)}
+
+Kata tugas biasa:
+${listToBulletText(examPattern.common_command_words)}
+
+Pola Bahagian A:
+${sectionAPatterns}
+
+Pola Bahagian B:
+${sectionBPatterns}
+
+Jangkaan jawapan:
+${listToBulletText(examPattern.observed_answer_expectations)}
+
+Panduan semakan fakta:
+${listToBulletText(examPattern.auto_marking_guidelines?.short_response)}
+
+Panduan semakan jawapan panjang:
+${listToBulletText(examPattern.auto_marking_guidelines?.extended_response)}
+=== AKHIR POLA WAJIB ===
+
+=== PELAN VARIASI MOD PERCUBAAN UNTUK SET INI ===
+Stimulus terpilih:
+${listToBulletText(variationPlan?.stimulusMix)}
+
+Kata tugas terpilih:
+${listToBulletText(variationPlan?.commandMix)}
+
+Corak prompt KBAT terpilih:
+${listToBulletText(variationPlan?.kbatPromptMix)}
+
+Campuran topik terpilih:
+${listToBulletText(variationPlan?.topicMix)}
+=== AKHIR PELAN VARIASI ===
+`;
+  }
+
+  return '';
+}
+
 function normalizeMcqQuestions(questions) {
   if (!Array.isArray(questions)) return [];
 
@@ -211,7 +427,9 @@ function sanitizeMcqQuestions(questions, totalQuestions) {
       exp: String(q.exp).trim(),
       level: ['mudah', 'sederhana', 'kbat'].includes(String(q.level).toLowerCase())
         ? String(q.level).toLowerCase()
-        : 'sederhana'
+        : 'sederhana',
+      form: q.form ? Number(q.form) : undefined,
+      chapter: q.chapter ? Number(q.chapter) : undefined
     }));
 
   return cleaned.slice(0, totalQuestions);
@@ -247,18 +465,97 @@ exports.handler = async (event) => {
     const totalQuestions = Number(questionCount) || 10;
     const distribution = getQuestionDistribution(totalQuestions);
 
-    const chapterData =
-      quizMode === 'chapter'
-        ? loadChapterData(selectedSkop, selectedSesi)
-        : null;
+    const isChapterMode = quizMode === 'chapter';
+    const isExamMode = quizMode === 'exam';
 
-    const variationPlan = buildVariationPlan(chapterData, mode, totalQuestions);
+    const chapterData = isChapterMode
+      ? loadChapterData(selectedSkop, selectedSesi)
+      : null;
+
+    const examPattern = isExamMode
+      ? loadExamPattern(mode)
+      : null;
+
+    const variationPlan = buildVariationPlan(chapterData, examPattern, mode, totalQuestions);
     const chapterContext = buildChapterContext(chapterData, variationPlan);
+    const examContext = buildExamContext(examPattern, variationPlan, mode, totalQuestions);
 
     if (mode === 'mcq') {
       model = 'gpt-5.4-nano';
 
-      systemText = `
+      if (isExamMode) {
+        systemText = `
+Anda ialah guru Sejarah KSSM Malaysia yang membina set soalan gaya percubaan SPM.
+Tugas anda ialah menjana soalan objektif gaya trial sebenar berdasarkan pola peperiksaan yang diberi.
+
+JANGAN keluar daripada skop Sejarah SPM Tingkatan 4 dan Tingkatan 5.
+JANGAN hasilkan soalan yang terlalu umum atau terlalu santai.
+JANGAN jadikan semua soalan berbentuk definisi.
+JANGAN ulang pola soalan yang sama berkali-kali.
+
+Anda mesti mematuhi gaya peperiksaan berikut:
+- stem ringkas dan tepat
+- pilihan jawapan munasabah
+- distractor hampir sama kekuatan
+- gabungan fakta, kefahaman, sebab-akibat, peranan, kesan dan KBAT ringan
+- campuran topik Tingkatan 4 dan Tingkatan 5
+
+Jana TEPAT ${totalQuestions} soalan objektif berkualiti tinggi.
+Campuran aras mestilah:
+- ${distribution.mudah} soalan mudah
+- ${distribution.sederhana} soalan sederhana
+- ${distribution.kbat} soalan KBAT
+
+${examContext}
+
+Balas dalam JSON SAHAJA dengan format:
+{
+  "questions": [
+    {
+      "q": "Soalan",
+      "opts": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
+      "ans": 0,
+      "exp": "Penjelasan ringkas",
+      "level": "mudah",
+      "form": 4,
+      "chapter": 1
+    }
+  ]
+}
+
+Peraturan:
+- Bahasa Melayu
+- Ikut gaya trial SPM Sejarah
+- Campurkan Tingkatan 4 dan Tingkatan 5
+- Jika soalan sentuh topik Tingkatan 4, letak "form": 4
+- Jika soalan sentuh topik Tingkatan 5, letak "form": 5
+- Letak "chapter" yang paling berkaitan jika boleh
+- Pilihan jawapan mesti 4 sahaja
+- "ans" ialah index 0 hingga 3
+- "level" mesti salah satu daripada: mudah, sederhana, kbat
+- Elakkan jawapan terlalu jelas
+- Elakkan jawapan betul terlalu kerap di pilihan pertama
+- Gunakan sekurang-kurangnya sebahagian stem, gaya dan topik daripada pola peperiksaan yang diberi
+- Pastikan set ini pelbagai dan tidak berulang
+`;
+        userText = `
+Mod dipilih:
+Percubaan SPM Sejarah Kertas 1
+
+Skop:
+${scopeLabel || 'Gabungan Tingkatan 4 dan Tingkatan 5'}
+
+Jana ${totalQuestions} soalan objektif gaya percubaan sebenar.
+
+Agihan aras wajib:
+- Mudah: ${distribution.mudah}
+- Sederhana: ${distribution.sederhana}
+- KBAT: ${distribution.kbat}
+
+Campurkan topik Tingkatan 4 dan Tingkatan 5 secara munasabah.
+`;
+      } else {
+        systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang sangat ketat terhadap skop bab.
 Tugas anda ialah menjana soalan HANYA daripada kandungan bab yang diberi.
 JANGAN campurkan fakta daripada bab lain.
@@ -320,8 +617,7 @@ Peraturan sangat penting:
 - Penjelasan "exp" mesti selaras dengan fakta bab yang diberi
 - Sekurang-kurangnya 60% soalan mesti datang daripada focus_areas dan possible_question_angles terpilih dalam pelan variasi
 `;
-
-      userText = `
+        userText = `
 Skop dipilih pengguna:
 ${scopeLabel}
 
@@ -351,10 +647,60 @@ ${listToBulletText(variationPlan.kbatMix)}
 
 Pastikan set ini pelbagai, tidak berulang dan tidak terlalu tertumpu pada satu jenis soalan sahaja.
 `;
+      }
     } else if (mode === 'structured') {
       model = 'gpt-5.4-mini';
 
-      systemText = `
+      if (isExamMode) {
+        systemText = `
+Anda ialah guru Sejarah KSSM Malaysia yang membina set soalan gaya percubaan SPM Kertas 2.
+Tugas anda ialah menjana set soalan struktur / esei berdasarkan pola peperiksaan yang diberi.
+
+Anda mesti mengekalkan rasa dan format trial sebenar:
+- ada rangsangan seperti petikan, pernyataan, rajah atau maklumat ringkas
+- soalan kecil bergerak daripada fakta kepada huraian dan KBAT
+- jawapan model perlu jelas dan mudah disemak
+- bahagian KBAT perlu matang tetapi masih sesuai untuk calon SPM
+
+${examContext}
+
+Balas dalam JSON SAHAJA dengan format:
+{
+  "context": "Petikan atau rangsangan ringkas berdasarkan gaya peperiksaan",
+  "questions": [
+    { "id": "a", "q": "Soalan", "marks": 2, "model": "Jawapan contoh" },
+    { "id": "b", "q": "Soalan", "marks": 4, "model": "Jawapan contoh" },
+    { "id": "c", "q": "Soalan", "marks": 4, "model": "Jawapan contoh" }
+  ]
+}
+
+Peraturan:
+- Bahasa Melayu
+- Gaya mesti menyerupai soalan percubaan sebenar
+- Campurkan Tingkatan 4 dan Tingkatan 5 secara munasabah jika sesuai
+- Bahagian (a) lebih asas dan terus
+- Bahagian (b) lebih menghuraikan
+- Bahagian (c) lebih KBAT, ulasan, kepentingan, iktibar atau aplikasi
+- Gunakan kata tugas peperiksaan sebenar seperti nyatakan, jelaskan, huraikan, ulaskan
+- Jawapan model mesti padat, tepat dan mudah dipadankan semasa semakan
+- Elakkan soalan terlalu umum
+`;
+        userText = `
+Mod dipilih:
+Percubaan SPM Sejarah Kertas 2
+
+Skop:
+${scopeLabel || 'Gabungan Tingkatan 4 dan Tingkatan 5'}
+
+Jana satu set soalan gaya percubaan sebenar dengan 3 bahagian kecil:
+- (a) asas
+- (b) huraian
+- (c) KBAT / ulasan
+
+Gunakan stimulus yang munasabah dan gaya skema yang mudah disemak.
+`;
+      } else {
+        systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang sangat ketat terhadap skop bab.
 Tugas anda ialah menjana soalan struktur HANYA daripada kandungan bab yang diberi.
 JANGAN campurkan fakta daripada bab lain.
@@ -395,8 +741,7 @@ Peraturan:
 - Jawapan model mesti padat, tepat dan berpandukan bab
 - Jangan jadikan ketiga-tiga bahagian terlalu serupa
 `;
-
-      userText = `
+        userText = `
 Skop dipilih pengguna:
 ${scopeLabel}
 
@@ -420,12 +765,34 @@ ${listToBulletText(variationPlan.questionAngles)}
 Sudut KBAT:
 ${listToBulletText(variationPlan.kbatMix)}
 `;
+      }
     } else if (mode === 'mark-structured') {
       model = 'gpt-5.4-mini';
 
-      systemText = `
+      if (isExamMode) {
+        systemText = `
+Anda ialah pemeriksa Sejarah KSSM Malaysia yang menyemak jawapan gaya percubaan SPM Kertas 2.
+Semak jawapan murid dengan adil, padankan dengan kehendak kata tugas, ketepatan isi, huraian dan unsur KBAT.
+
+Gunakan pendekatan berikut:
+- bahagian fakta: beri markah ikut poin tepat
+- bahagian ulasan/KBAT: nilai berdasarkan ketepatan, relevan, huraian, inferens dan kematangan jawapan
+- terima sinonim yang tepat
+- jangan terlalu kedekut dan jangan terlalu murah markah
+
+Balas dalam JSON SAHAJA dengan format:
+{
+  "results": [
+    { "id": "a", "marks_awarded": 1, "feedback": "Maklum balas ringkas" }
+  ],
+  "total": 0
+}
+`;
+      } else {
+        systemText = `
 Anda ialah pemeriksa Sejarah KSSM Malaysia.
 Semak jawapan murid dengan adil berdasarkan kehendak soalan dan jawapan model.
+
 Balas dalam JSON SAHAJA dengan format:
 {
   "results": [
@@ -440,6 +807,7 @@ Peraturan:
 - Markah realistik
 - Jangan terlalu kedekut dan jangan terlalu murah markah
 `;
+      }
 
       userText = `
 Konteks:
@@ -494,18 +862,20 @@ ${JSON.stringify(studentAnswers || {})}
       ...parsed,
       debug_source: chapterData
         ? {
+            type: 'chapter',
             form: chapterData.form,
             chapter: chapterData.chapter,
             title: chapterData.title
           }
-        : null,
-      debug_variation_plan: chapterData
-        ? {
-            focusMix: variationPlan.focusMix,
-            questionAngles: variationPlan.questionAngles,
-            kbatMix: variationPlan.kbatMix
-          }
-        : null
+        : examPattern
+          ? {
+              type: 'exam',
+              paper: examPattern.paper,
+              source: examPattern.source,
+              exam_type: examPattern.exam_type
+            }
+          : null,
+      debug_variation_plan: variationPlan || null
     });
 
   } catch (error) {
