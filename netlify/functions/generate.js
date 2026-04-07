@@ -48,12 +48,8 @@ function pickItems(items, limit = 4) {
 
 function readJsonFile(filePath) {
   try {
-    if (!fs.existsSync(filePath)) {
-      console.log('JSON file not found:', filePath);
-      return null;
-    }
-    const raw = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(raw);
+    if (!fs.existsSync(filePath)) return null;
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
   } catch (error) {
     console.error('Error reading JSON file:', filePath, error);
     return null;
@@ -70,18 +66,7 @@ function loadChapterData(selectedSkop, selectedSesi) {
     `form${selectedSkop}`,
     `chapter${selectedSesi}.json`
   );
-
-  const parsed = readJsonFile(filePath);
-
-  if (parsed) {
-    console.log('Chapter file loaded:', {
-      form: parsed.form,
-      chapter: parsed.chapter,
-      title: parsed.title,
-    });
-  }
-
-  return parsed;
+  return readJsonFile(filePath);
 }
 
 function loadExamPattern(mode) {
@@ -101,18 +86,7 @@ function loadExamPattern(mode) {
     'form45',
     fileName
   );
-
-  const parsed = readJsonFile(filePath);
-
-  if (parsed) {
-    console.log('Exam pattern loaded:', {
-      paper: parsed.paper,
-      source: parsed.source,
-      exam_type: parsed.exam_type,
-    });
-  }
-
-  return parsed;
+  return readJsonFile(filePath);
 }
 
 function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
@@ -202,15 +176,22 @@ ${listToBulletText(variationPlan?.kbatMix || [])}
 function getExamBatchPlan(examBatchLabel) {
   const plans = {
     form4_a: {
-      label: 'Form 4',
+      label: 'Form 4 A',
       form: 4,
-      chapters: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      chapters: [1, 2, 3, 4, 5],
       topics: [
         'warisan negara bangsa',
         'nasionalisme',
         'konflik dunia dan pendudukan Jepun',
         'era peralihan kuasa British',
-        'Persekutuan Tanah Melayu 1948',
+        'Persekutuan Tanah Melayu 1948'
+      ],
+    },
+    form4_b: {
+      label: 'Form 4 B',
+      form: 4,
+      chapters: [6, 7, 8, 9, 10],
+      topics: [
         'darurat',
         'usaha ke arah kemerdekaan',
         'pilihan raya',
@@ -219,15 +200,22 @@ function getExamBatchPlan(examBatchLabel) {
       ],
     },
     form5_a: {
-      label: 'Form 5',
+      label: 'Form 5 A',
       form: 5,
-      chapters: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      chapters: [1, 2, 3, 4, 5],
       topics: [
         'kedaulatan negara',
         'Perlembagaan Persekutuan',
         'Raja Berperlembagaan dan Demokrasi Berparlimen',
         'sistem Persekutuan',
-        'pembentukan Malaysia',
+        'pembentukan Malaysia'
+      ],
+    },
+    form5_b: {
+      label: 'Form 5 B',
+      form: 5,
+      chapters: [6, 7, 8, 9, 10],
+      topics: [
         'cabaran selepas pembentukan Malaysia',
         'membina kesejahteraan negara',
         'membina kemakmuran negara',
@@ -309,9 +297,7 @@ function normalizeMcqQuestions(questions) {
   if (!Array.isArray(questions)) return [];
 
   return questions.map((q) => {
-    if (!q || !Array.isArray(q.opts) || typeof q.ans !== 'number') {
-      return q;
-    }
+    if (!q || !Array.isArray(q.opts) || typeof q.ans !== 'number') return q;
 
     const originalOptions = [...q.opts];
     const correctAnswerText = originalOptions[q.ans];
@@ -387,20 +373,10 @@ async function requestModelJsonOnce({ model, systemText, userText, maxOutputToke
   const response = await client.responses.create({
     model,
     input: [
-      {
-        role: 'system',
-        content: [{ type: 'input_text', text: systemText }],
-      },
-      {
-        role: 'user',
-        content: [{ type: 'input_text', text: userText }],
-      },
+      { role: 'system', content: [{ type: 'input_text', text: systemText }] },
+      { role: 'user', content: [{ type: 'input_text', text: userText }] },
     ],
-    text: {
-      format: {
-        type: 'json_object',
-      },
-    },
+    text: { format: { type: 'json_object' } },
     max_output_tokens: maxOutputTokens,
   });
 
@@ -409,12 +385,8 @@ async function requestModelJsonOnce({ model, systemText, userText, maxOutputToke
     response.output?.[0]?.content?.[0]?.text ||
     '';
 
-  if (!outputText) {
-    throw new Error('AI tidak memulangkan data.');
-  }
-
-  const cleaned = cleanModelText(outputText);
-  return JSON.parse(cleaned);
+  if (!outputText) throw new Error('AI tidak memulangkan data.');
+  return JSON.parse(cleanModelText(outputText));
 }
 
 async function requestModelJsonWithRetry({
@@ -491,6 +463,7 @@ Peraturan:
 - level mesti mudah / sederhana / kbat
 - jangan ulang pola soalan yang sama
 - pulangkan TEPAT ${totalQuestions} soalan
+- exp maksimum 25 patah perkataan
 `;
 
   const userText = `
@@ -608,17 +581,9 @@ exports.handler = async (event) => {
     const isChapterMode = quizMode === 'chapter';
     const isExamMode = quizMode === 'exam';
 
-    const chapterData = isChapterMode
-      ? loadChapterData(selectedSkop, selectedSesi)
-      : null;
-
-    const examPattern = isExamMode
-      ? loadExamPattern(mode)
-      : null;
-
-    const examBatchPlan = isExamMode && mode === 'mcq'
-      ? getExamBatchPlan(examBatchLabel)
-      : null;
+    const chapterData = isChapterMode ? loadChapterData(selectedSkop, selectedSesi) : null;
+    const examPattern = isExamMode ? loadExamPattern(mode) : null;
+    const examBatchPlan = isExamMode && mode === 'mcq' ? getExamBatchPlan(examBatchLabel) : null;
 
     const variationPlan = buildVariationPlan(chapterData, examPattern, mode, totalQuestions);
     const chapterContext = buildChapterContext(chapterData, variationPlan);
@@ -648,7 +613,7 @@ exports.handler = async (event) => {
         model,
         systemText,
         userText,
-        maxOutputTokens: isExamMode ? 1800 : 1600,
+        maxOutputTokens: 1400,
         retries: 3,
       });
 
@@ -734,9 +699,7 @@ Jana satu set soalan struktur.
         retries: 3,
       });
 
-      return jsonResponse(200, {
-        ...parsed,
-      });
+      return jsonResponse(200, parsed);
     }
 
     if (mode === 'mark-structured') {

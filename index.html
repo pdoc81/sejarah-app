@@ -6,91 +6,40 @@
   <title>Sejarah Bersama Cikgu Habibah</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-    }
-    .glass {
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(8px);
-    }
-    .tab-btn.active,
-    .seg-btn.active,
-    .count-btn.active,
-    .paper-btn.active {
-      background: #dc2626;
-      color: white;
-      border-color: #dc2626;
+    body { background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); }
+    .glass { background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); }
+    .tab-btn.active, .seg-btn.active, .count-btn.active, .paper-btn.active {
+      background: #dc2626; color: white; border-color: #dc2626;
       box-shadow: 0 8px 20px rgba(220, 38, 38, 0.18);
     }
-    .tab-btn.help-tab {
-      background: #ecfeff;
-      color: #0f766e;
-      border-color: #99f6e4;
-    }
+    .tab-btn.help-tab { background: #ecfeff; color: #0f766e; border-color: #99f6e4; }
     .tab-btn.help-tab.active {
-      background: #0f766e;
-      color: white;
-      border-color: #0f766e;
+      background: #0f766e; color: white; border-color: #0f766e;
       box-shadow: 0 8px 20px rgba(15, 118, 110, 0.18);
     }
-    .tab-btn.donation-tab {
-      background: #fffbeb;
-      color: #b45309;
-      border-color: #fde68a;
-    }
+    .tab-btn.donation-tab { background: #fffbeb; color: #b45309; border-color: #fde68a; }
     .tab-btn.donation-tab.active {
-      background: #d97706;
-      color: white;
-      border-color: #d97706;
+      background: #d97706; color: white; border-color: #d97706;
       box-shadow: 0 8px 20px rgba(217, 119, 6, 0.18);
     }
-    .disabled-soft {
-      opacity: 0.45;
-      pointer-events: none;
-      filter: grayscale(0.15);
-    }
+    .disabled-soft { opacity: 0.45; pointer-events: none; filter: grayscale(0.15); }
     .option-btn.selected {
-      background: #fef2f2;
-      border-color: #dc2626;
-      color: #991b1b;
+      background: #fef2f2; border-color: #dc2626; color: #991b1b;
       box-shadow: 0 0 0 2px rgba(252, 165, 165, 0.45);
     }
-    .option-btn.dimmed {
-      background: #f8fafc;
-      border-color: #e2e8f0;
-      color: #94a3b8;
-    }
-    .option-btn.correct {
-      background: #dcfce7 !important;
-      border-color: #16a34a !important;
-      color: #166534 !important;
-    }
-    .option-btn.wrong {
-      background: #fee2e2 !important;
-      border-color: #dc2626 !important;
-      color: #991b1b !important;
-    }
-    .option-btn.reveal-correct {
-      background: #dbeafe !important;
-      border-color: #2563eb !important;
-      color: #1d4ed8 !important;
-    }
-    .fade-in {
-      animation: fadeIn 0.25s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .option-btn.dimmed { background: #f8fafc; border-color: #e2e8f0; color: #94a3b8; }
+    .option-btn.correct { background: #dcfce7 !important; border-color: #16a34a !important; color: #166534 !important; }
+    .option-btn.wrong { background: #fee2e2 !important; border-color: #dc2626 !important; color: #991b1b !important; }
+    .option-btn.reveal-correct { background: #dbeafe !important; border-color: #2563eb !important; color: #1d4ed8 !important; }
+    .fade-in { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body class="text-slate-800 min-h-screen">
   <div class="max-w-7xl mx-auto px-4 py-6">
     <header class="glass rounded-3xl border border-slate-200 shadow-sm px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div class="flex items-center gap-4">
-        <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-bold text-xl shadow">
-          H
-        </div>
+        <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center font-bold text-xl shadow">H</div>
         <div>
           <p class="text-xs font-bold tracking-[0.24em] text-red-500 uppercase">Sejarah Bersama</p>
           <h1 class="text-2xl md:text-3xl font-black tracking-tight">Cikgu Habibah</h1>
@@ -105,18 +54,10 @@
     </header>
 
     <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
-      <button class="tab-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="latihan">
-        Latihan
-      </button>
-      <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="progres">
-        Progres Semasa
-      </button>
-      <button class="tab-btn help-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="bantuan">
-        Bantuan
-      </button>
-      <button class="tab-btn donation-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="sumbangan">
-        Sumbangan
-      </button>
+      <button class="tab-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="latihan">Latihan</button>
+      <button class="tab-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="progres">Progres Semasa</button>
+      <button class="tab-btn help-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="bantuan">Bantuan</button>
+      <button class="tab-btn donation-tab rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm transition" data-tab="sumbangan">Sumbangan</button>
     </div>
 
     <section id="tab-latihan" class="tab-panel mt-6">
@@ -130,24 +71,16 @@
           <div class="mb-5">
             <p class="text-sm font-semibold mb-2">Pilih Mod</p>
             <div class="grid grid-cols-2 gap-2">
-              <button id="quizModeChapterBtn" class="seg-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">
-                Latih Tubi Bab
-              </button>
-              <button id="quizModeExamBtn" class="seg-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">
-                Mod Percubaan SPM
-              </button>
+              <button id="quizModeChapterBtn" class="seg-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">Latih Tubi Bab</button>
+              <button id="quizModeExamBtn" class="seg-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">Mod Percubaan SPM</button>
             </div>
           </div>
 
           <div class="mb-5">
             <p class="text-sm font-semibold mb-2">Pilih Kertas</p>
             <div class="grid grid-cols-2 gap-2">
-              <button id="paper1Btn" class="paper-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">
-                Kertas 1
-              </button>
-              <button id="paper2Btn" class="paper-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">
-                Kertas 2
-              </button>
+              <button id="paper1Btn" class="paper-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">Kertas 1</button>
+              <button id="paper2Btn" class="paper-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold">Kertas 2</button>
             </div>
           </div>
 
@@ -179,8 +112,7 @@
               <p class="text-xs uppercase tracking-[0.2em] text-red-500 font-semibold mb-1">Mod Percubaan</p>
               <p class="text-sm font-semibold text-slate-800">SPM Sejarah Tingkatan 4 + Tingkatan 5</p>
               <p class="mt-2 text-sm text-slate-600">
-                Untuk Kertas 1, sistem akan jana <span class="font-semibold">20 soalan</span> sahaja:
-                <span class="font-semibold">10 Tingkatan 4 + 10 Tingkatan 5</span>.
+                Untuk Kertas 1, sistem akan jana <span class="font-semibold">20 soalan</span> dalam batch kecil.
               </p>
             </div>
 
@@ -197,18 +129,12 @@
               <button class="count-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="10">10</button>
               <button class="count-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold" data-count="20">20</button>
             </div>
-            <p id="countHint" class="mt-2 text-xs text-slate-500">
-              Untuk Kertas 1 dalam Latih Tubi Bab sahaja.
-            </p>
+            <p id="countHint" class="mt-2 text-xs text-slate-500">Untuk Kertas 1 dalam Latih Tubi Bab sahaja.</p>
           </div>
 
           <div class="mt-6 grid grid-cols-2 gap-3">
-            <button id="generateBtn" class="rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-3 shadow-sm transition">
-              Jana Soalan
-            </button>
-            <button id="resetBtn" class="rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-4 py-3 transition">
-              Reset
-            </button>
+            <button id="generateBtn" class="rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold px-4 py-3 shadow-sm transition">Jana Soalan</button>
+            <button id="resetBtn" class="rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-4 py-3 transition">Reset</button>
           </div>
 
           <div class="mt-4 rounded-2xl bg-amber-50 border border-amber-100 px-4 py-3 text-sm text-amber-800">
@@ -222,21 +148,15 @@
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
               <div>
                 <h2 class="text-2xl font-bold">Ruang Latihan</h2>
-                <p id="resultSubtitle" class="text-sm text-slate-500 mt-1">
-                  Pilih mod, kertas dan skop sebelum menjana soalan.
-                </p>
+                <p id="resultSubtitle" class="text-sm text-slate-500 mt-1">Pilih mod, kertas dan skop sebelum menjana soalan.</p>
               </div>
               <div class="flex flex-wrap gap-2 items-center">
                 <div id="timerBox" class="hidden rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3">
                   <p class="text-xs uppercase tracking-[0.2em] text-slate-500 font-semibold">Masa Baki</p>
                   <p id="timerText" class="text-lg font-black text-slate-800">00:00</p>
                 </div>
-                <button id="markStructuredBtn" class="hidden rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 transition">
-                  Semak Jawapan
-                </button>
-                <button id="newSetBtn" class="hidden rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-4 py-2 transition">
-                  Jana Set Baharu
-                </button>
+                <button id="markStructuredBtn" class="hidden rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 transition">Semak Jawapan</button>
+                <button id="newSetBtn" class="hidden rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-4 py-2 transition">Jana Set Baharu</button>
               </div>
             </div>
           </section>
@@ -277,12 +197,8 @@
             <div id="mcqQuestions" class="space-y-5"></div>
 
             <div class="mt-6 flex flex-wrap gap-3">
-              <button id="submitMcqBtn" class="rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold px-5 py-3 transition">
-                Semak Jawapan
-              </button>
-              <button id="retryMcqBtn" class="hidden rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-5 py-3 transition">
-                Cuba Set Baharu
-              </button>
+              <button id="submitMcqBtn" class="rounded-2xl bg-red-500 hover:bg-red-600 text-white font-bold px-5 py-3 transition">Semak Jawapan</button>
+              <button id="retryMcqBtn" class="hidden rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 font-semibold px-5 py-3 transition">Cuba Set Baharu</button>
             </div>
           </section>
 
@@ -312,9 +228,7 @@
     <section id="tab-progres" class="tab-panel hidden mt-6">
       <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
         <h2 class="text-2xl font-bold">Progres Semasa</h2>
-        <p class="mt-2 text-slate-600">
-          Ruang ini boleh kita sambungkan kemudian kepada rekod markah, bab lemah, bab kuat dan cadangan ulang kaji automatik.
-        </p>
+        <p class="mt-2 text-slate-600">Ruang ini boleh disambungkan kepada rekod markah dan cadangan ulang kaji automatik.</p>
       </div>
     </section>
 
@@ -323,9 +237,9 @@
         <h2 class="text-2xl font-bold">Bantuan</h2>
         <div class="mt-4 space-y-4 text-slate-700 leading-7">
           <p><span class="font-semibold">Latih Tubi Bab</span> sesuai untuk fokus kepada satu bab tertentu mengikut tingkatan.</p>
-          <p><span class="font-semibold">Mod Percubaan SPM</span> sesuai untuk melatih pelajar dengan gaya soalan yang lebih hampir kepada peperiksaan sebenar.</p>
+          <p><span class="font-semibold">Mod Percubaan SPM</span> sesuai untuk melatih pelajar dengan gaya soalan lebih hampir kepada peperiksaan sebenar.</p>
           <p><span class="font-semibold">Kertas 1</span> menjana soalan objektif dan boleh disemak terus.</p>
-          <p><span class="font-semibold">Kertas 2</span> menjana soalan struktur. Jawapan model hanya dipaparkan selepas semakan.</p>
+          <p><span class="font-semibold">Kertas 2</span> menjana soalan struktur dan jawapan model dipaparkan selepas semakan.</p>
         </div>
       </div>
     </section>
@@ -341,35 +255,18 @@
               Bersama membantu aplikasi ini terus berkembang
             </h2>
             <div class="mt-5 space-y-5 text-slate-600 leading-8">
-              <p>
-                Aplikasi ini pada asalnya dibangunkan untuk anak saya sendiri yang sedang membuat persediaan menghadapi SPM.
-                Saya nak anak saya mempunyai satu medium pembelajaran yang lebih mudah, tersusun dan mesra pengguna untuk mengulang kaji matapelajaran, khususnya dalam membuat latih tubi, serta membina keyakinan sebelum peperiksaan.
-              </p>
-              <p>
-                Dalam proses membangunkannya, saya terfikir bahawa keperluan ini bukan hanya untuk anak saya sahaja.
-                Ramai lagi anak-anak lain yang turut memerlukan bantuan yang sama — sebuah platform pembelajaran yang lebih terarah, menarik, dan selari dengan cara pembelajaran zaman gajet.
-              </p>
-              <p>
-                Aplikasi ini juga menggunakan teknologi kecerdasan buatan (AI), bagi membantu memproses menjana soalan bersesuaian, serta menilai jawapan yang diberikan oleh pelajar.
-                Pendekatan ini membolehkan pembelajaran menjadi lebih interaktif, responsif dan membantu pelajar memahami kelemahan serta kekuatan mereka dengan lebih baik.
-                Namun begitu, penggunaan teknologi ini turut melibatkan kos kepada saya untuk mendapatkan suntikan AI.
-              </p>
-              <p>
-                Sekiranya tuan/puan merasakan aplikasi ini bermanfaat dan ingin membantu saya menambah baik kandungan, membangunkan ciri-ciri baharu, serta menampung kos operasi termasuk penggunaan AI,
-                tuan/puan bolehlah memberi sumbangan secara sukarela seikhlas hati. Sumbangan tuan/puan amat bermakna dan akan membantu kami meneruskan usaha ini demi manfaat lebih ramai pelajar. Insya-Allah.
-              </p>
+              <p>Aplikasi ini pada asalnya dibangunkan untuk anak saya sendiri yang sedang membuat persediaan menghadapi SPM.</p>
+              <p>Dalam proses membangunkannya, saya terfikir bahawa keperluan ini bukan hanya untuk anak saya sahaja.</p>
+              <p>Aplikasi ini juga menggunakan teknologi AI bagi membantu menjana soalan bersesuaian serta menilai jawapan pelajar.</p>
+              <p>Jika tuan/puan merasakan aplikasi ini bermanfaat, tuan/puan bolehlah memberi sumbangan secara sukarela seikhlas hati.</p>
             </div>
           </div>
 
           <div>
             <div class="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
               <div class="flex gap-2 mb-4">
-                <button id="donationMaybankBtn" class="seg-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold w-full">
-                  Maybank
-                </button>
-                <button id="donationTngBtn" class="seg-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold w-full">
-                  TnG eWallet
-                </button>
+                <button id="donationMaybankBtn" class="seg-btn active rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold w-full">Maybank</button>
+                <button id="donationTngBtn" class="seg-btn rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold w-full">TnG eWallet</button>
               </div>
 
               <div id="donationMaybankBox">
@@ -387,8 +284,7 @@
               </div>
 
               <div class="mt-4 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-sm text-slate-600">
-                Imbas kod QR menggunakan aplikasi perbankan atau eWallet pilihan tuan/puan untuk membuat sumbangan.
-                Terima kasih atas sokongan dan doa yang diberikan.
+                Imbas kod QR menggunakan aplikasi perbankan atau eWallet pilihan tuan/puan.
               </div>
             </div>
           </div>
@@ -399,62 +295,11 @@
 
   <script>
     const chapterTitles = {
-      1: {
-        1: "Mengenali Sejarah",
-        2: "Zaman Air Batu",
-        3: "Zaman Prasejarah",
-        4: "Mengenali Tamadun",
-        5: "Tamadun Awal Dunia",
-        6: "Peningkatan Tamadun Yunani dan Rom",
-        7: "Peningkatan Tamadun India dan China",
-        8: "Tamadun Islam dan Sumbangannya"
-      },
-      2: {
-        1: "Kerajaan Alam Melayu",
-        2: "Sistem Pemerintahan dan Kegiatan Ekonomi Masyarakat Kerajaan Alam Melayu",
-        3: "Sosiobudaya Masyarakat Kerajaan Alam Melayu",
-        4: "Agama, Kepercayaan dan Keunikan Warisan Masyarakat Kerajaan Alam Melayu",
-        5: "Kesultanan Melayu Melaka",
-        6: "Kesultanan Johor Riau",
-        7: "Kesultanan Melayu Pahang, Perak, Terengganu dan Selangor",
-        8: "Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",
-        9: "Warisan Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",
-        10: "Sarawak dan Sabah"
-      },
-      3: {
-        1: "Kedatangan Kuasa Barat",
-        2: "Pentadbiran Negeri-negeri Selat",
-        3: "Pentadbiran Negeri-negeri Melayu Bersekutu",
-        4: "Pentadbiran Negeri-negeri Melayu Tidak Bersekutu",
-        5: "Pentadbiran Barat di Sarawak dan Sabah",
-        6: "Kesan Pentadbiran Barat terhadap Ekonomi dan Sosial",
-        7: "Penentangan Masyarakat Tempatan",
-        8: "Kebijaksanaan Raja dan Pembesar Melayu Menangani Cabaran Barat"
-      },
-      4: {
-        1: "Warisan Negara Bangsa",
-        2: "Kebangkitan Nasionalisme",
-        3: "Konflik Dunia dan Pendudukan Jepun di Negara Kita",
-        4: "Era Peralihan Kuasa British di Negara Kita",
-        5: "Persekutuan Tanah Melayu 1948",
-        6: "Ancaman Komunis dan Perisytiharan Darurat",
-        7: "Usaha ke Arah Kemerdekaan",
-        8: "Pilihan Raya",
-        9: "Perlembagaan Persekutuan Tanah Melayu 1957",
-        10: "Pemasyhuran Kemerdekaan"
-      },
-      5: {
-        1: "Kedaulatan Negara",
-        2: "Perlembagaan Persekutuan",
-        3: "Raja Berperlembagaan dan Demokrasi Berparlimen",
-        4: "Sistem Persekutuan",
-        5: "Pembentukan Malaysia",
-        6: "Cabaran Selepas Pembentukan Malaysia",
-        7: "Membina Kesejahteraan Negara",
-        8: "Membina Kemakmuran Negara",
-        9: "Dasar Luar Malaysia",
-        10: "Kecemerlangan Malaysia di Persada Dunia"
-      }
+      1: {1:"Mengenali Sejarah",2:"Zaman Air Batu",3:"Zaman Prasejarah",4:"Mengenali Tamadun",5:"Tamadun Awal Dunia",6:"Peningkatan Tamadun Yunani dan Rom",7:"Peningkatan Tamadun India dan China",8:"Tamadun Islam dan Sumbangannya"},
+      2: {1:"Kerajaan Alam Melayu",2:"Sistem Pemerintahan dan Kegiatan Ekonomi Masyarakat Kerajaan Alam Melayu",3:"Sosiobudaya Masyarakat Kerajaan Alam Melayu",4:"Agama, Kepercayaan dan Keunikan Warisan Masyarakat Kerajaan Alam Melayu",5:"Kesultanan Melayu Melaka",6:"Kesultanan Johor Riau",7:"Kesultanan Melayu Pahang, Perak, Terengganu dan Selangor",8:"Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",9:"Warisan Kerajaan Kedah, Kelantan, Negeri Sembilan dan Perlis",10:"Sarawak dan Sabah"},
+      3: {1:"Kedatangan Kuasa Barat",2:"Pentadbiran Negeri-negeri Selat",3:"Pentadbiran Negeri-negeri Melayu Bersekutu",4:"Pentadbiran Negeri-negeri Melayu Tidak Bersekutu",5:"Pentadbiran Barat di Sarawak dan Sabah",6:"Kesan Pentadbiran Barat terhadap Ekonomi dan Sosial",7:"Penentangan Masyarakat Tempatan",8:"Kebijaksanaan Raja dan Pembesar Melayu Menangani Cabaran Barat"},
+      4: {1:"Warisan Negara Bangsa",2:"Kebangkitan Nasionalisme",3:"Konflik Dunia dan Pendudukan Jepun di Negara Kita",4:"Era Peralihan Kuasa British di Negara Kita",5:"Persekutuan Tanah Melayu 1948",6:"Ancaman Komunis dan Perisytiharan Darurat",7:"Usaha ke Arah Kemerdekaan",8:"Pilihan Raya",9:"Perlembagaan Persekutuan Tanah Melayu 1957",10:"Pemasyhuran Kemerdekaan"},
+      5: {1:"Kedaulatan Negara",2:"Perlembagaan Persekutuan",3:"Raja Berperlembagaan dan Demokrasi Berparlimen",4:"Sistem Persekutuan",5:"Pembentukan Malaysia",6:"Cabaran Selepas Pembentukan Malaysia",7:"Membina Kesejahteraan Negara",8:"Membina Kemakmuran Negara",9:"Dasar Luar Malaysia",10:"Kecemerlangan Malaysia di Persada Dunia"}
     };
 
     const tabButtons = document.querySelectorAll('.tab-btn');
@@ -527,15 +372,10 @@
     function setStatus(text, type = 'ready') {
       statusBadge.textContent = text;
       statusBadge.className = 'text-xs font-semibold px-3 py-1 rounded-full';
-      if (type === 'loading') {
-        statusBadge.classList.add('bg-amber-100', 'text-amber-700');
-      } else if (type === 'error') {
-        statusBadge.classList.add('bg-red-100', 'text-red-700');
-      } else if (type === 'success') {
-        statusBadge.classList.add('bg-emerald-100', 'text-emerald-700');
-      } else {
-        statusBadge.classList.add('bg-slate-100', 'text-slate-600');
-      }
+      if (type === 'loading') statusBadge.classList.add('bg-amber-100', 'text-amber-700');
+      else if (type === 'error') statusBadge.classList.add('bg-red-100', 'text-red-700');
+      else if (type === 'success') statusBadge.classList.add('bg-emerald-100', 'text-emerald-700');
+      else statusBadge.classList.add('bg-slate-100', 'text-slate-600');
     }
 
     function stopTimer() {
@@ -562,7 +402,6 @@
       timerInterval = setInterval(() => {
         timerSeconds -= 1;
         timerText.textContent = formatTime(Math.max(0, timerSeconds));
-
         if (timerSeconds <= 0) {
           stopTimer();
           if (state.paper === 'mcq' && state.quizMode === 'chapter' && submitMcqBtn.dataset.done !== 'true') {
@@ -576,14 +415,12 @@
       const form = Number(tingkatanSelect.value);
       const chapters = chapterTitles[form] || {};
       babSelect.innerHTML = '';
-
       Object.keys(chapters).forEach(chNo => {
         const option = document.createElement('option');
         option.value = String(chNo);
         option.textContent = `Bab ${chNo} – ${chapters[chNo]}`;
         babSelect.appendChild(option);
       });
-
       updateScopePreview();
     }
 
@@ -600,13 +437,9 @@
       quizModeExamBtn.classList.toggle('active', mode === 'exam');
       chapterFields.classList.toggle('hidden', mode !== 'chapter');
       examFields.classList.toggle('hidden', mode !== 'exam');
-
-      if (mode === 'chapter') {
-        resultSubtitle.textContent = 'Latih tubi berdasarkan kandungan buku teks mengikut tingkatan dan bab.';
-      } else {
-        resultSubtitle.textContent = 'Mod percubaan menjana set berpandukan pola soalan trial SPM Tingkatan 4 dan 5.';
-      }
-
+      resultSubtitle.textContent = mode === 'chapter'
+        ? 'Latih tubi berdasarkan kandungan buku teks mengikut tingkatan dan bab.'
+        : 'Mod percubaan menjana set berpandukan pola soalan trial SPM Tingkatan 4 dan 5.';
       updateCountState();
     }
 
@@ -626,12 +459,10 @@
         disabled = true;
         hint = 'Pilihan ini dinyahaktifkan untuk Kertas 2.';
       }
-
       if (state.quizMode === 'exam' && state.paper === 'mcq') {
         disabled = true;
-        hint = 'Mod Percubaan SPM Kertas 1 akan menjana 20 soalan: 10 Tingkatan 4 + 10 Tingkatan 5.';
+        hint = 'Mod Percubaan SPM Kertas 1 akan menjana 20 soalan dalam batch kecil.';
       }
-
       if (state.quizMode === 'exam' && state.paper === 'structured') {
         disabled = true;
         hint = 'Kertas 2 menggunakan set struktur gaya percubaan.';
@@ -646,13 +477,8 @@
     }
 
     function switchTab(tabName) {
-      tabButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabName);
-      });
-
-      tabPanels.forEach(panel => {
-        panel.classList.toggle('hidden', panel.id !== `tab-${tabName}`);
-      });
+      tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
+      tabPanels.forEach(panel => panel.classList.toggle('hidden', panel.id !== `tab-${tabName}`));
     }
 
     function resetOutput() {
@@ -689,7 +515,6 @@
           ? 'Percubaan SPM Sejarah Kertas 1 Tingkatan 4 dan 5'
           : 'Percubaan SPM Sejarah Kertas 2 Tingkatan 4 dan 5';
       }
-
       const form = Number(tingkatanSelect.value);
       const chapter = Number(babSelect.value);
       const title = chapterTitles[form]?.[chapter] || '';
@@ -701,11 +526,8 @@
       buttons.forEach(btn => {
         btn.classList.remove('selected', 'dimmed', 'ring-2', 'ring-red-300');
         const optIndex = Number(btn.dataset.optindex);
-        if (optIndex === selectedIndex) {
-          btn.classList.add('selected');
-        } else {
-          btn.classList.add('dimmed');
-        }
+        if (optIndex === selectedIndex) btn.classList.add('selected');
+        else btn.classList.add('dimmed');
       });
     }
 
@@ -770,9 +592,7 @@
         btn.addEventListener('click', () => {
           const qIndex = Number(btn.dataset.qindex);
           const optIndex = Number(btn.dataset.optindex);
-
           if (submitMcqBtn.dataset.done === 'true') return;
-
           state.selectedAnswers[qIndex] = optIndex;
           setQuestionSelectionVisual(qIndex, optIndex);
         });
@@ -795,7 +615,6 @@
       newSetBtn.classList.remove('hidden');
 
       stopTimer();
-
       state.structuredData = data;
       structuredMeta.textContent = state.quizMode === 'exam'
         ? 'Mod Percubaan SPM · Set Struktur'
@@ -826,62 +645,81 @@
       });
     }
 
+    async function fetchJsonPayload(payload) {
+      const res = await fetch('/.netlify/functions/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const rawText = await res.text();
+      let data = {};
+
+      try {
+        data = rawText ? JSON.parse(rawText) : {};
+      } catch (parseError) {
+        console.error('Raw response parse error:', rawText);
+        throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
+      }
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Gagal menjana soalan.');
+      }
+
+      return data;
+    }
+
     async function generateQuestions() {
       resetOutput();
       loadingBox.classList.remove('hidden');
       setStatus('Menjana...', 'loading');
 
       try {
-        if (state.quizMode === 'exam' && state.paper === 'mcq') {
+        if (state.paper === 'mcq' && state.quizMode === 'exam') {
           const batchPlans = [
             { label: 'form4_a' },
-            { label: 'form5_a' }
+            { label: 'form4_b' },
+            { label: 'form5_a' },
+            { label: 'form5_b' }
           ];
 
           const allQuestions = [];
 
           for (let i = 0; i < batchPlans.length; i++) {
-            setStatus(`Menjana batch ${i + 1}/2...`, 'loading');
-
-            const res = await fetch('/.netlify/functions/generate', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                quizMode: 'exam',
-                mode: 'mcq',
-                questionCount: 10,
-                scopeLabel: getScopeLabel(),
-                examBatchLabel: batchPlans[i].label
-              })
+            setStatus(`Menjana batch ${i + 1}/4...`, 'loading');
+            const data = await fetchJsonPayload({
+              quizMode: 'exam',
+              mode: 'mcq',
+              questionCount: 5,
+              scopeLabel: getScopeLabel(),
+              examBatchLabel: batchPlans[i].label
             });
-
-            const rawText = await res.text();
-            let data = {};
-
-            try {
-              data = rawText ? JSON.parse(rawText) : {};
-            } catch (parseError) {
-              console.error('Raw response parse error:', rawText);
-              throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
-            }
-
-            if (!res.ok || data.error) {
-              throw new Error(data.error || 'Gagal menjana batch soalan.');
-            }
-
-            if (Array.isArray(data.questions)) {
-              allQuestions.push(...data.questions);
-            }
+            if (Array.isArray(data.questions)) allQuestions.push(...data.questions);
           }
 
           loadingBox.classList.add('hidden');
+          renderMcq({ questions: allQuestions.slice(0, 20) });
+          setStatus('Berjaya', 'success');
+          return;
+        }
 
-          renderMcq({
-            questions: allQuestions.slice(0, 20)
-          });
+        if (state.paper === 'mcq' && state.quizMode === 'chapter' && state.questionCount === 20) {
+          const allQuestions = [];
+          for (let i = 0; i < 4; i++) {
+            setStatus(`Menjana batch ${i + 1}/4...`, 'loading');
+            const data = await fetchJsonPayload({
+              quizMode: 'chapter',
+              mode: 'mcq',
+              questionCount: 5,
+              selectedSkop: tingkatanSelect.value,
+              selectedSesi: babSelect.value,
+              scopeLabel: getScopeLabel()
+            });
+            if (Array.isArray(data.questions)) allQuestions.push(...data.questions);
+          }
 
+          loadingBox.classList.add('hidden');
+          renderMcq({ questions: allQuestions.slice(0, 20) });
           setStatus('Berjaya', 'success');
           return;
         }
@@ -895,37 +733,11 @@
           scopeLabel: getScopeLabel()
         };
 
-        const res = await fetch('/.netlify/functions/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const rawText = await res.text();
-        let data = {};
-
-        try {
-          data = rawText ? JSON.parse(rawText) : {};
-        } catch (parseError) {
-          console.error('Raw response parse error:', rawText);
-          throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
-        }
+        const data = await fetchJsonPayload(payload);
 
         loadingBox.classList.add('hidden');
-
-        if (!res.ok || data.error) {
-          showError(data.error || 'Gagal menjana soalan.');
-          return;
-        }
-
-        if (state.paper === 'mcq') {
-          renderMcq(data);
-        } else {
-          renderStructured(data);
-        }
-
+        if (state.paper === 'mcq') renderMcq(data);
+        else renderStructured(data);
         setStatus('Berjaya', 'success');
       } catch (err) {
         console.error('Generate error:', err);
@@ -950,22 +762,15 @@
           btn.disabled = true;
           btn.classList.remove('selected', 'dimmed');
 
-          if (optIndex === item.ans) {
-            btn.classList.add('reveal-correct');
-          }
-
+          if (optIndex === item.ans) btn.classList.add('reveal-correct');
           if (selected === optIndex && selected === item.ans) {
             btn.classList.remove('reveal-correct');
             btn.classList.add('correct');
           }
-
-          if (selected === optIndex && selected !== item.ans) {
-            btn.classList.add('wrong');
-          }
+          if (selected === optIndex && selected !== item.ans) btn.classList.add('wrong');
         });
 
         if (selected === item.ans) score += 1;
-
         const expBox = document.getElementById(`exp-${index}`);
         if (expBox) expBox.classList.remove('hidden');
       });
@@ -973,9 +778,7 @@
       mcqScore.textContent = `${score} / ${state.mcqData.length}`;
       retryMcqBtn.classList.remove('hidden');
 
-      if (isAuto) {
-        setStatus('Masa Tamat', 'error');
-      }
+      if (isAuto) setStatus('Masa Tamat', 'error');
     }
 
     async function markStructuredAnswers() {
@@ -992,34 +795,13 @@
       });
 
       try {
-        const res = await fetch('/.netlify/functions/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            quizMode: state.quizMode,
-            mode: 'mark-structured',
-            context: state.structuredData.context || '',
-            questions: state.structuredData.questions || [],
-            studentAnswers
-          })
+        const data = await fetchJsonPayload({
+          quizMode: state.quizMode,
+          mode: 'mark-structured',
+          context: state.structuredData.context || '',
+          questions: state.structuredData.questions || [],
+          studentAnswers
         });
-
-        const rawText = await res.text();
-        let data = {};
-
-        try {
-          data = rawText ? JSON.parse(rawText) : {};
-        } catch (parseError) {
-          console.error('Raw mark response parse error:', rawText);
-          throw new Error(`Respons semakan tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
-        }
-
-        if (!res.ok || data.error) {
-          showError(data.error || 'Gagal menyemak jawapan.');
-          return;
-        }
 
         structuredResults.classList.remove('hidden');
         structuredFeedbackList.innerHTML = '';
@@ -1056,29 +838,19 @@
       state.quizMode = 'chapter';
       state.paper = 'mcq';
       state.questionCount = 5;
-
       tingkatanSelect.value = '1';
       updateBabOptions();
       babSelect.value = '1';
-
       setQuizMode('chapter');
       setPaper('mcq');
-
-      countButtons.forEach(btn => {
-        btn.classList.toggle('active', Number(btn.dataset.count) === 5);
-      });
-
+      countButtons.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.count) === 5));
       updateScopePreview();
       resetOutput();
     }
 
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-    });
-
+    tabButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
     quizModeChapterBtn.addEventListener('click', () => setQuizMode('chapter'));
     quizModeExamBtn.addEventListener('click', () => setQuizMode('exam'));
-
     paper1Btn.addEventListener('click', () => setPaper('mcq'));
     paper2Btn.addEventListener('click', () => setPaper('structured'));
 
@@ -1086,7 +858,6 @@
       btn.addEventListener('click', () => {
         if (state.paper !== 'mcq') return;
         if (state.quizMode !== 'chapter') return;
-
         state.questionCount = Number(btn.dataset.count);
         countButtons.forEach(b => b.classList.toggle('active', b === btn));
       });
