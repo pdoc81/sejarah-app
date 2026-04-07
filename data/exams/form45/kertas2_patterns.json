@@ -1,0 +1,203 @@
+{
+  "exam_type": "spm_trial",
+  "source": "Putrajaya 2024 Set 1",
+  "form_scope": [4, 5],
+  "paper": 2,
+  "paper_code": "1249/2",
+  "description": "Pola umum soalan struktur dan esei Sejarah SPM percubaan yang menggabungkan Tingkatan 4 dan Tingkatan 5.",
+  "structure": {
+    "section_a": {
+      "question_count": 4,
+      "must_answer": true,
+      "total_marks": 40,
+      "question_pattern": "setiap soalan biasanya mempunyai bahagian a, b, c",
+      "marks_pattern": [
+        "2 markah",
+        "3 atau 4 markah",
+        "4 markah KBAT atau ulasan"
+      ]
+    },
+    "section_b": {
+      "question_count": 5,
+      "must_answer": false,
+      "choose": 3,
+      "total_marks": 60,
+      "question_numbers": [5, 6, 7, 8, 9],
+      "question_pattern": "soalan esei berbahagian, biasanya a, b, c",
+      "marks_pattern": [
+        "4 hingga 6 markah bagi fakta atau huraian",
+        "8 markah bagi bahagian ulasan / KBAT / mesej / iktibar"
+      ]
+    }
+  },
+  "stimulus_types": [
+    "petikan sejarah",
+    "pernyataan akhbar atau media",
+    "petikan buku atau sumber sekunder",
+    "rajah",
+    "jadual",
+    "senarai atau maklumat ringkas",
+    "isu semasa yang dihubungkan dengan topik sejarah"
+  ],
+  "section_a_patterns": [
+    {
+      "part": "a",
+      "style": "fakta langsung atau senarai",
+      "typical_marks": 2,
+      "common_task_words": [
+        "nyatakan",
+        "senaraikan",
+        "apakah yang dimaksudkan dengan"
+      ]
+    },
+    {
+      "part": "b",
+      "style": "jelaskan atau terangkan",
+      "typical_marks": 3,
+      "common_task_words": [
+        "jelaskan",
+        "terangkan",
+        "huraikan"
+      ]
+    },
+    {
+      "part": "c",
+      "style": "ulasan, kepentingan, aplikasi atau inferens",
+      "typical_marks": 4,
+      "common_task_words": [
+        "jelaskan hubung kait",
+        "apakah kepentingan",
+        "bagaimanakah anda mengamalkan",
+        "ulaskan"
+      ]
+    }
+  ],
+  "section_b_patterns": [
+    {
+      "part": "a",
+      "style": "fakta dan huraian asas",
+      "typical_marks": 4,
+      "common_task_words": [
+        "jelaskan",
+        "bagaimanakah langkah berikut",
+        "apakah yang dimaksudkan"
+      ]
+    },
+    {
+      "part": "b",
+      "style": "huraian mendalam berdasarkan topik",
+      "typical_marks": 6,
+      "common_task_words": [
+        "terangkan",
+        "huraikan",
+        "jelaskan"
+      ]
+    },
+    {
+      "part": "c",
+      "style": "KBAT berasaskan petikan, rajah atau isu",
+      "typical_marks": 8,
+      "common_task_words": [
+        "huraikan mesej",
+        "jelaskan maklumat dan kesan",
+        "berikan ulasan anda",
+        "apakah iktibar yang boleh diambil"
+      ]
+    }
+  ],
+  "common_command_words": [
+    "nyatakan",
+    "jelaskan",
+    "terangkan",
+    "huraikan",
+    "ulaskan",
+    "bagaimanakah",
+    "mengapakah",
+    "apakah kepentingan",
+    "apakah iktibar",
+    "berikan ulasan anda"
+  ],
+  "marking_patterns": {
+    "fact_based": {
+      "style": "fakta diskret berlabel F1, F2, F3 dan seterusnya",
+      "rule": "mana-mana beberapa fakta dikira ikut markah diperuntukkan",
+      "examples": [
+        "Mana-mana 2F x 1m",
+        "Mana-mana 4F x 1m",
+        "Mana-mana 8F x 1m"
+      ]
+    },
+    "kbat_based": {
+      "style": "aras 1 hingga aras 4",
+      "features": {
+        "aras_1": "pengetahuan terhad, jawapan umum",
+        "aras_2": "pengetahuan jelas tetapi ringkas dan kurang mendalam",
+        "aras_3": "pengetahuan jelas, contoh sesuai, inferens wujud, jawapan mendalam",
+        "aras_4": "pengetahuan sangat jelas, contoh sangat sesuai, inferens tepat, jawapan matang dan sangat terperinci"
+      }
+    }
+  },
+  "observed_answer_expectations": [
+    "jawapan perlu terus kepada kehendak kata tugas",
+    "bahagian a biasanya tidak memerlukan huraian panjang",
+    "bahagian b memerlukan isi dan huraian yang lebih lengkap",
+    "bahagian c memerlukan kaitan dengan petikan, rajah, nilai, kepentingan, iktibar atau kesan",
+    "jawapan terbaik biasanya ada fakta, contoh, inferens dan rumusan"
+  ],
+  "topic_coverage_examples": [
+    "Kesultanan Melayu Melaka",
+    "penyerahan Sabah",
+    "kebebasan asasi",
+    "Rukun Negara",
+    "darurat",
+    "Suruhanjaya Perlembagaan Persekutuan Tanah Melayu",
+    "kerjasama Kerajaan Persekutuan dan Negeri",
+    "pembentukan Malaysia",
+    "wawasan masa hadapan"
+  ],
+  "question_design_rules": [
+    "bina Bahagian A dengan 4 soalan pendek berbahagian a, b, c",
+    "bina Bahagian B dengan 5 soalan lebih besar dan pelajar pilih 3",
+    "setiap set mesti campur Tingkatan 4 dan Tingkatan 5",
+    "gunakan rangsangan yang sesuai seperti petikan, rajah atau pernyataan",
+    "bahagian a fokus fakta asas atau definisi",
+    "bahagian b fokus huraian atau sebab dan kesan",
+    "bahagian c fokus KBAT, mesej, ulasan, iktibar, kepentingan atau aplikasi",
+    "jawapan model perlu dibina dalam bentuk poin yang jelas untuk memudahkan pemarkahan",
+    "untuk semakan automatik, jadikan jawapan model berasaskan poin utama dan frasa sokongan"
+  ],
+  "kbat_prompt_patterns": [
+    "jelaskan hubung kait berdasarkan petikan",
+    "apakah kepentingan ... kepada negara",
+    "ulaskan pernyataan tersebut",
+    "huraikan mesej yang terkandung dalam petikan",
+    "jelaskan maklumat dalam petikan dan kesannya",
+    "berikan ulasan anda berdasarkan petikan",
+    "apakah iktibar yang boleh diambil"
+  ],
+  "real_set_observation": {
+    "notes": [
+      "Kertas 2 Putrajaya jelas mengekalkan format SPM yang menggabungkan fakta, huraian dan KBAT.",
+      "Banyak soalan menggunakan stimulus luar buku seperti petikan akhbar, laman web, rajah atau kata-kata tokoh.",
+      "Bahagian c selalunya menuntut jawapan yang lebih matang, ada inferens dan iktibar."
+    ],
+    "evidence_summary": [
+      "Bahagian A mempunyai 4 soalan wajib dengan pecahan kecil a, b dan c.",
+      "Bahagian B mengandungi soalan panjang tentang darurat, perlembagaan, pembangunan, pembentukan Malaysia dan wawasan masa hadapan.",
+      "Skema menunjukkan bahagian ulasan menggunakan aras 1 hingga 4 dengan penekanan pada inferens, contoh dan kematangan jawapan."
+    ]
+  },
+  "auto_marking_guidelines": {
+    "short_response": [
+      "padankan jawapan murid dengan poin fakta utama",
+      "terima sinonim yang tepat",
+      "beri markah mengikut jumlah fakta relevan"
+    ],
+    "extended_response": [
+      "semak sama ada murid menjawab kehendak kata tugas",
+      "semak sama ada murid merujuk stimulus",
+      "semak kewujudan fakta, huraian, inferens dan iktibar",
+      "gunakan aras 1 hingga 4 untuk menilai mutu keseluruhan"
+    ]
+  }
+}

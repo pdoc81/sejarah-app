@@ -1,0 +1,202 @@
+{
+  "exam_type": "spm_trial",
+  "source": "Putrajaya 2024 Set 1",
+  "form_scope": [4, 5],
+  "paper": 1,
+  "paper_code": "1249/1",
+  "description": "Pola umum soalan objektif Sejarah SPM percubaan yang menggabungkan Tingkatan 4 dan Tingkatan 5.",
+  "structure": {
+    "total_questions": 40,
+    "answer_type": "multiple_choice",
+    "options_per_question": 4,
+    "form4_questions": 20,
+    "form5_questions": 20,
+    "distribution_note": "Soalan 1 hingga 20 merangkumi Tingkatan 4, soalan 21 hingga 40 merangkumi Tingkatan 5."
+  },
+  "observed_distribution": {
+    "form4": {
+      "chapters": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2,
+        "8": 2,
+        "9": 2,
+        "10": 2
+      }
+    },
+    "form5": {
+      "chapters": {
+        "1": 2,
+        "2": 2,
+        "3": 2,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2,
+        "8": 2,
+        "9": 2,
+        "10": 2
+      }
+    }
+  },
+  "question_styles": [
+    "fakta langsung",
+    "istilah sejarah",
+    "sebab dan akibat",
+    "tujuan sesuatu tindakan atau dasar",
+    "kesan sesuatu peristiwa",
+    "fungsi institusi atau tokoh",
+    "kronologi atau urutan perkembangan",
+    "perbandingan ringkas",
+    "pemadanan pernyataan dengan konsep",
+    "item dua atau empat pernyataan seperti I dan II atau III dan IV",
+    "soalan berasaskan maklumat ringkas",
+    "soalan berasaskan jadual atau senarai"
+  ],
+  "common_stem_patterns": [
+    "Apakah X?",
+    "Apakah yang diperjuangkan oleh ...?",
+    "Mengapakah ...?",
+    "Apakah kesan ...?",
+    "Apakah tujuan ...?",
+    "Apakah kepentingan ...?",
+    "Bagaimanakah ...?",
+    "Antara berikut, yang manakah ...?",
+    "Pihak yang manakah ...?",
+    "Apakah persamaan ...?"
+  ],
+  "stimulus_types": [
+    "frasa atau senarai ringkas",
+    "jadual kecil",
+    "pernyataan ringkas",
+    "nama tokoh",
+    "tajuk karya atau novel",
+    "peristiwa sejarah",
+    "gambar rajah konsep",
+    "senarai negeri atau organisasi"
+  ],
+  "distractor_patterns": [
+    "semua pilihan nampak munasabah tetapi hanya satu paling tepat",
+    "pilihan yang benar dalam topik umum tetapi tidak menjawab kehendak khusus soalan",
+    "pilihan yang mengelirukan antara tujuan dan kesan",
+    "pilihan yang mengelirukan antara institusi, tokoh dan fungsi",
+    "pilihan yang hampir sama dari segi istilah",
+    "gabungan pernyataan I, II, III, IV yang memerlukan ketepatan fakta"
+  ],
+  "difficulty_profile": {
+    "mudah": [
+      "definisi asas",
+      "istilah atau maksud",
+      "fakta terus daripada buku teks",
+      "pengenalpastian tokoh, institusi atau konsep"
+    ],
+    "sederhana": [
+      "tujuan atau kesan sesuatu tindakan",
+      "fungsi institusi",
+      "persamaan atau perbezaan asas",
+      "hubungan sebab dan akibat",
+      "soalan berdasarkan pernyataan ringkas"
+    ],
+    "kbat": [
+      "membuat inferens daripada situasi",
+      "memilih tindakan paling tepat",
+      "menganalisis gabungan pernyataan",
+      "menghubungkan konsep dengan konteks",
+      "menilai langkah atau tanggungjawab terbaik"
+    ]
+  },
+  "topic_patterns": {
+    "form4": [
+      "warisan negara bangsa",
+      "nasionalisme",
+      "perang dunia dan pendudukan Jepun",
+      "Malayan Union dan era peralihan kuasa British",
+      "Persekutuan Tanah Melayu 1948",
+      "darurat dan ancaman komunis",
+      "usaha ke arah kemerdekaan",
+      "pilihan raya",
+      "Perlembagaan Persekutuan Tanah Melayu 1957",
+      "pemasyhuran kemerdekaan"
+    ],
+    "form5": [
+      "kedaulatan negara",
+      "Perlembagaan Persekutuan",
+      "Raja Berperlembagaan dan Demokrasi Berparlimen",
+      "sistem Persekutuan",
+      "pembentukan Malaysia",
+      "cabaran selepas pembentukan Malaysia",
+      "membina kesejahteraan negara",
+      "membina kemakmuran negara",
+      "dasar luar Malaysia",
+      "kecemerlangan Malaysia di persada dunia"
+    ]
+  },
+  "high_frequency_task_patterns": [
+    {
+      "pattern": "tujuan",
+      "examples": [
+        "tujuan pentadbiran British selepas perang",
+        "tujuan penubuhan jawatankuasa pilihan raya",
+        "tujuan memperkenalkan undang-undang"
+      ]
+    },
+    {
+      "pattern": "kesan",
+      "examples": [
+        "kesan kekosongan politik selepas Jepun",
+        "kesan darurat terhadap politik",
+        "kesan langsung kemerdekaan terhadap sistem pemerintahan"
+      ]
+    },
+    {
+      "pattern": "faktor",
+      "examples": [
+        "faktor pemisahan Singapura",
+        "faktor penggubalan dasar luar",
+        "faktor utama penggubalan dasar"
+      ]
+    },
+    {
+      "pattern": "kepentingan atau peranan",
+      "examples": [
+        "kepentingan Sistem Ahli",
+        "peranan Dewan Bahasa dan Pustaka",
+        "peranan Malaysia dalam isu kemanusiaan"
+      ]
+    }
+  ],
+  "mcq_generation_rules": [
+    "jana 40 soalan penuh jika mod percubaan penuh dipilih",
+    "agih 20 soalan Tingkatan 4 dan 20 soalan Tingkatan 5",
+    "cuba kekalkan kira-kira 2 soalan bagi setiap bab untuk set penuh",
+    "gunakan stem ringkas, padat dan terus seperti gaya peperiksaan sebenar",
+    "gunakan sekurang-kurangnya 25 peratus item yang ada stimulus ringkas",
+    "gunakan sebahagian item berbentuk tujuan, kesan, faktor dan peranan kerana pola ini dominan",
+    "masukkan sebahagian item dua pernyataan atau empat pernyataan",
+    "elakkan semua item menjadi definisi semata-mata",
+    "pastikan distractor hampir munasabah dan tidak terlalu mudah diteka",
+    "pastikan jawapan betul tersebar seimbang antara A, B, C dan D"
+  ],
+  "chapter_balancing_rules": [
+    "untuk set penuh 40 soalan, sasarkan 2 item setiap bab bagi Tingkatan 4 dan 5",
+    "untuk set 20 soalan, sasarkan 1 item setiap bab dan tambah 1 item ekstra pada bab teras",
+    "untuk set 10 soalan, gunakan gabungan bab utama dan bab berimpak tinggi peperiksaan",
+    "jika set lebih kecil, tetap campurkan Tingkatan 4 dan 5 kecuali pengguna pilih skop tertentu"
+  ],
+  "real_set_observation": {
+    "notes": [
+      "Set Putrajaya 2024 menunjukkan agihan bab yang sangat seimbang.",
+      "Set ini menilai pengetahuan asas, kefahaman dan sedikit inferens.",
+      "Banyak soalan menggunakan konteks ringkas sebelum bertanya tujuan, kesan atau faktor."
+    ],
+    "evidence_summary": [
+      "Skema Kertas 1 memadankan soalan 1 hingga 20 dengan bab Tingkatan 4 dan soalan 21 hingga 40 dengan bab Tingkatan 5.",
+      "Set soalan menunjukkan penggunaan item stimulus ringkas seperti tokoh, jadual, senarai dan pernyataan.",
+      "Set juga menggunakan item gabungan pernyataan seperti I dan II atau III dan IV."
+    ]
+  }
+}
