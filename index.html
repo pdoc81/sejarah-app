@@ -846,62 +846,75 @@
       });
     }
 
-    async function generateQuestions() {
-      resetOutput();
-      loadingBox.classList.remove('hidden');
-      setStatus('Menjana...', 'loading');
+    <script>
 
-      const payload = {
+    async function generateQuestions() {
+    resetOutput();
+    loadingBox.classList.remove('hidden');
+    setStatus('Menjana...', 'loading');
+
+    const payload = {
         quizMode: state.quizMode,
         mode: state.paper,
         questionCount:
-          state.quizMode === 'exam' && state.paper === 'mcq'
+        state.quizMode === 'exam' && state.paper === 'mcq'
             ? 40
             : state.paper === 'mcq'
-              ? state.questionCount
-              : 10,
+            ? state.questionCount
+            : 10,
         selectedSkop: state.quizMode === 'chapter' ? tingkatanSelect.value : null,
         selectedSesi: state.quizMode === 'chapter' ? babSelect.value : null,
         scopeLabel: getScopeLabel()
-      };
+    };
 
-      try {
+    try {
         const res = await fetch('/.netlify/functions/generate', {
-          method: 'POST',
-          headers: {
+        method: 'POST',
+        headers: {
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
+        },
+        body: JSON.stringify(payload)
         });
 
-        const data = await res.json();
+        const rawText = await res.text();
+        let data = null;
+
+        try {
+        data = rawText ? JSON.parse(rawText) : {};
+        } catch (parseError) {
+        console.error('Raw response parse error:', rawText);
+        throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
+        }
+
         loadingBox.classList.add('hidden');
 
         if (!res.ok || data.error) {
-          showError(data.error || 'Gagal menjana soalan.');
-          return;
+        showError(data.error || 'Gagal menjana soalan.');
+        return;
         }
 
         if (data.debug_source || data.debug_variation_plan) {
-          debugBox.classList.remove('hidden');
-          debugText.textContent = JSON.stringify({
+        debugBox.classList.remove('hidden');
+        debugText.textContent = JSON.stringify({
             debug_source: data.debug_source || null,
             debug_variation_plan: data.debug_variation_plan || null
-          }, null, 2);
+        }, null, 2);
         }
 
         if (state.paper === 'mcq') {
-          renderMcq(data);
+        renderMcq(data);
         } else {
-          renderStructured(data);
+        renderStructured(data);
         }
 
         setStatus('Berjaya', 'success');
-      } catch (err) {
+    } catch (err) {
+        console.error('Generate error:', err);
         loadingBox.classList.add('hidden');
         showError(err.message || 'Ralat sambungan.');
-      }
     }
+    }
+    </script>
 
     function submitMcq(isAuto = false) {
       if (!state.mcqData.length) return;

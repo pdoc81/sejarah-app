@@ -482,10 +482,10 @@ exports.handler = async (event) => {
     const examContext = buildExamContext(examPattern, variationPlan, mode, totalQuestions);
 
     if (mode === 'mcq') {
-      model = 'gpt-5.4-nano';
+        model = isExamMode ? 'gpt-5.4-mini' : 'gpt-5.4-nano';
 
-      if (isExamMode) {
-        systemText = `
+        if (isExamMode) {
+            systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang membina set soalan gaya percubaan SPM.
 Tugas anda ialah menjana soalan objektif gaya trial sebenar berdasarkan pola peperiksaan yang diberi.
 
