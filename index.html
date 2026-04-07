@@ -253,6 +253,53 @@
           </div>
         </div>
 
+        <div class="glass rounded-3xl border border-slate-200 shadow-sm p-6">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div>
+              <h3 class="text-xl font-bold">Penapis</h3>
+              <p class="text-sm text-slate-500 mt-1">Tapis paparan graf dan statistik mengikut pilihan di bawah.</p>
+            </div>
+          </div>
+
+          <div class="mt-5 grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div>
+              <label for="progressFilterMode" class="block text-sm font-semibold mb-2">Mod</label>
+              <select id="progressFilterMode" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-red-300">
+                <option value="all">Semua Mod</option>
+                <option value="chapter">Latih Tubi Bab</option>
+                <option value="exam">Percubaan SPM</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="progressFilterForm" class="block text-sm font-semibold mb-2">Tingkatan</label>
+              <select id="progressFilterForm" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-red-300">
+                <option value="all">Semua Tingkatan</option>
+                <option value="1">Tingkatan 1</option>
+                <option value="2">Tingkatan 2</option>
+                <option value="3">Tingkatan 3</option>
+                <option value="4">Tingkatan 4</option>
+                <option value="5">Tingkatan 5</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="progressFilterChapter" class="block text-sm font-semibold mb-2">Bab</label>
+              <select id="progressFilterChapter" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-red-300">
+                <option value="all">Semua Bab</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="progressFilterRange" class="block text-sm font-semibold mb-2">Julat Masa</label>
+              <select id="progressFilterRange" class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-red-300">
+                <option value="all">Semua Rekod</option>
+                <option value="30days">30 Hari Terakhir</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
           <div class="glass rounded-3xl border border-slate-200 shadow-sm p-5">
             <p class="text-sm text-slate-500">Jumlah Sesi</p>
@@ -276,7 +323,7 @@
           <div class="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <h3 class="text-xl font-bold">Trend Markah</h3>
-              <p class="text-sm text-slate-500 mt-1">10 sesi terakhir Kertas 1</p>
+              <p class="text-sm text-slate-500 mt-1">10 sesi terakhir Kertas 1 mengikut penapis semasa</p>
             </div>
           </div>
           <div class="mt-4 chart-wrap">
@@ -301,7 +348,7 @@
             <div class="flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <h3 class="text-xl font-bold">Prestasi Ikut Bab</h3>
-                <p class="text-sm text-slate-500 mt-1">6 bab paling kerap dijawab</p>
+                <p class="text-sm text-slate-500 mt-1">6 bab paling kerap dijawab mengikut penapis semasa</p>
               </div>
             </div>
             <div class="mt-4 chart-wrap-sm">
@@ -475,6 +522,11 @@
     const recentSessionsList = document.getElementById('recentSessionsList');
     const clearProgressBtn = document.getElementById('clearProgressBtn');
 
+    const progressFilterMode = document.getElementById('progressFilterMode');
+    const progressFilterForm = document.getElementById('progressFilterForm');
+    const progressFilterChapter = document.getElementById('progressFilterChapter');
+    const progressFilterRange = document.getElementById('progressFilterRange');
+
     let timerInterval = null;
     let timerSeconds = 0;
 
@@ -597,7 +649,10 @@
     function switchTab(tabName) {
       tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
       tabPanels.forEach(panel => panel.classList.toggle('hidden', panel.id !== `tab-${tabName}`));
-      if (tabName === 'progres') renderProgressDashboard();
+      if (tabName === 'progres') {
+        updateProgressChapterFilterOptions();
+        renderProgressDashboard();
+      }
     }
 
     function resetOutput() {
@@ -725,11 +780,8 @@
 
       submitMcqBtn.dataset.done = 'false';
 
-      if (state.quizMode === 'chapter') {
-        startTimer(state.questionCount * 30);
-      } else {
-        stopTimer();
-      }
+      if (state.quizMode === 'chapter') startTimer(state.questionCount * 30);
+      else stopTimer();
     }
 
     function renderStructured(data) {
@@ -908,6 +960,7 @@
       const records = getProgressRecords();
       records.unshift(record);
       saveProgressRecords(records.slice(0, 300));
+      updateProgressChapterFilterOptions();
       renderProgressDashboard();
     }
 
@@ -926,8 +979,7 @@
     }
 
     function getModeLabel(record) {
-      if (record.quizMode === 'exam') return 'Percubaan SPM';
-      return 'Latih Tubi Bab';
+      return record.quizMode === 'exam' ? 'Percubaan SPM' : 'Latih Tubi Bab';
     }
 
     function getScopeDisplay(record) {
@@ -936,6 +988,97 @@
         return `Tingkatan ${record.form} · Bab ${record.chapter}${record.chapterTitle ? ` – ${record.chapterTitle}` : ''}`;
       }
       return record.scopeLabel || '-';
+    }
+
+    function buildGroupedChapterStats(records) {
+      const chapterRecords = records.filter(r => r.quizMode === 'chapter' && r.form && r.chapter);
+      const grouped = {};
+
+      chapterRecords.forEach((r) => {
+        const key = `${r.form}-${r.chapter}`;
+        if (!grouped[key]) {
+          grouped[key] = {
+            key,
+            form: r.form,
+            chapter: r.chapter,
+            label: `T${r.form} · B${r.chapter}${r.chapterTitle ? ` – ${r.chapterTitle}` : ''}`,
+            longLabel: `Tingkatan ${r.form} · Bab ${r.chapter}${r.chapterTitle ? ` – ${r.chapterTitle}` : ''}`,
+            count: 0,
+            totalPercent: 0
+          };
+        }
+        grouped[key].count += 1;
+        grouped[key].totalPercent += Number(r.percent) || 0;
+      });
+
+      return Object.values(grouped).map(item => ({
+        ...item,
+        avg: Math.round(item.totalPercent / item.count)
+      }));
+    }
+
+    function getFilteredProgressRecords() {
+      let records = getProgressRecords();
+
+      const modeValue = progressFilterMode.value;
+      const formValue = progressFilterForm.value;
+      const chapterValue = progressFilterChapter.value;
+      const rangeValue = progressFilterRange.value;
+
+      if (modeValue !== 'all') {
+        records = records.filter(r => r.quizMode === modeValue);
+      }
+
+      if (formValue !== 'all') {
+        records = records.filter(r => String(r.form) === String(formValue));
+      }
+
+      if (chapterValue !== 'all') {
+        const [f, c] = chapterValue.split('-');
+        records = records.filter(r => String(r.form) === f && String(r.chapter) === c);
+      }
+
+      if (rangeValue === '30days') {
+        const now = Date.now();
+        const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+        records = records.filter(r => {
+          const t = new Date(r.timestamp).getTime();
+          return Number.isFinite(t) && (now - t) <= THIRTY_DAYS;
+        });
+      }
+
+      return records;
+    }
+
+    function updateProgressChapterFilterOptions() {
+      const allRecords = getProgressRecords();
+      const modeValue = progressFilterMode.value;
+      const formValue = progressFilterForm.value;
+      const currentChapterValue = progressFilterChapter.value;
+
+      let records = [...allRecords];
+
+      if (modeValue !== 'all') {
+        records = records.filter(r => r.quizMode === modeValue);
+      }
+      if (formValue !== 'all') {
+        records = records.filter(r => String(r.form) === String(formValue));
+      }
+
+      const chapterStats = buildGroupedChapterStats(records)
+        .sort((a, b) => a.form - b.form || a.chapter - b.chapter);
+
+      progressFilterChapter.innerHTML = '<option value="all">Semua Bab</option>';
+
+      chapterStats.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = `${item.form}-${item.chapter}`;
+        opt.textContent = item.longLabel;
+        progressFilterChapter.appendChild(opt);
+      });
+
+      const stillExists = [...progressFilterChapter.options].some(opt => opt.value === currentChapterValue);
+      progressFilterChapter.value = stillExists ? currentChapterValue : 'all';
     }
 
     function renderTopicCards(container, items, emptyText) {
@@ -968,7 +1111,7 @@
     function renderRecentSessions(records) {
       recentSessionsList.innerHTML = '';
       if (!records.length) {
-        recentSessionsList.innerHTML = `<p class="text-slate-500">Belum ada rekod.</p>`;
+        recentSessionsList.innerHTML = `<p class="text-slate-500">Belum ada rekod bagi penapis ini.</p>`;
         return;
       }
 
@@ -989,30 +1132,6 @@
         `;
         recentSessionsList.appendChild(el);
       });
-    }
-
-    function buildGroupedChapterStats(records) {
-      const chapterRecords = records.filter(r => r.quizMode === 'chapter' && r.form && r.chapter);
-      const grouped = {};
-
-      chapterRecords.forEach((r) => {
-        const key = `${r.form}-${r.chapter}`;
-        if (!grouped[key]) {
-          grouped[key] = {
-            label: `T${r.form} · B${r.chapter}${r.chapterTitle ? ` – ${r.chapterTitle}` : ''}`,
-            longLabel: `Tingkatan ${r.form} · Bab ${r.chapter}${r.chapterTitle ? ` – ${r.chapterTitle}` : ''}`,
-            count: 0,
-            totalPercent: 0
-          };
-        }
-        grouped[key].count += 1;
-        grouped[key].totalPercent += Number(r.percent) || 0;
-      });
-
-      return Object.values(grouped).map(item => ({
-        ...item,
-        avg: Math.round(item.totalPercent / item.count)
-      }));
     }
 
     function destroyChart(chartRef) {
@@ -1043,15 +1162,9 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: true }
-          },
+          plugins: { legend: { display: true } },
           scales: {
-            y: {
-              min: 0,
-              max: 100,
-              ticks: { stepSize: 20 }
-            }
+            y: { min: 0, max: 100, ticks: { stepSize: 20 } }
           }
         }
       });
@@ -1088,15 +1201,9 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: true }
-          },
+          plugins: { legend: { display: true } },
           scales: {
-            y: {
-              min: 0,
-              max: 100,
-              ticks: { stepSize: 20 }
-            }
+            y: { min: 0, max: 100, ticks: { stepSize: 20 } }
           }
         }
       });
@@ -1128,30 +1235,24 @@
           indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: true }
-          },
+          plugins: { legend: { display: true } },
           scales: {
-            x: {
-              min: 0,
-              max: 100,
-              ticks: { stepSize: 20 }
-            }
+            x: { min: 0, max: 100, ticks: { stepSize: 20 } }
           }
         }
       });
     }
 
     function renderProgressDashboard() {
-      const records = getProgressRecords();
+      const records = getFilteredProgressRecords();
       progressTotalSessions.textContent = String(records.length);
 
       if (!records.length) {
         progressAverage.textContent = '0%';
         progressLastSession.textContent = 'Belum ada';
         progressMostUsedMode.textContent = 'Belum ada';
-        renderTopicCards(strongTopicsList, [], 'Belum ada rekod.');
-        renderTopicCards(weakTopicsList, [], 'Belum ada rekod.');
+        renderTopicCards(strongTopicsList, [], 'Belum ada rekod bagi penapis ini.');
+        renderTopicCards(weakTopicsList, [], 'Belum ada rekod bagi penapis ini.');
         renderRecentSessions([]);
         renderScoreTrendChart([]);
         renderFormPerformanceChart([]);
@@ -1181,13 +1282,13 @@
       renderTopicCards(
         strongTopicsList,
         strong.map(item => ({ ...item, label: item.longLabel })),
-        'Belum ada rekod bab.'
+        'Belum ada rekod bab bagi penapis ini.'
       );
 
       renderTopicCards(
         weakTopicsList,
         weak.map(item => ({ ...item, label: item.longLabel })),
-        'Belum ada rekod bab.'
+        'Belum ada rekod bab bagi penapis ini.'
       );
 
       renderRecentSessions(records);
@@ -1230,31 +1331,6 @@
       saveMcqProgress(score, state.mcqData.length);
 
       if (isAuto) setStatus('Masa Tamat', 'error');
-    }
-
-    function saveMcqProgress(score, total) {
-      const percent = total > 0 ? Math.round((score / total) * 100) : 0;
-      const form = state.quizMode === 'chapter' ? Number(tingkatanSelect.value) : null;
-      const chapter = state.quizMode === 'chapter' ? Number(babSelect.value) : null;
-      const chapterTitle = state.quizMode === 'chapter' ? getCurrentChapterTitle() : null;
-
-      const record = {
-        timestamp: new Date().toISOString(),
-        quizMode: state.quizMode,
-        paper: 'mcq',
-        form,
-        chapter,
-        chapterTitle,
-        totalQuestions: total,
-        score,
-        percent,
-        scopeLabel: getScopeLabel()
-      };
-
-      const records = getProgressRecords();
-      records.unshift(record);
-      saveProgressRecords(records.slice(0, 300));
-      renderProgressDashboard();
     }
 
     async function markStructuredAnswers() {
@@ -1326,6 +1402,7 @@
 
     function clearProgress() {
       localStorage.removeItem(PROGRESS_KEY);
+      updateProgressChapterFilterOptions();
       renderProgressDashboard();
     }
 
@@ -1346,6 +1423,17 @@
 
     tingkatanSelect.addEventListener('change', updateBabOptions);
     babSelect.addEventListener('change', updateScopePreview);
+
+    progressFilterMode.addEventListener('change', () => {
+      updateProgressChapterFilterOptions();
+      renderProgressDashboard();
+    });
+    progressFilterForm.addEventListener('change', () => {
+      updateProgressChapterFilterOptions();
+      renderProgressDashboard();
+    });
+    progressFilterChapter.addEventListener('change', renderProgressDashboard);
+    progressFilterRange.addEventListener('change', renderProgressDashboard);
 
     generateBtn.addEventListener('click', generateQuestions);
     resetBtn.addEventListener('click', resetAllSettings);
@@ -1374,6 +1462,7 @@
     setPaper('mcq');
     switchTab('latihan');
     resetOutput();
+    updateProgressChapterFilterOptions();
     renderProgressDashboard();
   </script>
 </body>
