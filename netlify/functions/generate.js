@@ -28,17 +28,26 @@ exports.handler = async (event) => {
 
   try {
     const body = JSON.parse(event.body || '{}');
-    const { mode, scopeLabel, questions, context, studentAnswers } = body;
+    const {
+      mode,
+      scopeLabel,
+      questions,
+      context,
+      studentAnswers,
+      questionCount
+    } = body;
 
     let systemText = '';
     let userText = '';
     let model = 'gpt-5.4-mini';
+    const totalQuestions = Number(questionCount) || 10;
 
     if (mode === 'mcq') {
       model = 'gpt-5.4-nano';
+
       systemText = `
 Anda ialah guru Sejarah KSSM Malaysia yang teliti.
-Jana TEPAT 10 soalan objektif berkualiti tinggi.
+Jana TEPAT ${totalQuestions} soalan objektif berkualiti tinggi.
 Balas dalam JSON SAHAJA dengan format:
 {
   "questions": [
@@ -59,10 +68,13 @@ Peraturan:
 - Pilihan jawapan mesti 4 sahaja
 - "ans" ialah index 0 hingga 3
 - Pastikan jawapan tepat
+- Elakkan pilihan jawapan yang terlalu jelas salah
 `;
-      userText = `Jana 10 soalan objektif Sejarah KSSM bagi skop: ${scopeLabel}.`;
+
+      userText = `Jana ${totalQuestions} soalan objektif Sejarah KSSM bagi skop: ${scopeLabel}.`;
     } else if (mode === 'structured') {
       model = 'gpt-5.4-mini';
+
       systemText = `
 Anda ialah guru Sejarah KSSM Malaysia.
 Jana satu set soalan Kertas 2 berstruktur.
@@ -83,9 +95,11 @@ Peraturan:
 - Sesuai gaya SPM Sejarah
 - Jawapan model perlu padat dan berguna
 `;
+
       userText = `Jana satu set soalan struktur Sejarah untuk skop: ${scopeLabel}.`;
     } else if (mode === 'mark-structured') {
       model = 'gpt-5.4-mini';
+
       systemText = `
 Anda ialah pemeriksa Sejarah KSSM Malaysia.
 Semak jawapan murid dengan adil berdasarkan kehendak soalan dan jawapan model.
@@ -103,6 +117,7 @@ Peraturan:
 - Markah realistik
 - Jangan terlalu kedekut dan jangan terlalu murah markah
 `;
+
       userText = `
 Konteks:
 ${context || ''}
@@ -149,23 +164,42 @@ ${JSON.stringify(studentAnswers || {})}
     return jsonResponse(200, parsed);
 
   } catch (error) {
-    console.error('Function error:', error);
+    console.error('Function error full:', error);
 
-    let message = 'Ralat backend AI.';
+    let userMessage = 'Ralat backend AI.';
     const apiMessage = error?.error?.message || error?.message || '';
+    const errorCode = error?.code || error?.error?.code || null;
+    const errorType = error?.type || error?.error?.type || null;
+    const errorStatus = error?.status || null;
 
-    if (error?.status === 429 || error?.code === 'insufficient_quota') {
-      message = 'Kuota AI telah habis atau billing API belum aktif. Sila semak OpenAI billing.';
-    } else if (error?.status === 401) {
-      message = 'API key tidak sah atau tidak dibaca oleh server.';
-    } else if (error?.status === 404) {
-      message = 'Model AI tidak dijumpai.';
+    if (
+      errorStatus === 429 ||
+      errorCode === 'insufficient_quota' ||
+      errorType === 'insufficient_quota'
+    ) {
+      userMessage = 'Kuota AI telah habis atau billing API belum aktif. Sila semak OpenAI billing.';
+    } else if (errorStatus === 401) {
+      userMessage = 'API key tidak sah atau tidak dibaca oleh server.';
+    } else if (errorStatus === 404) {
+      userMessage = 'Model AI tidak dijumpai.';
+    } else if (
+      String(apiMessage).toLowerCase().includes('mismatched source ip') ||
+      String(apiMessage).toLowerCase().includes('mismatched client ip') ||
+      String(errorCode).toLowerCase().includes('mismatched_client_ip')
+    ) {
+      userMessage = 'Ralat sambungan rangkaian dikesan (mismatched source IP). Cuba matikan VPN/Private Relay dan mulakan semula netlify dev.';
     } else if (apiMessage) {
-      message = apiMessage;
+      userMessage = apiMessage;
     }
 
     return jsonResponse(500, {
-      error: message
+      error: userMessage,
+      debug: {
+        message: apiMessage || null,
+        code: errorCode,
+        type: errorType,
+        status: errorStatus
+      }
     });
   }
 };
