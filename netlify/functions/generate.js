@@ -104,6 +104,39 @@ ${kbatAngles}
 `;
 }
 
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function normalizeMcqQuestions(questions) {
+  if (!Array.isArray(questions)) return [];
+
+  return questions.map((q) => {
+    if (!q || !Array.isArray(q.opts) || typeof q.ans !== 'number') {
+      return q;
+    }
+
+    const originalOptions = [...q.opts];
+    const correctAnswerText = originalOptions[q.ans];
+
+    const shuffledOptions = shuffleArray(originalOptions);
+    const newAnswerIndex = shuffledOptions.findIndex(
+      (opt) => opt === correctAnswerText
+    );
+
+    return {
+      ...q,
+      opts: shuffledOptions,
+      ans: newAnswerIndex >= 0 ? newAnswerIndex : q.ans
+    };
+  });
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return jsonResponse(200, {});
@@ -176,6 +209,7 @@ Peraturan:
 - "level" mesti salah satu daripada: mudah, sederhana, kbat
 - Pastikan jawapan tepat
 - Elakkan pilihan jawapan yang terlalu jelas salah
+- Elakkan meletakkan jawapan betul terlalu kerap pada pilihan pertama
 - Soalan mudah = fakta asas / pengetahuan langsung
 - Soalan sederhana = kefahaman / sebab-akibat / aplikasi mudah
 - Soalan KBAT = analisis / perbandingan / inferens / penilaian
@@ -288,6 +322,11 @@ ${JSON.stringify(studentAnswers || {})}
     }
 
     const parsed = JSON.parse(outputText);
+
+    if (mode === 'mcq' && Array.isArray(parsed.questions)) {
+      parsed.questions = normalizeMcqQuestions(parsed.questions);
+    }
+
     return jsonResponse(200, parsed);
 
   } catch (error) {
