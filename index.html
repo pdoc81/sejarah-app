@@ -64,6 +64,31 @@
       background: rgba(15, 23, 42, 0.45);
       backdrop-filter: blur(4px);
     }
+    .help-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .roadmap-card { position: relative; overflow: hidden; }
+    .roadmap-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: #e2e8f0;
+    }
+    .roadmap-card.done::before { background: #16a34a; }
+    .roadmap-card.planned::before { background: #2563eb; }
+    .roadmap-card.major::before { background: #d97706; }
+    .roadmap-subcard {
+      border: 1px dashed #cbd5e1;
+      background: #f8fafc;
+    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
@@ -468,16 +493,49 @@
     <section id="tab-bantuan" class="tab-panel hidden mt-6">
       <div class="space-y-6">
         <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
-          <h2 class="text-2xl font-bold panel-title">Bantuan</h2>
-          <p class="mt-2 text-slate-600">Ruang bantuan, pemakluman versi dan cadangan penambahbaikan.</p>
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h2 class="text-2xl font-bold panel-title">Bantuan</h2>
+              <p class="mt-2 text-slate-600">Panduan penggunaan, pemakluman versi dan roadmap pembangunan.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="help-chip bg-blue-50 text-blue-700 border border-blue-200">Versi 1.0</span>
+              <span class="help-chip bg-emerald-50 text-emerald-700 border border-emerald-200">Stabil</span>
+              <span class="help-chip bg-amber-50 text-amber-700 border border-amber-200">Roadmap Aktif</span>
+            </div>
+          </div>
         </div>
 
-        <div class="glass rounded-3xl border border-blue-200 bg-blue-50 soft-shadow p-6">
-          <h3 class="text-xl font-bold text-blue-800 panel-title">Pengumuman</h3>
-          <div class="mt-3 space-y-3 text-blue-900 leading-7">
-            <p><strong>Versi semasa:</strong> 1.0</p>
-            <p>Versi 1.0 menandakan asas aplikasi sudah stabil untuk penggunaan latihan harian dan semakan kendiri pelajar.</p>
-            <p>Sebarang perubahan selepas ini akan diteruskan dalam siri <strong>1.XX</strong> sehingga tuan sendiri memutuskan peralihan ke versi <strong>2.0</strong>.</p>
+        <div class="grid xl:grid-cols-2 gap-6">
+          <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+            <h3 class="text-xl font-bold panel-title">Bantuan Ringkas</h3>
+            <div class="mt-4 space-y-4 text-slate-700 leading-7">
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p class="font-bold text-slate-800">Latih Tubi Bab</p>
+                <p class="mt-1 text-sm">Sesuai untuk ulang kaji fokus mengikut tingkatan dan bab tertentu.</p>
+              </div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p class="font-bold text-slate-800">Mod Percubaan SPM</p>
+                <p class="mt-1 text-sm">Digunakan untuk latihan gaya peperiksaan sebenar Tingkatan 4 dan Tingkatan 5.</p>
+              </div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p class="font-bold text-slate-800">Review Keputusan</p>
+                <p class="mt-1 text-sm">Selepas semakan jawapan, review boleh dicetak atau dieksport untuk rujukan semula.</p>
+              </div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p class="font-bold text-slate-800">Murid Berasingan</p>
+                <p class="mt-1 text-sm">Setiap murid mempunyai rekod progres sendiri pada peranti yang sama.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl border border-blue-200 bg-blue-50 soft-shadow p-6">
+            <h3 class="text-xl font-bold text-blue-800 panel-title">Pengumuman</h3>
+            <div class="mt-4 space-y-3 text-blue-900 leading-7">
+              <p><strong>Versi semasa:</strong> 1.0</p>
+              <p>Versi 1.0 ialah versi asas yang menyatukan fungsi latihan, semakan jawapan, progres murid, akaun murid berasingan dan review boleh cetak / eksport.</p>
+              <p>Sebarang perubahan selepas ini akan diteruskan dalam siri <strong>1.01, 1.02, 1.03</strong> dan seterusnya, sehingga diputuskan naik ke <strong>2.0</strong>.</p>
+            </div>
           </div>
         </div>
 
@@ -487,22 +545,175 @@
             <div class="mt-4 space-y-3 text-slate-700 leading-7">
               <p><strong>Versi:</strong> 1.0</p>
               <p><strong>Status:</strong> Stabil</p>
-              <p><strong>Model pembangunan:</strong> Iterasi 1.XX untuk perubahan seterusnya</p>
-              <p><strong>Skop semasa:</strong> Pembelajaran Sejarah KSSM berasaskan latihan, review dan pemantauan progres murid</p>
+              <p><strong>Kaedah penomboran:</strong> 1.01, 1.02, 1.03, 1.5, 1.51 dan seterusnya</p>
+              <p><strong>Versi 2.0:</strong> hanya digunakan apabila diputuskan untuk bergerak ke arah backend sebenar, akaun online dan multi-device</p>
             </div>
           </div>
 
           <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
             <h3 class="text-xl font-bold panel-title">Kandungan & Features Versi 1.0</h3>
-            <div class="mt-4 space-y-3 text-slate-700 leading-7">
-              <p>• Latih tubi mengikut tingkatan dan bab</p>
-              <p>• Mod Percubaan SPM</p>
-              <p>• Kertas 1 objektif dengan semakan jawapan</p>
-              <p>• Kertas 2 struktur dengan semakan jawapan model</p>
-              <p>• Timer untuk Kertas 1 Latih Tubi Bab</p>
-              <p>• Dashboard progres dengan graf dan penapis</p>
-              <p>• Akaun murid berasingan secara lokal pada peranti yang sama</p>
-              <p>• Cetak dan eksport review selepas semakan jawapan</p>
+            <div class="mt-4 grid sm:grid-cols-2 gap-3 text-sm text-slate-700">
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Latih tubi bab</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Mod Percubaan SPM</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Kertas 1 & Kertas 2</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Semakan jawapan</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Dashboard progres</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Penapis progres</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Akaun murid berasingan</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Cetak & eksport review</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-3xl border border-slate-200 soft-shadow p-6">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h3 class="text-xl font-bold panel-title">Roadmap sejarah-app</h3>
+              <p class="mt-1 text-slate-500 text-sm">Pelan pembangunan rasmi selepas Versi 1.0.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="help-chip bg-emerald-50 text-emerald-700 border border-emerald-200">Selesai</span>
+              <span class="help-chip bg-blue-50 text-blue-700 border border-blue-200">Dirancang</span>
+              <span class="help-chip bg-amber-50 text-amber-700 border border-amber-200">Cabang Besar</span>
+            </div>
+          </div>
+
+          <div class="mt-6 space-y-4">
+            <div class="roadmap-card done rounded-3xl border border-emerald-200 bg-emerald-50 p-5 pl-7">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <h4 class="text-xl font-bold text-emerald-800">1.0 — Selesai</h4>
+                <span class="help-chip bg-white text-emerald-700 border border-emerald-200">Baseline Release</span>
+              </div>
+              <div class="mt-4 grid sm:grid-cols-2 xl:grid-cols-3 gap-3 text-sm">
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Latih tubi bab</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Mod Percubaan SPM</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Kertas 1 dan Kertas 2</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Semakan jawapan</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Dashboard progres</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Penapis progres</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Akaun murid berasingan</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Cetak dan eksport review</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Ruang bantuan, versi dan maklum balas</div>
+                <div class="rounded-2xl bg-white border border-emerald-100 p-3">Tab sumbangan lengkap</div>
+              </div>
+            </div>
+
+            <div class="roadmap-card planned rounded-3xl border border-slate-200 bg-white p-5 pl-7">
+              <h4 class="text-xl font-bold text-slate-800">1.01 — Penstabilan & Kekemasan UI</h4>
+              <ul class="mt-4 space-y-2 text-slate-700">
+                <li>• bug fixing kecil</li>
+                <li>• kemas UI iPad/iPhone/mobile</li>
+                <li>• mesej ralat lebih jelas</li>
+                <li>• auto pilih tingkatan ikut murid aktif</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-card planned rounded-3xl border border-slate-200 bg-white p-5 pl-7">
+              <h4 class="text-xl font-bold text-slate-800">1.02 — Cadangan Pembelajaran Pintar</h4>
+              <ul class="mt-4 space-y-2 text-slate-700">
+                <li>• cadangan bab perlu diulang kaji</li>
+                <li>• amaran prestasi menurun</li>
+                <li>• sasaran markah</li>
+                <li>• ringkasan 7/30 hari</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-card planned rounded-3xl border border-slate-200 bg-white p-5 pl-7">
+              <h4 class="text-xl font-bold text-slate-800">1.03 — Review & Laporan Dipertingkat</h4>
+              <ul class="mt-4 space-y-2 text-slate-700">
+                <li>• eksport review ke PDF</li>
+                <li>• simpan sejarah review</li>
+                <li>• laporan keputusan</li>
+                <li>• ulang semula soalan salah</li>
+                <li>• corak kesalahan murid</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-card major rounded-3xl border border-amber-200 bg-amber-50 p-5 pl-7">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <h4 class="text-xl font-bold text-amber-800">Cabang Besar Seterusnya — 1.5</h4>
+                <span class="help-chip bg-white text-amber-700 border border-amber-200">Milestone Besar</span>
+              </div>
+              <p class="mt-3 text-amber-900">Sokongan tulisan tangan / stylus / Apple Pencil</p>
+
+              <div class="mt-5 grid lg:grid-cols-3 gap-4">
+                <div class="roadmap-subcard rounded-2xl p-4">
+                  <h5 class="font-bold text-slate-800">1.51 — Asas input stylus</h5>
+                  <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                    <li>• ruang jawapan berasaskan canvas</li>
+                    <li>• sokongan stylus / Apple Pencil</li>
+                    <li>• padam / clear / undo asas</li>
+                  </ul>
+                </div>
+
+                <div class="roadmap-subcard rounded-2xl p-4">
+                  <h5 class="font-bold text-slate-800">1.52 — Pengurusan jawapan tulisan tangan</h5>
+                  <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                    <li>• simpan hasil tulisan tangan</li>
+                    <li>• paparan semula dalam review</li>
+                    <li>• cetak review bersama jawapan bertulis</li>
+                  </ul>
+                </div>
+
+                <div class="roadmap-subcard rounded-2xl p-4">
+                  <h5 class="font-bold text-slate-800">1.53 — Penambahbaikan pengalaman menulis</h5>
+                  <ul class="mt-3 space-y-2 text-sm text-slate-700">
+                    <li>• palm rejection yang lebih sesuai</li>
+                    <li>• pengoptimuman stroke</li>
+                    <li>• mod highlight / anotasi ringkas</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="roadmap-card planned rounded-3xl border border-slate-200 bg-white p-5 pl-7">
+              <h4 class="text-xl font-bold text-slate-800">1.6 — Pengukuhan Kandungan</h4>
+              <ul class="mt-4 space-y-2 text-slate-700">
+                <li>• lebih banyak set percubaan</li>
+                <li>• bank soalan ikut negeri / tahun</li>
+                <li>• tag topik kecil</li>
+                <li>• variasi KBAT lebih luas</li>
+                <li>• tambahan lebih banyak kandungan</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-card planned rounded-3xl border border-slate-200 bg-white p-5 pl-7">
+              <h4 class="text-xl font-bold text-slate-800">1.7 — Pengalaman Ibu Bapa / Guru</h4>
+              <ul class="mt-4 space-y-2 text-slate-700">
+                <li>• ringkasan semua murid</li>
+                <li>• perbandingan prestasi</li>
+                <li>• laporan mingguan</li>
+                <li>• rekod masa belajar</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-card planned rounded-3xl border border-slate-200 bg-white p-5 pl-7">
+              <h4 class="text-xl font-bold text-slate-800">1.8 — Pengurusan Akaun Murid Diperkemas</h4>
+              <ul class="mt-4 space-y-2 text-slate-700">
+                <li>• PIN murid</li>
+                <li>• edit profil</li>
+                <li>• lock profil</li>
+                <li>• pengasingan data lebih kukuh</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-card planned rounded-3xl border border-slate-200 bg-white p-5 pl-7">
+              <h4 class="text-xl font-bold text-slate-800">1.9 — Ciri Ulang Kaji Fokus & Perkemasan Akhir Siri 1.x</h4>
+              <ul class="mt-4 space-y-2 text-slate-700">
+                <li>• bookmark soalan</li>
+                <li>• mod ulang kaji pantas</li>
+                <li>• mod fokus bab lemah</li>
+                <li>• mod fokus soalan salah</li>
+                <li>• UI lebih matang</li>
+              </ul>
+            </div>
+
+            <div class="roadmap-card major rounded-3xl border border-indigo-200 bg-indigo-50 p-5 pl-7">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                <h4 class="text-xl font-bold text-indigo-800">2.0 — Backend + Akaun Online + Multi-device</h4>
+                <span class="help-chip bg-white text-indigo-700 border border-indigo-200">Future Platform</span>
+              </div>
+              <p class="mt-3 text-indigo-900">Versi ini hanya akan digunakan apabila diputuskan untuk bergerak ke arah backend sebenar, akaun online dan penyelarasan data antara peranti.</p>
             </div>
           </div>
         </div>
@@ -516,17 +727,6 @@
             <p>• dashboard progres lengkap dengan penapis</p>
             <p>• review keputusan yang boleh dicetak dan dieksport</p>
             <p>• pengasingan data murid secara lokal bagi penggunaan oleh lebih daripada seorang murid pada peranti yang sama</p>
-          </div>
-        </div>
-
-        <div class="glass rounded-3xl border border-amber-200 bg-amber-50 soft-shadow p-6">
-          <h3 class="text-xl font-bold text-amber-800 panel-title">Maklum Balas / Cadangan Penambahbaikan</h3>
-          <div class="mt-4 space-y-3 text-amber-900 leading-7">
-            <p>Sekiranya tuan/puan ingin memberi maklum balas, melaporkan isu, atau mencadangkan penambahbaikan untuk versi seterusnya, sila emel kepada:</p>
-            <p class="font-bold text-lg">
-              <a href="mailto:nag4tidur@gmail.com?subject=Maklum%20Balas%20Aplikasi%20Sejarah%20Versi%201.0" class="underline underline-offset-4">nag4tidur@gmail.com</a>
-            </p>
-            <p>Cadangan yang jelas dan spesifik akan memudahkan penambahbaikan dibuat dalam iterasi 1.XX yang akan datang.</p>
           </div>
         </div>
       </div>
@@ -543,11 +743,11 @@
               Bersama membantu aplikasi ini terus berkembang
             </h2>
             <div class="mt-5 space-y-5 text-slate-600 leading-8">
-              <p>Aplikasi ini pada asalnya saya bangunkan untuk anak saya sendiri yang sedang membuat persediaan menghadapi SPM. Saya mahukan anak saya mempunyai satu medium pembelajaran yang lebih mudah, tersusun dan mesra pengguna untuk mengulang kaji subjek Sejarah, khususnya dalam memahami fakta, membuat latihan, serta membina keyakinan sebelum peperiksaan.</p>
-              <p>Ramai lagi anak-anak lain yang turut memerlukan bantuan yang sama — sebuah platform pembelajaran yang lebih terarah, menarik, dan selari dengan cara pembelajaran masa kini.</p>
-              <p>Aplikasi ini juga menggunakan teknologi kecerdasan buatan bagi membantu memproses soalan, menjana latihan yang bersesuaian, serta menilai jawapan yang diberikan oleh pelajar. Pendekatan ini membolehkan pembelajaran menjadi lebih interaktif, responsif dan membantu pelajar memahami kelemahan serta kekuatan mereka dengan lebih baik. Namun begitu, penggunaan teknologi ini turut melibatkan kos operasi dan pembangunan yang berterusan.</p>
-              <p>Atas sebab itu, aplikasi ini terus dibangunkan dengan harapan ia dapat memberi manfaat kepada lebih ramai pelajar yang menghadapi SPM. Setiap penambahbaikan yang dibuat adalah dengan niat agar aplikasi ini dapat menjadi teman ulang kaji yang benar-benar membantu anak-anak kita belajar dengan lebih yakin dan berkesan.</p>
-              <p>Sekiranya tuan/puan merasakan aplikasi ini bermanfaat dan ingin membantu saya menambah baik kandungan, membangunkan ciri-ciri baharu, serta menampung kos operasi termasuk penggunaan AI, tuan/puan bolehlah memberi sumbangan secara sukarela. Setiap sokongan yang diberikan amat bermakna dan akan membantu saya meneruskan usaha ini demi manfaat lebih ramai pelajar.</p>
+              <p>Aplikasi ini pada asalnya saya bangunkan untuk anak saya sendiri yang sedang membuat persediaan menghadapi SPM. Sebagai seorang bapa, saya mahu anak saya mempunyai satu medium pembelajaran yang lebih mudah, tersusun dan mesra pengguna untuk mengulang kaji subjek Sejarah, khususnya dalam memahami fakta, membuat latihan, serta membina keyakinan sebelum peperiksaan.</p>
+              <p>Dalam proses membangunkannya, saya terfikir bahawa keperluan ini bukan hanya untuk anak saya sahaja. Ramai lagi anak-anak lain di luar sana yang turut memerlukan bantuan yang sama — sebuah platform pembelajaran yang lebih terarah, menarik, dan selari dengan cara pembelajaran masa kini.</p>
+              <p>Aplikasi ini juga menggunakan teknologi kecerdasan buatan, termasuk ChatGPT, bagi membantu memproses soalan, menjana latihan yang bersesuaian, serta menilai jawapan yang diberikan oleh pelajar. Pendekatan ini membolehkan pembelajaran menjadi lebih interaktif, responsif dan membantu pelajar memahami kelemahan serta kekuatan mereka dengan lebih baik. Namun begitu, penggunaan teknologi ini turut melibatkan kos operasi dan pembangunan yang berterusan.</p>
+              <p>Atas sebab itu, aplikasi ini terus dibangunkan bukan sekadar untuk kegunaan sendiri, tetapi dengan harapan ia dapat memberi manfaat kepada lebih ramai pelajar yang sedang berjuang menghadapi SPM. Setiap penambahbaikan yang dibuat adalah dengan niat agar aplikasi ini dapat menjadi teman ulang kaji yang benar-benar membantu anak-anak kita belajar dengan lebih yakin dan berkesan.</p>
+              <p>Sekiranya anda merasakan aplikasi ini bermanfaat dan ingin membantu kami menambah baik kandungan, membangunkan ciri-ciri baharu, serta menampung kos operasi termasuk penggunaan AI, anda bolehlah memberi sumbangan secara sukarela. Setiap sokongan yang diberikan amat bermakna dan akan membantu kami meneruskan usaha ini demi manfaat lebih ramai pelajar.</p>
             </div>
           </div>
 
@@ -581,12 +781,17 @@
       </div>
     </section>
 
-    <footer class="mt-10 pb-8 text-center text-sm text-slate-500">
-      Sejarah Bersama Cikgu Habibah · Versi 1.0
+    <footer class="mt-10 pb-8 text-center text-sm text-slate-500 space-y-2">
+      <p>Sejarah Bersama Cikgu Habibah · Versi 1.0 dibangunkan oleh Firdaus bin Md Din (nagaTidur)</p>
+      <p>
+        Maklum balas / Cadangan:
+        <a href="mailto:nag4tidur@gmail.com?subject=Maklum%20Balas%20Aplikasi%20Sejarah%20Versi%201.0" class="font-semibold underline underline-offset-4 hover:text-slate-700">
+          nag4tidur@gmail.com
+        </a>
+      </p>
     </footer>
   </div>
 
-  <!-- Modal Tambah Murid -->
   <div id="studentModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center px-4">
     <div class="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 soft-shadow">
       <div class="flex items-center justify-between gap-3">
@@ -627,7 +832,6 @@
     </div>
   </div>
 
-  <!-- Modal Tukar Murid -->
   <div id="switchStudentModal" class="hidden fixed inset-0 z-50 modal-backdrop items-center justify-center px-4">
     <div class="w-full max-w-2xl rounded-3xl border border-slate-200 bg-white p-6 soft-shadow">
       <div class="flex items-center justify-between gap-3">
