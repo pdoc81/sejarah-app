@@ -563,7 +563,7 @@
               <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Akaun murid berasingan</div>
               <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Cetak & eksport review</div>
               <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Auto pilih tingkatan ikut murid aktif</div>
-              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Bantuan & versi diperkemas</div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">Mesej ralat lebih jelas</div>
             </div>
           </div>
         </div>
@@ -607,6 +607,7 @@
                 <li>• bug fixing kecil dan semakan aliran penggunaan</li>
                 <li>• kemas maklumat tab Bantuan dan pemakluman versi</li>
                 <li>• auto pilih tingkatan ikut murid aktif</li>
+                <li>• mesej ralat lebih jelas dan lebih mudah difahami</li>
                 <li>• pengalaman penggunaan dijadikan lebih konsisten untuk dijadikan template modul SDDS</li>
               </ul>
             </div>
@@ -729,7 +730,7 @@
             <p>• dropdown Tingkatan kini mengikut murid aktif secara automatik</p>
             <p>• senarai bab diselaraskan semula ikut tingkatan murid aktif</p>
             <p>• tab Bantuan dan maklumat versi dikemas kini</p>
-            <p>• aliran penggunaan awal dijadikan lebih konsisten</p>
+            <p>• mesej ralat dijadikan lebih jelas dan lebih mudah difahami</p>
           </div>
         </div>
       </div>
@@ -1337,10 +1338,56 @@
       submitMcqBtn.dataset.done = 'false';
     }
 
+    function normalizeErrorMessage(message) {
+      const text = String(message || '').trim().toLowerCase();
+
+      if (!text) {
+        return 'Ralat tidak diketahui. Cuba semula.';
+      }
+
+      if (text.includes('tiada murid')) {
+        return 'Sila tambah atau pilih murid terlebih dahulu.';
+      }
+
+      if (text.includes('respons server tidak sah')) {
+        return 'Respons server tidak lengkap atau rosak. Cuba jana semula.';
+      }
+
+      if (text.includes('timeout') || text.includes('inactivity timeout')) {
+        return 'Permintaan mengambil masa terlalu lama. Cuba jana semula.';
+      }
+
+      if (text.includes('failed to fetch') || text.includes('networkerror') || text.includes('network request failed')) {
+        return 'Sambungan ke server gagal. Semak internet atau cuba semula.';
+      }
+
+      if (text.includes('kuota ai telah habis') || text.includes('billing')) {
+        return 'Kuota AI atau billing bermasalah. Sila semak tetapan OpenAI API.';
+      }
+
+      if (text.includes('api key')) {
+        return 'API key tidak sah atau tidak dibaca oleh server.';
+      }
+
+      if (text.includes('model ai tidak dijumpai') || text.includes('model')) {
+        return 'Model AI tidak dijumpai atau tidak tersedia.';
+      }
+
+      if (text.includes('mismatched source ip') || text.includes('mismatched client ip')) {
+        return 'Ralat rangkaian dikesan. Cuba matikan VPN atau Private Relay dan cuba semula.';
+      }
+
+      if (text.includes('json')) {
+        return 'Respons AI tidak lengkap. Cuba jana semula.';
+      }
+
+      return String(message).trim();
+    }
+
     function showError(message) {
       stopTimer();
       errorBox.classList.remove('hidden');
-      errorText.textContent = message || 'Ralat tidak diketahui.';
+      errorText.textContent = normalizeErrorMessage(message);
       setStatus('Ralat', 'error');
     }
 
@@ -1486,20 +1533,31 @@
     }
 
     async function fetchJsonPayload(payload) {
-      const res = await fetch('/.netlify/functions/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      let res;
+      let rawText = '';
 
-      const rawText = await res.text();
+      try {
+        res = await fetch('/.netlify/functions/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (networkError) {
+        throw new Error('Sambungan ke server gagal. Semak internet atau cuba semula.');
+      }
+
+      try {
+        rawText = await res.text();
+      } catch (readError) {
+        throw new Error('Gagal membaca respons daripada server.');
+      }
+
       let data = {};
-
       try {
         data = rawText ? JSON.parse(rawText) : {};
       } catch (parseError) {
         console.error('Raw response parse error:', rawText);
-        throw new Error(`Respons server tidak sah. ${rawText || 'Tiada kandungan respons.'}`);
+        throw new Error('Respons server tidak sah. Respons AI mungkin tidak lengkap atau rosak.');
       }
 
       if (!res.ok || data.error) {
@@ -1511,7 +1569,7 @@
 
     async function generateQuestions() {
       if (!getActiveStudent()) {
-        alert('Sila tambah atau pilih murid dahulu.');
+        showError('Sila tambah atau pilih murid dahulu.');
         return;
       }
 
