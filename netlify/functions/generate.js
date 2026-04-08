@@ -66,6 +66,7 @@ function loadChapterData(selectedSkop, selectedSesi) {
     `form${selectedSkop}`,
     `chapter${selectedSesi}.json`
   );
+
   return readJsonFile(filePath);
 }
 
@@ -86,6 +87,7 @@ function loadExamPattern(mode) {
     'form45',
     fileName
   );
+
   return readJsonFile(filePath);
 }
 
@@ -93,9 +95,18 @@ function buildVariationPlan(chapterData, examPattern, mode, totalQuestions) {
   if (chapterData) {
     return {
       sourceType: 'chapter',
-      focusMix: pickItems(chapterData.focus_areas || [], mode === 'mcq' ? 5 : 4),
-      questionAngles: pickItems(chapterData.possible_question_angles || [], mode === 'mcq' ? 6 : 4),
-      kbatMix: pickItems(chapterData.kbat_angles || [], mode === 'mcq' ? 3 : 2),
+      focusMix: pickItems(
+        chapterData.focus_areas || chapterData.learning_points || [],
+        mode === 'mcq' ? 5 : 4
+      ),
+      questionAngles: pickItems(
+        chapterData.possible_question_angles || [],
+        mode === 'mcq' ? 6 : 4
+      ),
+      kbatMix: pickItems(
+        chapterData.kbat_angles || [],
+        mode === 'mcq' ? 3 : 2
+      ),
     };
   }
 
@@ -184,7 +195,7 @@ function getExamBatchPlan(examBatchLabel) {
         'nasionalisme',
         'konflik dunia dan pendudukan Jepun',
         'era peralihan kuasa British',
-        'Persekutuan Tanah Melayu 1948'
+        'Persekutuan Tanah Melayu 1948',
       ],
     },
     form4_b: {
@@ -196,7 +207,7 @@ function getExamBatchPlan(examBatchLabel) {
         'usaha ke arah kemerdekaan',
         'pilihan raya',
         'Perlembagaan Persekutuan Tanah Melayu 1957',
-        'pemasyhuran kemerdekaan'
+        'pemasyhuran kemerdekaan',
       ],
     },
     form5_a: {
@@ -208,7 +219,7 @@ function getExamBatchPlan(examBatchLabel) {
         'Perlembagaan Persekutuan',
         'Raja Berperlembagaan dan Demokrasi Berparlimen',
         'sistem Persekutuan',
-        'pembentukan Malaysia'
+        'pembentukan Malaysia',
       ],
     },
     form5_b: {
@@ -220,7 +231,7 @@ function getExamBatchPlan(examBatchLabel) {
         'membina kesejahteraan negara',
         'membina kemakmuran negara',
         'dasar luar Malaysia',
-        'kecemerlangan Malaysia di persada dunia'
+        'kecemerlangan Malaysia di persada dunia',
       ],
     },
   };
@@ -353,6 +364,54 @@ function dedupeMcqQuestions(questions) {
   });
 }
 
+function sanitizeStructuredSet(parsed) {
+  const context = typeof parsed?.context === 'string' ? parsed.context.trim() : '';
+  const rawQuestions = Array.isArray(parsed?.questions) ? parsed.questions : [];
+
+  const questions = rawQuestions
+    .filter((q) =>
+      q &&
+      typeof q.id === 'string' &&
+      q.id.trim() &&
+      typeof q.q === 'string' &&
+      q.q.trim() &&
+      Number.isFinite(Number(q.marks)) &&
+      typeof q.model === 'string'
+    )
+    .map((q) => ({
+      id: String(q.id).trim().toLowerCase(),
+      q: String(q.q).trim(),
+      marks: Number(q.marks),
+      model: String(q.model).trim(),
+    }))
+    .slice(0, 3);
+
+  return {
+    context: context || 'Tiada konteks.',
+    questions,
+  };
+}
+
+function sanitizeMarkedStructured(parsed) {
+  const rawResults = Array.isArray(parsed?.results) ? parsed.results : [];
+  const results = rawResults
+    .filter((r) => r && typeof r.id === 'string')
+    .map((r) => ({
+      id: String(r.id).trim().toLowerCase(),
+      marks_awarded: Number.isFinite(Number(r.marks_awarded)) ? Number(r.marks_awarded) : 0,
+      feedback: typeof r.feedback === 'string' && r.feedback.trim()
+        ? String(r.feedback).trim()
+        : 'Tiada maklum balas.',
+    }));
+
+  const total =
+    Number.isFinite(Number(parsed?.total))
+      ? Number(parsed.total)
+      : results.reduce((sum, item) => sum + item.marks_awarded, 0);
+
+  return { results, total };
+}
+
 function cleanModelText(text) {
   let cleaned = String(text || '').trim();
 
@@ -385,7 +444,10 @@ async function requestModelJsonOnce({ model, systemText, userText, maxOutputToke
     response.output?.[0]?.content?.[0]?.text ||
     '';
 
-  if (!outputText) throw new Error('AI tidak memulangkan data.');
+  if (!outputText) {
+    throw new Error('AI tidak memulangkan data.');
+  }
+
   return JSON.parse(cleanModelText(outputText));
 }
 
@@ -409,7 +471,8 @@ AMARAN TAMBAHAN:
 - Respons sebelum ini rosak.
 - Pulangkan JSON SAH sahaja.
 - Jangan tambah apa-apa di luar objek JSON.
-- Pastikan semua string ditutup dengan betul.`;
+- Pastikan semua string ditutup dengan betul.
+- Pastikan array dan koma lengkap.`;
 
       return await requestModelJsonOnce({
         model,
@@ -439,6 +502,8 @@ function buildChapterMcqPrompts({
 Anda ialah guru Sejarah KSSM Malaysia yang sangat ketat terhadap skop bab.
 Tugas anda ialah menjana soalan HANYA daripada kandungan bab yang diberi.
 JANGAN campurkan fakta daripada bab lain.
+JANGAN hasilkan soalan umum di luar bab.
+JANGAN hasilkan soalan yang tidak boleh disokong oleh data bab.
 
 ${chapterContext}
 
@@ -583,7 +648,9 @@ exports.handler = async (event) => {
 
     const chapterData = isChapterMode ? loadChapterData(selectedSkop, selectedSesi) : null;
     const examPattern = isExamMode ? loadExamPattern(mode) : null;
-    const examBatchPlan = isExamMode && mode === 'mcq' ? getExamBatchPlan(examBatchLabel) : null;
+    const examBatchPlan = isExamMode && mode === 'mcq'
+      ? getExamBatchPlan(examBatchLabel)
+      : null;
 
     const variationPlan = buildVariationPlan(chapterData, examPattern, mode, totalQuestions);
     const chapterContext = buildChapterContext(chapterData, variationPlan);
@@ -622,6 +689,12 @@ exports.handler = async (event) => {
           sanitizeMcqQuestions(parsed.questions || [], totalQuestions)
         )
       );
+
+      if (!finalQuestions.length) {
+        return jsonResponse(500, {
+          error: 'AI tidak berjaya menjana soalan yang sah. Cuba jana semula.',
+        });
+      }
 
       return jsonResponse(200, {
         questions: finalQuestions,
@@ -699,7 +772,15 @@ Jana satu set soalan struktur.
         retries: 3,
       });
 
-      return jsonResponse(200, parsed);
+      const cleaned = sanitizeStructuredSet(parsed);
+
+      if (!cleaned.questions.length) {
+        return jsonResponse(500, {
+          error: 'AI tidak berjaya menjana set struktur yang sah. Cuba jana semula.',
+        });
+      }
+
+      return jsonResponse(200, cleaned);
     }
 
     if (mode === 'mark-structured') {
@@ -731,7 +812,9 @@ ${JSON.stringify(studentAnswers || {})}
         retries: 3,
       });
 
-      return jsonResponse(200, parsed);
+      const cleaned = sanitizeMarkedStructured(parsed);
+
+      return jsonResponse(200, cleaned);
     }
 
     return jsonResponse(400, { error: 'Mode tidak sah.' });
@@ -764,7 +847,13 @@ ${JSON.stringify(studentAnswers || {})}
       String(apiMessage).toLowerCase().includes('mismatched client ip') ||
       String(errorCode).toLowerCase().includes('mismatched_client_ip')
     ) {
-      userMessage = 'Ralat sambungan rangkaian dikesan (mismatched source IP). Cuba matikan VPN/Private Relay dan mulakan semula netlify dev.';
+      userMessage = 'Ralat sambungan rangkaian dikesan. Cuba matikan VPN atau Private Relay dan mulakan semula server tempatan.';
+    } else if (
+      String(apiMessage).toLowerCase().includes('unexpected token') ||
+      String(apiMessage).toLowerCase().includes('unterminated string') ||
+      String(apiMessage).toLowerCase().includes('json')
+    ) {
+      userMessage = 'Respons AI tidak lengkap atau rosak. Cuba jana semula.';
     } else if (apiMessage) {
       userMessage = apiMessage;
     }
